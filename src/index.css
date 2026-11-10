@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --theme-midnight-black: #050505;
+  --theme-graphite-grey: #111111;
+  --theme-deep-charcoal: #171717;
+  --theme-electric-blue: #00E5FF;
+  --theme-ai-cyan: #00FFFF;
+  --theme-violet-glow: #7B61FF;
+  --theme-soft-white: #F8FAFC;
+  --theme-quantum-silver: #BFC7D5;
+  --theme-glass-surface: rgba(255, 255, 255, 0.03);
+  --theme-glass-border: transparent;
+  --theme-text-primary: #FFFFFF;
+}
+
+.light {
+  --theme-midnight-black: #F8FAFC;
+  --theme-graphite-grey: #E2E8F0;
+  --theme-deep-charcoal: #F1F5F9;
+  --theme-electric-blue: #0284C7;
+  --theme-ai-cyan: #0891B2;
+  --theme-violet-glow: #6D28D9;
+  --theme-soft-white: #050505;
+  --theme-quantum-silver: #475569;
+  --theme-glass-surface: rgba(0, 0, 0, 0.05);
+  --theme-glass-border: transparent;
+  --theme-text-primary: #050505;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-midnight-black: var(--theme-midnight-black);
+  --color-graphite-grey: var(--theme-graphite-grey);
+  --color-deep-charcoal: var(--theme-deep-charcoal);
+  --color-electric-blue: var(--theme-electric-blue);
+  --color-ai-cyan: var(--theme-ai-cyan);
+  --color-violet-glow: var(--theme-violet-glow);
+  --color-soft-white: var(--theme-soft-white);
+  --color-quantum-silver: var(--theme-quantum-silver);
+  --color-glass-surface: var(--theme-glass-surface);
+  --color-glass-border: var(--theme-glass-border);
+  
+  --color-white: var(--theme-text-primary);
+  --color-slate-300: var(--theme-quantum-silver);
+  --color-slate-400: var(--theme-quantum-silver);
+
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-fast: float 3s ease-in-out infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 1.5s infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
+  100% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+body {
+  background-color: var(--color-midnight-black);
+  color: var(--theme-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-midnight-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-graphite-grey);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-electric-blue);
+}
+
+/* Remove all borderlines throughout the whole platform */
+*, ::before, ::after {
+  border-color: transparent !important;
+}
+
+/* Maintain clean accessible boundaries for native form checkboxes and radios */
+input[type="checkbox"], input[type="radio"] {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
