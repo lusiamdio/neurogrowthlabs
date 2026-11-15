@@ -1,0 +1,262 @@
+Multilingual Health Information Assistants: A Clinician-Supervised Framework for Community Health Worker Integration
+NeuroGrowth Labs Research and Development Paper AI for Health Systems Programme November 2026
+Abstract
+Access to accurate health information remains profoundly unequal across linguistic lines. Across the African continent, where well over a thousand languages are spoken, most digital health content and nearly all commercial language technologies are optimised for a handful of high-resource languages. This paper presents NeuroGrowth Labs' research and development framework for Multilingual Health Information Assistants (MHIAs): AI systems that deliver health guidance in local languages, operate under explicit clinician supervision, and are embedded in the workflows of community health workers (CHWs). We argue that safe deployment in this setting requires a departure from the "general-purpose chatbot" paradigm. Instead, we propose a layered architecture combining (i) retrieval-grounded generation over clinician-curated, jurisdiction-specific guidance, (ii) a tiered risk-and-escalation engine that routes high-acuity cases to humans, (iii) speech-first and low-bandwidth interaction channels, (iv) community-participatory language data practices, and (v) a continuous clinical governance loop. We specify design requirements, a reference architecture, a safety case structure, a staged evaluation protocol aligned with CONSORT-AI, SPIRIT-AI and DECIDE-AI reporting guidance, and a phased deployment roadmap. The framework is explicitly aligned with the African Union's stated priority of language inclusion within its Continental Artificial Intelligence Strategy and with WHO guidance on the ethics and governance of AI for health. This paper is a framework and protocol contribution; it reports no clinical outcome data, and all performance targets stated herein are design objectives to be validated prospectively.
+Keywords: multilingual NLP, low-resource languages, digital health, community health workers, clinical safety, retrieval-augmented generation, human-in-the-loop AI, African Union, health equity
+1. Introduction
+1.1 Motivation
+Community health workers are the most proximate point of contact between health systems and the populations they serve. The WHO has issued guidance on optimising CHW programmes precisely because these cadres extend primary care into settings where facilities, clinicians and written materials are scarce (WHO, 2018). Yet the information tools available to CHWs, such as paper job aids, static mobile applications and printed protocols, are typically authored in a national or colonial-era official language, while the households they visit communicate in local languages and dialects. The resulting mismatch has three consequences: CHWs improvise translations of clinical terminology, caregivers receive guidance that is partial or misunderstood, and health systems lose the ability to audit what advice was actually given.
+Large language models (LLMs) appear to offer a remedy. They can converse fluently, summarise guidelines and, in some languages, perform strongly on medical question answering (Singhal et al., 2023). However, three well-documented problems prevent naive adoption in the settings that need the technology most. First, performance degrades sharply for low-resource languages, and the tokenisation schemes of many commercial models impose higher cost, higher latency and lower accuracy on non-Latin and morphologically rich languages (Petrov et al., 2023; Ahia et al., 2023). Second, generative models produce fluent but unsupported statements, a failure mode in the NLP literature termed hallucination (Ji et al., 2023), which in a clinical context is a patient-safety hazard rather than a mere quality defect. Third, general-purpose systems are not designed around the accountability structures of health systems: they do not know who the supervising clinician is, which national guideline applies, or when a conversation must stop and a human must take over.
+1.2 Policy Context
+The African Union (AU) Continental Artificial Intelligence Strategy, endorsed in 2024, identifies inclusive, human-centred and development-oriented AI as a continental objective, and language inclusion is a stated priority within it (African Union, 2024). This is consistent with the broader AU Digital Transformation Strategy for Africa 2020–2030 (African Union, 2020) and with the WHO's six consensus principles for AI in health: protecting human autonomy; promoting well-being, safety and the public interest; ensuring transparency, explainability and intelligibility; fostering responsibility and accountability; ensuring inclusiveness and equity; and promoting responsive and sustainable AI (WHO, 2021). WHO's 2024 guidance on large multi-modal models further emphasises that developers, providers and deployers share responsibilities across the lifecycle of such systems (WHO, 2024).
+1.3 Contributions
+This paper makes the following contributions:
+1.  A problem formalisation and a set of testable design requirements for multilingual, clinician-supervised health assistants (Section 3).
+2.  A reference architecture in which safety is a property of system structure rather than of model behaviour alone (Section 4).
+3.  A tiered clinical risk model with explicit escalation semantics and a governance loop (Section 5).
+4.  A language-technology methodology for low-resource and code-switched settings that treats communities as co-owners of language data (Section 6).
+5.  A CHW workflow integration model (Section 7) and a staged evaluation protocol (Section 8).
+6.  A responsible-deployment roadmap with explicit stop criteria (Section 10).
+2. Background and Related Work
+2.1 Language Inclusion in NLP
+Joshi et al. (2020) showed that the vast majority of the world's languages receive negligible attention in NLP research and resources, with a small number of languages dominating. Community-driven efforts have begun to narrow the gap. The Masakhane initiative demonstrated that participatory, distributed research by speakers of African languages can produce usable machine translation baselines where industry efforts had not (Nekoto et al., 2020). Models such as AfriBERTa showed that pre-training on small, carefully selected multilingual corpora can be competitive for low-resource African languages (Ogueji et al., 2021), and Meta's No Language Left Behind project extended machine translation to 200 languages, with human-evaluated benchmarks for many low-resource pairs (NLLB Team, 2022). Large-scale weakly supervised speech recognition has likewise broadened coverage, although accuracy remains uneven and is generally weakest for the languages with the least training data (Radford et al., 2023).
+Two cautions follow from this literature. First, aggregate benchmark scores obscure large variance across languages, dialects, registers and speakers. Second, general-domain translation quality does not guarantee clinical fidelity: terms for symptoms, dosage, danger signs and anatomy are precisely where lexical gaps, euphemism and borrowed terminology are most common.
+2.2 Language Models in Clinical Question Answering
+Evidence that LLMs encode substantial clinical knowledge (Singhal et al., 2023) has motivated their use in patient-facing settings. However, benchmark success on licensing-style questions in English is not evidence of safe performance in low-resource languages, in conversational triage, or in the presence of incomplete patient histories. Retrieval-augmented generation (RAG) reduces unsupported claims by conditioning generation on retrieved source passages (Lewis et al., 2020), but it does not eliminate them: retrieval can fail, retrieved passages can be misread, and cross-lingual retrieval introduces additional error. Our framework therefore treats retrieval grounding as one safeguard among several, not as a sufficient one.
+2.3 Digital Tools for Community Health Workers
+Digital CHW tools, from SMS-based reminders to decision-support applications following integrated community case management protocols, have a substantial implementation history. Programmes that combine automated messaging with human escalation, such as maternal-health SMS triage services staffed by nurses, illustrate a design pattern that our framework generalises: the automated component handles volume and language access, and humans handle judgement, exceptions and accountability. The lesson we draw is that CHW technology succeeds when it fits existing supervision, reporting and referral structures, and fails when it creates a parallel workflow.
+2.4 Governance and Reporting Standards
+For evaluation and reporting we adopt the extensions of established trial guidance to AI interventions: CONSORT-AI for trial reports (Liu et al., 2020), SPIRIT-AI for trial protocols (Rivera et al., 2020), and DECIDE-AI for early-stage live clinical evaluation (Vasey et al., 2022). For transparency of artefacts we adopt model cards (Mitchell et al., 2019) and datasheets for datasets (Gebru et al., 2021).
+3. Problem Statement and Design Requirements
+3.1 Problem Formalisation
+Let a household member or CHW pose a query q in language l (possibly code-switched, possibly spoken) in context c (location, patient age band, pregnancy status, reported danger signs, applicable national guideline). The assistant must return a response r in language l such that:
+• r is clinically faithful: it is entailed by an approved guidance corpus G(c) and does not exceed the assistant's scope;
+• r is linguistically faithful: it preserves meaning, register and urgency in l, including for non-literate listeners;
+• r is appropriately conservative: when the case is outside scope, ambiguous or potentially high-acuity, the system escalates rather than answers; and
+• the interaction is auditable by a named supervising clinician.
+The design objective is to maximise coverage and usefulness subject to hard safety constraints, rather than to maximise a single accuracy score.
+3.2 Design Requirements
+ID
+Requirement
+Rationale
+R1
+All substantive health content must trace to a versioned, clinician-approved source passage
+Prevents unsupported claims; enables audit
+R2
+Danger-sign detection must run independently of the generative model and fail toward escalation
+Safety must not depend on a single probabilistic component
+R3
+The system must support spoken input and output in each target language
+Many users have limited literacy in the official language, and some languages have limited standardised orthography
+R4
+Performance must be reported per language, dialect and channel, never only in aggregate
+Aggregate metrics conceal inequity
+R5
+A named clinician supervisor must be accountable for each deployment site
+Aligns with WHO accountability principle
+R6
+The system must operate under intermittent connectivity and on low-cost devices
+Reflects deployment realities
+R7
+Data collection must be minimal, consented, locally governed and jurisdiction-compliant
+Privacy and sovereignty
+R8
+The assistant must disclose that it is an AI system and state its limits in plain language
+Autonomy and transparency
+R9
+The system must be withdrawable at any time without disrupting care pathways
+Prevents harmful dependency
+4. Reference Architecture
+The MHIA architecture comprises six layers. Safety-critical functions are implemented as deterministic or independently validated components surrounding, rather than inside, the generative model.
+4.1 Layer 1: Interaction Channels
+Channels include voice (interactive voice response and in-app voice), SMS and USSD for feature-phone users, messaging applications, and a CHW-facing mobile application with offline capability. A speech-first design is central: for populations with limited literacy, or for languages whose written conventions are not widely used, text-only assistants exclude the very users they are meant to serve.
+4.2 Layer 2: Language Processing
+This layer performs language identification (including code-switch detection), automatic speech recognition (ASR), text normalisation, and, where required, translation into a pivot language for retrieval. It also performs text-to-speech (TTS) for output. Confidence estimates from each component are propagated downstream. Low ASR or translation confidence triggers a clarification turn or escalation, never silent best-guess behaviour.
+4.3 Layer 3: Safety Gateway
+Before any generation, the gateway applies:
+1.  Danger-sign classifier. A conservative classifier, built from clinician-authored rules and a validated model, flags indicators such as convulsions, severe bleeding, breathing difficulty, unconsciousness, severe dehydration, or pregnancy danger signs. Detection bypasses generation and invokes the escalation workflow (Section 5.2).
+2.  Scope filter. Requests for diagnosis, prescribing, dosing outside approved protocols, or topics outside the approved corpus are declined with a referral message.
+3.  Vulnerability and safeguarding checks. Indicators of self-harm, gender-based violence or child protection concerns route to trained human responders and approved local resources.
+The gateway is tuned for high sensitivity. Its false-positive burden (unnecessary escalations) is tracked as an operational cost, not minimised at the expense of recall.
+4.4 Layer 4: Grounded Response Generation
+A retrieval component queries a clinical knowledge base composed of national guidelines, WHO guidance adapted to local policy, CHW job aids and locally approved patient-education materials. Every passage carries metadata: source, version, approving body, effective date, jurisdiction, target audience and language. The generator is constrained to compose answers from retrieved passages, to cite them internally, and to abstain when retrieval confidence is low. A separate verifier model checks entailment of each claim against the cited passage, and a back-translation and consistency check compares meaning across languages for safety-critical statements such as dosing, timing and referral advice.
+4.5 Layer 5: Clinician Supervision and Escalation
+A supervision console gives clinicians a sampled and risk-prioritised view of interactions, the ability to correct or retire responses, and a queue for escalated cases. Escalations can trigger a call-back by a nurse or clinician, an alert to the CHW's supervisor, or a facility referral with a structured summary.
+4.6 Layer 6: Governance, Logging and Analytics
+An immutable audit log records inputs (with privacy protections), retrieved sources, outputs, safety-gateway decisions, model and corpus versions, and human interventions. Dashboards report safety and equity metrics by language, site and demographic stratum. Model cards and datasheets are published for each release.
+4.7 Model Strategy
+We adopt a portfolio approach: no single model is assumed to be best across languages. Candidate generators, ASR systems and translators are evaluated per language against clinical test sets, and routing selects the best-performing system for each language and task, with smaller, locally hostable models preferred where they meet safety thresholds, to support offline use, cost control and data sovereignty. Where tokenisation inefficiency raises cost or truncates context for a language (Ahia et al., 2023; Petrov et al., 2023), this is measured and factored into model selection rather than accepted as a hidden penalty.
+5. Clinical Safety and Governance
+5.1 Safety Case
+We structure safety assurance as a safety case: an explicit argument, supported by evidence, that the system is acceptably safe for a defined intended use in a defined context. The intended use is bounded: the MHIA provides general, guideline-based health information and supports CHW decision-making within approved protocols; it does not diagnose, prescribe, or replace clinical judgement. The safety case is maintained as a living document, with hazards recorded in a hazard log and each mitigation linked to verification evidence.
+Principal hazards include: (H1) failure to detect a danger sign; (H2) mistranslation of clinical terms; (H3) hallucinated or outdated guidance; (H4) over-reliance by CHWs or caregivers; (H5) privacy breach or re-identification; (H6) inequitable performance across languages or dialects; (H7) inappropriate response to distress or safeguarding disclosures; and (H8) service outage at a critical moment.
+5.2 Tiered Risk Model
+Tier
+Description
+System behaviour
+Human involvement
+0
+General wellness and prevention information
+Answer from approved corpus
+Retrospective sampling
+1
+Common conditions within CHW protocols
+Answer with CHW-protocol framing and "when to seek care" advice
+Supervisor review of sampled cases
+2
+Ambiguous, multi-symptom or out-of-scope queries
+Clarify once, then refer
+Asynchronous clinician review
+3
+Danger signs or high-acuity indicators
+Stop generation; deliver pre-approved urgent-referral message; alert human
+Immediate clinician or supervisor contact
+4
+Safeguarding, self-harm, violence
+Pre-approved supportive message; route to trained responder
+Immediate trained human response
+Urgent and supportive messages at Tiers 3 and 4 are pre-authored and clinically approved in each language, not generated at runtime. This removes generative variability from the highest-risk interactions.
+5.3 Clinical Governance Loop
+Each deployment is overseen by a Clinical Safety Board including supervising clinicians, CHW representatives, language experts, and community members. The Board approves corpus releases, reviews incidents and near-misses, sets escalation thresholds, and holds authority to suspend the system. Incident reporting follows a blameless, learning-oriented protocol, and serious events trigger notification to the relevant health authority in accordance with local regulation.
+5.4 Regulatory Positioning
+Depending on jurisdiction and intended use, software of this kind may fall within medical device or digital health regulation. Deployments must therefore begin with a regulatory assessment in each country, and the intended-use statement above is deliberately conservative to keep the product within an information-support role until evidence justifies expansion.
+6. Multilingual Language Technology Methodology
+6.1 Language Prioritisation
+Languages are selected through a transparent scoring approach that weighs (a) speaker population in the target health districts, (b) unmet need, as measured by the gap between household language and available health materials, (c) availability of language data and community partners, and (d) technical feasibility. Priority is given to languages that are both highly needed and under-served, rather than those that are merely easiest to support. Where feasibility is low, we deploy a graceful-degradation pathway: the system supports the language with a restricted, fully pre-approved content set and human fallback, and expands coverage only as measured quality allows.
+6.2 Community-Participatory Data Practices
+Following the participatory model demonstrated by African NLP communities (Nekoto et al., 2020), we treat speakers as research partners rather than annotation labour. Practices include:
+• compensated, trained community translators and clinicians co-developing health terminologies and glossaries;
+• documentation of dialect, register and orthographic choices in a datasheet for each dataset (Gebru et al., 2021);
+• consent and data-governance arrangements that specify who may use language data, for what purposes, and under what benefit-sharing terms; and
+• open release of non-sensitive resources, such as terminologies and evaluation sets, where communities agree, to strengthen the wider ecosystem.
+6.3 Clinical Terminology Resources
+For each language we build a bilingual clinical glossary linking guideline terminology to lay expressions and idioms for symptoms, danger signs, anatomy and medication instructions, validated by clinicians and native speakers. The glossary constrains translation (terminology-aware decoding and post-editing checks) and feeds the safety gateway so that danger-sign detection recognises colloquial descriptions and not only biomedical terms.
+6.4 Speech and Code-Switching
+Spoken interaction introduces acoustic variability (accent, background noise, low-quality handsets) and frequent code-switching between a local language and a regional lingua franca or official language. We therefore (i) collect representative speech with consent across age, gender, dialect and device type, (ii) fine-tune and evaluate ASR on realistic field audio, (iii) evaluate performance separately on code-switched utterances, and (iv) design the dialogue manager to confirm critical details, such as age of the child or duration of symptoms, by read-back. Where TTS quality is poor, pre-recorded human voice for critical messages is preferred over synthetic voice.
+6.5 Synthetic Data and Its Limits
+Translated or synthetically generated data can accelerate development for low-resource languages, but it can propagate translation artefacts and flatten dialect variation. We permit synthetic augmentation for training only, never for final evaluation, and require that all clinical test sets be authored or validated by human experts.
+7. Integration with Community Health Worker Workflows
+7.1 Design Principles
+The MHIA must fit existing supervision, reporting and referral structures. We therefore co-design with CHWs, supervisors and facility staff through observation, task analysis and iterative prototyping, and we adopt four principles:
+1.  Assist, do not replace. The assistant supports the CHW's protocol-based tasks; the CHW remains the accountable actor.
+2.  Reduce burden. The tool must save time, for example by auto-structuring visit notes and pre-populating referral forms, otherwise adoption will fail.
+3.  Preserve the relationship. Voice-first, brief, culturally appropriate interaction supports rather than substitutes for the CHW's rapport with households.
+4.  Close the loop. Every referral and escalation generates a trackable outcome, so the health system can see whether advice led to care.
+7.2 Use Cases
+Use case
+Primary user
+Example function
+Tier range
+Household counselling support
+CHW
+Local-language explanations of nutrition, hygiene, immunisation schedules
+0–1
+Protocol decision support
+CHW
+Guideline-based prompts for danger signs in under-five or maternal care
+1–3
+Caregiver self-service
+Household
+Voice queries on common concerns, with referral advice
+0–2
+Visit documentation
+CHW
+Spoken notes converted to structured records
+0
+Supervisor feedback
+Supervisor
+Summaries of common questions and gaps in CHW knowledge
+Analytic
+7.3 Training and Change Management
+CHW training covers the assistant's capabilities and limits, how to recognise and report errors, and how to maintain independent clinical vigilance. Automation bias, the tendency to over-trust automated suggestions, is a recognised risk, so training includes deliberately presented model errors in simulation, and the interface displays uncertainty and "verify with protocol" cues where appropriate.
+7.4 Interoperability
+The system integrates with national health information platforms where available, using open standards for records and messaging, so that data flow supports routine reporting rather than creating duplicate registers. Integration is designed to be modular, so countries can adopt components independently.
+8. Evaluation Framework
+The following is a proposed protocol. No results are reported in this paper.
+8.1 Stage 1: Offline Technical and Clinical Validation
+Objective: establish that components meet predefined safety thresholds before any live exposure.
+• Language quality: ASR word error rate, translation fidelity assessed by bilingual clinicians, and terminology accuracy, each reported per language, dialect, and channel.
+• Clinical faithfulness: blinded clinician review of responses against source guidance, scoring correctness, completeness, and potential for harm using a pre-specified rubric with inter-rater agreement reporting.
+• Safety gateway performance: sensitivity and specificity of danger-sign detection on curated test cases written in colloquial local language, with a pre-specified sensitivity threshold, agreed by the Clinical Safety Board, that must be met before progression.
+• Adversarial testing: red-teaming for prompt injection, scope-evasion, misleading framing, and culturally specific misinformation.
+• Robustness: performance under noise, code-switching, and low-bandwidth conditions.
+8.2 Stage 2: Simulated and Shadow-Mode Evaluation
+The assistant runs in shadow mode: it produces outputs that are reviewed by clinicians but not delivered to users. This allows measurement of real-world query distributions, failure modes and escalation rates with no patient exposure.
+8.3 Stage 3: Early Live Evaluation
+Following DECIDE-AI guidance (Vasey et al., 2022), a small-scale, closely supervised deployment assesses usability, human factors, workflow fit, and early safety signals. Outcomes include CHW time per visit, error and near-miss reports, escalation appropriateness, user comprehension (teach-back assessment), and qualitative feedback from CHWs and caregivers.
+8.4 Stage 4: Pragmatic Effectiveness Trial
+A cluster-randomised or stepped-wedge design, specified according to SPIRIT-AI and reported according to CONSORT-AI (Rivera et al., 2020; Liu et al., 2020), evaluates effects at the CHW-cluster level. Candidate outcomes, selected with ministries of health and community partners, include timely care-seeking for danger signs, completion of referral, immunisation timeliness, adherence to protocol steps, and CHW productivity and retention. Safety outcomes are monitored by an independent data and safety monitoring committee with predefined stopping rules.
+8.5 Equity Analysis
+All primary and safety outcomes are disaggregated by language, gender, age, literacy, geography and device type. We pre-specify a minimum-performance floor for each supported language: a language failing to meet the floor is not offered in free-form mode and reverts to the restricted, pre-approved content pathway. This operationalises the principle that inclusion must not be purchased with lower safety.
+8.6 Post-Deployment Surveillance
+Continuous monitoring covers drift in language use, corpus staleness, changes to national guidelines, and shifts in escalation rates. Any model, corpus, or threshold change follows a controlled release process with regression testing across all supported languages.
+9. Ethics, Privacy and Data Sovereignty
+9.1 Data Protection
+Health conversations are sensitive personal data. Deployments must comply with applicable national law, for example South Africa's Protection of Personal Information Act, Kenya's Data Protection Act (2019), and Nigeria's Data Protection Act (2023), and take account of the African Union Convention on Cyber Security and Personal Data Protection (the Malabo Convention), which entered into force in 2023. We apply data minimisation, purpose limitation, encryption in transit and at rest, short retention windows for raw audio, and de-identification before any secondary analysis. Where feasible, processing occurs within the jurisdiction, and on-device or on-premises inference is preferred for sensitive workflows.
+9.2 Consent and Transparency
+Users are told, in their language and in plain terms, that they are interacting with an AI system, what it can and cannot do, how their data are used, and how to reach a human. Consent flows are tested for comprehension with low-literacy users, since a consent screen that cannot be understood is not meaningful consent.
+9.3 Fairness and Cultural Safety
+Beyond translation accuracy, cultural appropriateness matters: health beliefs, gender norms, traditional medicine practices, stigma around conditions such as HIV, mental health and reproductive health, and taboos affecting how topics may be discussed. Community advisory groups review content for cultural safety, and the system avoids prescriptive or dismissive framing of traditional practices while still giving accurate safety-relevant information.
+9.4 Accountability and Redress
+Users and CHWs can report problems through accessible channels, and complaints are triaged by the Clinical Safety Board. The deployment agreement specifies who bears responsibility for harms and how redress is provided, consistent with WHO guidance that responsibility be clearly allocated among developers, providers and deployers (WHO, 2021; WHO, 2024).
+9.5 Sustainability and Ownership
+To avoid dependency, we pursue open interfaces, documented model and corpus provenance, capacity transfer to national institutions and local developers, and licensing arrangements that allow ministries and communities to retain control of language resources and clinical content.
+10. Phased Roadmap and Stop Criteria
+Phase
+Indicative duration
+Focus
+Exit criteria
+0. Foundations
+0–6 months
+Partnership agreements, regulatory assessment, language prioritisation, corpus curation, hazard analysis
+Approved intended-use statement; initial safety case; community governance established
+1. Build and validate
+6–15 months
+Glossaries, speech data, model portfolio, safety gateway, Stage 1 evaluation
+All components meet pre-specified thresholds in pilot languages
+2. Shadow and pilot
+15–24 months
+Shadow mode, then supervised live pilot in limited districts
+No unresolved serious safety signals; acceptable usability and workflow fit
+3. Effectiveness and scale
+24–42 months
+Pragmatic trial; expansion to additional languages and districts
+Evidence of benefit and safety; ministry endorsement
+4. Sustained operation
+Ongoing
+National integration, local ownership, continuous surveillance
+Independent governance operating; local technical capacity
+Stop criteria. Progression between phases is conditional. The Clinical Safety Board will suspend or roll back a deployment if any of the following occurs: a serious adverse event attributable to the system; sensitivity of danger-sign detection falling below the agreed threshold on ongoing audit; evidence of systematic inequity for a supported language; a confirmed privacy breach; or loss of clinician supervision capacity at a site.
+11. Limitations and Open Research Questions
+This framework has important limitations. It is a design and protocol contribution without empirical outcome data, and the performance thresholds it invokes must be set with clinical and community stakeholders and validated in the field. Several research questions remain open:
+1.  Dialect and orthographic variation. How can quality be assured for languages with weak standardisation and extensive dialectal diversity, without privileging one variety?
+2.  Speech in the wild. What accuracy is achievable on low-end handsets in noisy home environments for languages with very limited audio resources?
+3.  Cross-lingual retrieval. How reliable is retrieval over guidance written in one language when queries arrive in another, and how should errors be detected?
+4.  Calibration. How can uncertainty be communicated honestly to low-literacy users and to CHWs without either inducing alarm or encouraging over-trust?
+5.  Automation bias in CHWs. What training and interface designs sustain independent vigilance over time?
+6.  Economics. What is the cost-effectiveness of the assistant relative to other investments in CHW support, including the cost of clinician supervision?
+7.  Governance of language data. What benefit-sharing and licensing models best protect communities while enabling a shared language-technology commons?
+Additionally, a clinician-supervised model assumes sufficient clinician capacity to supervise. Where clinician supply is itself severely constrained, supervision may need to rely on supervisory nurses or tele-consultation networks, and the system's scope should be narrowed accordingly.
+12. Conclusion
+Language is a determinant of access to health information and, ultimately, to care. Multilingual health information assistants offer a route to extending reliable guidance to communities currently excluded by language, but only if they are engineered as accountable components of health systems rather than as autonomous conversational agents. The framework presented here places safety in the architecture: grounding in clinician-approved content, independent danger-sign detection, pre-authored high-acuity messages, human escalation, per-language performance floors, and continuous governance. It places inclusion in the process: community-owned language data, participatory terminology development, and speech-first design. And it places evidence at the centre: staged evaluation, pre-specified safety thresholds, and explicit stop criteria. In doing so it responds directly to the African Union's priority on language inclusion and to international guidance on responsible AI for health. NeuroGrowth Labs invites ministries of health, CHW programmes, linguistic communities, and research partners to collaborate on validating and refining this framework in the field.
+References
+African Union. (2020). The Digital Transformation Strategy for Africa (2020–2030). Addis Ababa: African Union.
+African Union. (2024). Continental Artificial Intelligence Strategy. Addis Ababa: African Union.
+Ahia, O., Kumar, S., Gonen, H., Kasai, J., Mortensen, D. R., Smith, N. A., & Tsvetkov, Y. (2023). Do all languages cost the same? Tokenization in the era of commercial language models. Proceedings of EMNLP 2023.
+Gebru, T., Morgenstern, J., Vecchione, B., Vaughan, J. W., Wallach, H., Daumé III, H., & Crawford, K. (2021). Datasheets for datasets. Communications of the ACM, 64(12), 86–92.
+Ji, Z., Lee, N., Frieske, R., et al. (2023). Survey of hallucination in natural language generation. ACM Computing Surveys, 55(12), 1–38.
+Joshi, P., Santy, S., Budhiraja, A., Bali, K., & Choudhury, M. (2020). The state and fate of linguistic diversity and inclusion in the NLP world. Proceedings of ACL 2020.
+Lewis, P., Perez, E., Piktus, A., et al. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks. Advances in Neural Information Processing Systems, 33.
+Liu, X., Cruz Rivera, S., Moher, D., Calvert, M. J., & Denniston, A. K. (2020). Reporting guidelines for clinical trial reports for interventions involving artificial intelligence: the CONSORT-AI extension. Nature Medicine, 26, 1364–1374.
+Mitchell, M., Wu, S., Zaldivar, A., et al. (2019). Model cards for model reporting. Proceedings of the Conference on Fairness, Accountability, and Transparency (FAT*).
+Nekoto, W., Marivate, V., Matsila, T., et al. (2020). Participatory research for low-resourced machine translation: A case study in African languages. Findings of EMNLP 2020.
+NLLB Team, Costa-jussà, M. R., et al. (2022). No Language Left Behind: Scaling human-centered machine translation. arXiv:2207.04672.
+Ogueji, K., Zhu, Y., & Lin, J. (2021). Small data? No problem! Exploring the viability of pretrained multilingual language models for low-resourced languages. Proceedings of the 1st Workshop on Multilingual Representation Learning.
+Petrov, A., La Malfa, E., Torr, P. H. S., & Bibi, A. (2023). Language model tokenizers introduce unfairness between languages. Advances in Neural Information Processing Systems, 36.
+Radford, A., Kim, J. W., Xu, T., Brockman, G., McLeavey, C., & Sutskever, I. (2023). Robust speech recognition via large-scale weak supervision. Proceedings of ICML 2023.
+Rivera, S. C., Liu, X., Chan, A.-W., Denniston, A. K., & Calvert, M. J. (2020). Guidelines for clinical trial protocols for interventions involving artificial intelligence: the SPIRIT-AI extension. Nature Medicine, 26, 1351–1363.
+Singhal, K., Azizi, S., Tu, T., et al. (2023). Large language models encode clinical knowledge. Nature, 620, 172–180.
+Vasey, B., Nagendran, M., Campbell, B., et al. (2022). Reporting guideline for the early-stage clinical evaluation of decision support systems driven by artificial intelligence: DECIDE-AI. Nature Medicine, 28, 924–933.
+World Health Organization. (2018). WHO guideline on health policy and system support to optimize community health worker programmes. Geneva: WHO.
+World Health Organization. (2021). Ethics and governance of artificial intelligence for health: WHO guidance. Geneva: WHO.
+World Health Organization. (2024). Ethics and governance of artificial intelligence for health: Guidance on large multi-modal models. Geneva: WHO.

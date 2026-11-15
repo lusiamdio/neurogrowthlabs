@@ -56,7 +56,12 @@ ${paper.policyRecommendations.map((r, i) => `[5.${i + 1}] ${r}`).join('\n\n')}
 6. BIBTEX CITATION
 --------------------------------------------------------------------------------
 ${paper.bibtex}
-
+${paper.fullArticleText ? `
+--------------------------------------------------------------------------------
+7. FULL VERBATIM RESEARCH PAPER TEXT
+--------------------------------------------------------------------------------
+${paper.fullArticleText}
+` : ''}
 ================================================================================
 VERIFICATION NOTICE:
 This document is licensed under Creative Commons BY-NC 4.0 for pan-African academic,

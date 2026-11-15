@@ -1,0 +1,365 @@
+Fair and Explainable Clinical AI: Subgroup Evaluation and Transparent Uncertainty Reporting
+NeuroGrowth Labs, AI Research and Development Paper
+Nov 15, 2026 · @Lusimadio Soki Simao
+Abstract
+Clinical artificial intelligence (AI) is entering African health systems faster than the evidence needed to show that it is safe and equitable for the people it serves. This paper presents a research and development framework from NeuroGrowth Labs for evaluating clinical AI across six axes of potential inequity: sex, age, ethnicity, disability, geography and language, together with their intersections. The framework combines four components: (i) stratified and intersectional performance testing with interval estimates sized for small subgroups; (ii) calibration and error-rate parity analysis; (iii) robustness testing under geographic, device and linguistic distribution shift; and (iv) a clinician-facing uncertainty reporting standard built on calibrated risk estimates, conformal prediction sets with subgroup-conditional coverage checks, and explicit abstention. A governance layer translates the safeguards against AI bias and misuse called for in the African Union Continental AI Strategy into auditable release gates, documentation artefacts and post-deployment monitoring duties. The paper is a methods and protocol contribution. It specifies metrics, statistical procedures, acceptance criteria and a staged validation plan for South Africa, Nigeria and Angola, and it reports no empirical performance results. We argue that fairness claims are meaningful only when they are testable, that explanations are useful only when their reliability is itself evaluated, and that uncertainty belongs in the clinical output as a first-class element.
+Keywords: clinical AI, algorithmic fairness, explainability, uncertainty quantification, conformal prediction, health equity, African Union AI governance
+1. Introduction
+1.1 Context
+AI-enabled tools for imaging interpretation, triage, risk prediction and clinical documentation are being piloted and procured across African health systems, often with limited local validation (Wahl et al., 2018). Most of these tools are developed on data from high-income settings. Models trained on such data can fail quietly when applied to patients whose physiology, disease presentation, care pathway, language or imaging equipment differs from the training distribution (Zech et al., 2018; Finlayson et al., 2021).
+The evidence that clinical AI can encode and amplify inequity is substantial. A widely used population-health algorithm under-identified Black patients with equal health needs because it used healthcare cost as a proxy for need (Obermeyer et al., 2019). Chest radiograph classifiers have shown systematically higher underdiagnosis rates in female, younger, Black and lower-income patients (Seyyed-Kalantari et al., 2021). Dermatology AI performs worse on darker skin tones that are under-represented in training and test sets (Daneshjou et al., 2022). Pulse oximeters, which feed many downstream algorithms, overestimate oxygen saturation in patients with darker skin (Sjoding et al., 2020). Facial analysis systems have shown large intersectional error gaps (Buolamwini and Gebru, 2018).
+1.2 The African policy setting
+The African Union Continental Artificial Intelligence Strategy, endorsed by the AU Executive Council in July 2024, frames AI as a driver of development and calls for safeguards against AI bias and misuse. Health is a priority domain because the stakes of error are high and because the gap between model development contexts and deployment contexts is wide. National data protection regimes, including South Africa's Protection of Personal Information Act (2013), Nigeria's Data Protection Act (2023) and Angola's Law 22/11 on personal data protection (2011), add binding obligations on how health data may be used for evaluation. The continent also has a very large linguistic diversity, which makes language a first-order fairness axis for any tool that processes speech or text.
+1.3 The gap this paper addresses
+Existing reporting guidance asks developers to describe their data and performance (Collins et al., 2024; Mitchell et al., 2019). It rarely specifies how to test performance across the axes that matter in African deployments, how to treat small and intersecting subgroups, or how to present uncertainty to a clinician who must act on a single patient's output. Explainability methods are frequently offered as a remedy, yet their reliability is seldom measured (Ghassemi et al., 2021).
+1.4 Research questions and contributions
+This paper addresses three questions.
+1.  RQ1. How should clinical AI be evaluated across sex, age, ethnicity, disability, geography and language so that disparities are detected with known statistical error rates, including in small and intersecting subgroups?
+2.  RQ2. How can uncertainty be quantified and reported so that it is calibrated, subgroup-aware and usable by clinicians at the point of care?
+3.  RQ3. How can the AU strategy's call for safeguards against bias and misuse be turned into concrete, auditable release and monitoring requirements?
+The contributions are: a fairness taxonomy and metric set suited to clinical use (Section 3); a stratified and intersectional evaluation protocol with pre-specified statistics and shift tests (Section 4); an uncertainty and explanation reporting standard for clinicians (Section 5); a staged multi-country validation plan with falsifiable hypotheses (Section 6); and a governance mapping to AU safeguards (Section 7).
+2. Background and Related Work
+2.1 Sources of bias in clinical AI
+Bias can enter at every stage of the lifecycle (Mehrabi et al., 2021; Rajkomar et al., 2018). Five sources matter most for the settings considered here.
+• Representation bias. Subgroups are missing or sparse in training and test data, as with gender imbalance in imaging datasets (Larrazabal et al., 2020) and skin tone in dermatology images.
+• Label and proxy bias. The target variable measures access to care or spending rather than disease (Obermeyer et al., 2019). Race-based correction factors in clinical equations can embed historical inequity (Vyas et al., 2020).
+• Measurement bias. Sensors and acquisition devices perform differently across patients and sites (Sjoding et al., 2020).
+• Distribution shift. Disease prevalence, case mix, equipment and care pathways differ between development and deployment sites (Subbaswamy and Saria, 2020).
+• Language and interface bias. Speech and text tools perform unevenly across the world's languages, with low-resource languages worst served (Blasi et al., 2022). African-language resources have grown through participatory research but remain thin for clinical vocabulary (Nekoto et al., 2020).
+Disability is under-examined in this literature. Atypical presentations, assistive devices and accessibility barriers can degrade both model inputs and the usability of clinical interfaces (Trewin, 2018).
+2.2 Fairness definitions and their tensions
+Group fairness criteria include equality of opportunity and equalized odds (Hardt et al., 2016), predictive parity and calibration within groups (Chouldechova, 2017) and demographic parity. When base rates differ between groups, calibration and equal error rates cannot in general be satisfied together (Kleinberg et al., 2017; Chouldechova, 2017; Pleiss et al., 2017). Individual and causal notions, such as counterfactual fairness, require assumptions about causal structure that are hard to justify in clinical data (Kusner et al., 2017). Auditing only single attributes can miss harm to intersecting groups (Crenshaw, 1989; Kearns et al., 2018). Fairness in medicine is also not identical to fairness in lending or hiring: equal selection rates are rarely the goal, because disease prevalence legitimately differs, and the aim is closer to equal quality of care and equal protection from error (Paulus and Kent, 2020).
+2.3 Explainability
+Post-hoc attribution methods such as LIME, SHAP and integrated gradients are widely used (Ribeiro et al., 2016; Lundberg and Lee, 2017; Sundararajan et al., 2017). Some saliency methods are insensitive to model parameters and so can mislead (Adebayo et al., 2018). Critics argue that explanations of black-box models can give clinicians false reassurance and that inherently interpretable models should be preferred in high-stakes settings where they perform comparably (Rudin, 2019; Ghassemi et al., 2021). We therefore treat an explanation as a claim to be tested for faithfulness and stability, not as evidence of safety.
+2.4 Uncertainty quantification
+Modern neural networks are often miscalibrated (Guo et al., 2017), and predictive uncertainty degrades under dataset shift (Ovadia et al., 2019). Calibration is central to clinical use because a stated risk is acted on as a probability (Van Calster et al., 2019). Strictly proper scoring rules, such as the Brier score and log loss, reward honest probabilities (Gneiting and Raftery, 2007). Ensembles and approximate Bayesian methods estimate epistemic uncertainty (Lakshminarayanan et al., 2017; Gal and Ghahramani, 2016). Conformal prediction produces prediction sets with finite-sample coverage guarantees under exchangeability (Vovk et al., 2005; Angelopoulos and Bates, 2023), with extensions for group-conditional validity and for distribution shift (Vovk, 2012; Barber et al., 2023; Gibbs and Candès, 2021). Selective prediction lets a model abstain when confidence is low (Geifman and El-Yaniv, 2017). Communicating uncertainty to clinicians remains an open design problem (Kompa et al., 2021).
+2.5 Reporting and governance instruments
+Relevant instruments include model cards and datasheets for datasets (Mitchell et al., 2019; Gebru et al., 2021), the TRIPOD+AI, DECIDE-AI and CONSORT-AI reporting guidelines (Collins et al., 2024; Vasey et al., 2022; Liu et al., 2020), the PROBAST risk-of-bias tool (Wolff et al., 2019), WHO guidance on the ethics and governance of AI for health (WHO, 2021) and the EU AI Act (Regulation (EU) 2024/1689). The AU Continental AI Strategy and the AU Convention on Cyber Security and Personal Data Protection (the Malabo Convention) provide the continental frame. None of these specifies a subgroup evaluation protocol tailored to African deployment conditions, which is the gap this paper targets.
+3. Problem Formulation and Fairness Taxonomy
+3.1 Setting and notation
+Let X denote patient inputs (images, signals, text, structured data), Y the clinical outcome, S a model's risk score in [0, 1], and A a vector of attributes with six components: sex, age band, ethnicity, disability status, geography (country, region, facility type, urban or rural) and language (of the patient or of the interface). A subgroup g is a level or an intersection of levels of A. The decision rule is a threshold on S, set by clinical governance before fairness testing.
+3.2 The six axes
+Axis
+Why it matters clinically
+Typical failure mode
+Ascertainment note
+Sex
+Different physiology, symptom presentation and imaging characteristics
+Under-diagnosis in under-represented sex, as in cardiac and imaging models
+Record sex at birth and, where relevant, gender identity separately
+Age
+Paediatric, adult and geriatric disease patterns differ widely
+Models fitted to adult data applied to children or older adults
+Use clinically meaningful bands, not arbitrary deciles
+Ethnicity
+Genetic ancestry, skin tone and care access vary and are correlated with outcomes
+Performance gaps by skin tone and ancestry; proxy bias
+Self-reported where lawful; categories defined with local communities, not imported
+Disability
+Atypical presentations, assistive devices, communication barriers
+Inputs and interfaces that assume typical function
+Functional rather than diagnostic categories; voluntary disclosure
+Geography
+Case mix, equipment, referral pathways, connectivity and prevalence differ
+Site and country shift; rural facilities with older devices
+Record site, device model and facility level for every case
+Language
+Clinical speech and text tools depend on language coverage and dialect
+Higher word and concept error rates in low-resource languages and code-switching
+Record language(s) used in the encounter and in the data
+Ascertainment is itself an ethical and technical issue. Attributes must be collected with consent and under applicable data protection law. The framework does not infer sensitive attributes, such as ethnicity from images or names, for use in deployment decisions. Where an attribute is missing, the missingness rate is reported by subgroup, because non-random missingness can hide disparity.
+3.3 Metric set
+No single metric defines fairness, and the metrics cannot all be satisfied at once when prevalence differs. We therefore specify a fixed core set that is always reported, and require developers to state in advance which criteria bind release.
+Metric
+What it measures
+Clinical reading
+Main caution
+Sensitivity gap (equal opportunity)
+Difference in true positive rate between subgroup and reference
+Equal chance that disease is detected
+Reference group choice affects the result; report all pairwise or worst-group
+False positive rate gap
+Difference in false alarm rate
+Equal burden of unnecessary follow-up
+Costs differ by setting and by test pathway
+Equalized odds gap
+Joint sensitivity and false positive rate difference
+Equal protection from both error types
+Conflicts with calibration when prevalence differs
+Calibration within group
+Agreement of predicted risk and observed risk per subgroup
+A stated 20% risk means about 20% in every group
+Needs enough cases per risk bin; use smoothed calibration curves
+Positive predictive value gap
+Difference in precision at the operating threshold
+Equal reliability of a positive result
+Depends on prevalence, so interpret with base rates
+AUROC and Brier score by subgroup
+Discrimination and overall probabilistic accuracy
+Whether ranking and probabilities degrade for a group
+AUROC alone hides calibration failure
+Worst-group performance
+Minimum of a metric over all pre-specified subgroups
+Floor on the quality of care
+Unstable for tiny groups; pair with intervals
+Conformal coverage gap
+Difference between nominal and empirical coverage of prediction sets per subgroup
+Whether stated uncertainty is honest for each group
+Needs calibration data from each subgroup
+Abstention rate and risk by subgroup
+How often and for whom the model defers
+Whether deferral burden falls unevenly
+Deferral can shift workload onto under-served clinics
+We do not treat demographic parity (equal positive prediction rates) as a default target in diagnosis, because disease prevalence legitimately differs between groups. It may be informative for resource allocation tools, where it should be justified explicitly.
+3.4 Formal definitions
+Equalized odds requires, for each outcome y in {0, 1} and each pair of subgroups a and a':
+P(\hat{Y}=1 \mid Y=y, A=a) = P(\hat{Y}=1 \mid Y=y, A=a')
+Calibration within groups requires that, for every score value s and subgroup a:
+P(Y=1 \mid S=s, A=a) = s
+Subgroup-conditional conformal validity, for a prediction set C(X) and a chosen error level alpha, requires:
+P(Y \in C(X) \mid A=a) \geq 1-\alpha
+The worst-group value of a metric M over the set G of pre-specified subgroups is:
+M_{\text{worst}} = \min_{g \in G} M(g)
+The framework reports the worst-group value alongside the overall value, so that a strong average cannot conceal a failing subgroup.
+4. Proposed Evaluation Framework
+The framework is a sequence of pre-specified stages. Every threshold, margin and subgroup definition is fixed in a written evaluation plan before any model output is examined, and the plan is time-stamped and archived.
+1.  Define the evaluation population and attributes. Specify the intended use, the clinical setting and the reference standard. Collect the six attributes with documented provenance, and report missingness by subgroup.
+2.  Audit the data. Complete a datasheet for each dataset (Gebru et al., 2021). Test whether labels measure disease or access to care, and whether any input or feature is a proxy for a protected attribute (Obermeyer et al., 2019).
+3.  Fix the subgroup plan. List single-attribute strata and the intersections of clinical or policy interest, such as older women in rural facilities. State minimum sample sizes in advance.
+4.  Estimate performance with uncertainty. Compute the metric set in Section 3.3 for each subgroup with interval estimates, and report differences from a reference with intervals.
+5.  Test robustness to shift. Evaluate across sites, countries, devices and languages using held-out units.
+6.  Probe attribute sensitivity. Run perturbation and counterfactual-style tests where an attribute should not change the output, and report the exceptions.
+7.  Analyse root causes. For each failing subgroup, trace the gap to data, label, measurement, threshold or interface causes.
+8.  Apply the release gate. Compare results with pre-specified criteria and record a decision: release, release with restrictions, remediate, or do not release.
+4.1 Sample size and small subgroups
+Subgroup estimates are only as good as the number of cases behind them. For a sensitivity near 0.85, a 95% confidence interval with half-width 0.07 needs about 100 positive cases in the subgroup, since n is approximately (1.96 / 0.07)^2 x 0.85 x 0.15. We adopt about 100 positive and 100 negative cases per reported stratum as a default planning target, and require developers to recompute it for their own metric, prevalence and precision goal. Strata below the target are reported as having insufficient evidence. Insufficient evidence is never presented as evidence of no disparity.
+For intersectional cells, which are often small, the framework uses multilevel models with partial pooling so that sparse cells borrow strength from related cells while still showing wide intervals (Kearns et al., 2018, motivate auditing such subgroups; the pooling approach is our proposal). Developers are encouraged to plan data collection that deliberately oversamples under-represented subgroups rather than relying on convenience samples.
+4.2 Statistical procedures
+• Intervals. Stratified bootstrap with at least 2,000 resamples for performance metrics and for differences between subgroups, resampling patients, not images or encounters, to respect clustering.
+• Multiplicity. Control the false discovery rate across the family of subgroup comparisons with the Benjamini-Hochberg procedure (Benjamini and Hochberg, 1995), while also reporting unadjusted intervals so that clinicians can see the raw uncertainty.
+• Equivalence margins. For release criteria, use a pre-specified non-inferiority or equivalence margin on the gap, set with clinicians and patient representatives. A margin of 0.05 absolute on sensitivity is used in this paper only as an illustration; the margin for a given tool must reflect the clinical consequence of a missed case.
+• Calibration. Report calibration curves with confidence bands, calibration intercept and slope, and a binned or smoothed error summary per subgroup (Van Calster et al., 2019).
+• Pre-registration. Register the plan and report all pre-specified analyses, including those that fail.
+4.3 Robustness to geographic, device and language shift
+Geography is tested by leave-one-site-out and leave-one-country-out evaluation, which approximates the experience of deploying into a new facility (Zech et al., 2018; Koh et al., 2021). Device and acquisition effects are tested by stratifying by scanner, sensor or app version and by facility tier.
+For tools that process speech or text, language is tested directly. The evaluation set must contain native-speaker content in each supported language, including dialect variation and code-switching, and must not rely on machine-translated test data alone, which can hide errors (Nekoto et al., 2020; Blasi et al., 2022). Clinical concept error rates, not only general word error rates, are reported per language, because a small transcription error on a drug name or a dose can matter more than many errors on filler words.
+4.4 Disability-aware evaluation
+Disability is evaluated through functional categories and through the whole interaction path rather than the model alone. Tests include atypical presentations, input from assistive devices, and the accessibility of the clinician and patient interface. Where numbers are too small for statistical testing, structured qualitative review with disability organisations complements the quantitative analysis (Trewin, 2018).
+4.5 Release criteria
+A tool passes the fairness gate only if all of the following hold: the worst-group lower confidence bound on each binding metric meets the pre-specified clinical floor; no pre-specified gap exceeds its margin after multiplicity control; calibration slope and intercept are within pre-specified bounds in every adequately sampled subgroup; and every subgroup with insufficient evidence is either excluded from the intended-use statement or covered by a restriction and a monitoring plan.
+5. Explainability and Transparent Uncertainty Reporting for Clinicians
+5.1 Design principles
+• Uncertainty is part of the output. A prediction without a stated reliability is incomplete, and the reliability must itself be tested by subgroup.
+• Explanations are claims, and claims are audited. Every explanation method shipped with a tool is evaluated for faithfulness, stability and usefulness, and the results are reported by subgroup.
+• Honest limits over false confidence. When a patient falls outside the validated population, the tool says so and, where appropriate, abstains.
+• Clinician judgement is preserved. Outputs inform decisions and never conceal that a human decision-maker remains accountable.
+5.2 Calibrated risk estimates
+Risk scores are recalibrated on held-out data using methods such as temperature scaling or isotonic regression, and calibration is verified in every adequately sampled subgroup (Guo et al., 2017; Van Calster et al., 2019). Subgroup-specific recalibration can repair within-group calibration but may worsen error-rate parity, because the two criteria conflict when base rates differ (Pleiss et al., 2017). The framework therefore requires developers to report both before and after recalibration and to document the clinical reasoning for the chosen trade-off.
+5.3 Prediction sets with subgroup-aware coverage
+For classification, split conformal prediction builds a set of plausible diagnoses whose coverage meets a stated level, for example 90%, under exchangeability (Angelopoulos and Bates, 2023; Romano et al., 2020). Marginal coverage can hide poor coverage for particular groups, so the framework requires:
+1.  Empirical coverage reported per subgroup, with intervals, and the coverage gap included in the release gate.
+2.  Group-conditional calibration of the conformal threshold, where sample sizes allow, so that coverage holds within each group (Vovk, 2012).
+3.  Set size reported per subgroup. Larger sets for one group signal that the model is less certain about that group and are a fairness finding in their own right.
+4.  Monitoring under shift with adaptive or weighted conformal methods after deployment, since exchangeability may fail across sites and time (Gibbs and Candes, 2021; Barber et al., 2023).
+For continuous outcomes, prediction intervals from conformalised quantile or jackknife+ methods serve the same role (Barber et al., 2021).
+5.4 Abstention and deferral
+The tool can defer to a clinician when the prediction set is large, when the input is flagged as out of distribution, or when an input-quality check fails (Geifman and El-Yaniv, 2017). Deferral is evaluated as a fairness issue: the framework reports the coverage-risk trade-off and the deferral rate by subgroup, and checks that deferral does not systematically move work and delay onto under-resourced facilities or onto particular groups of patients.
+5.5 Evaluating explanations
+Where a tool provides feature attributions, saliency maps or case-based explanations, three properties are tested:
+• Faithfulness. Do the highlighted features actually drive the prediction? Use parameter-randomisation and input-deletion sanity checks (Adebayo et al., 2018).
+• Stability and parity. Are explanations stable under small input changes, and is their quality similar across subgroups?
+• Clinical usefulness. Do explanations improve clinician accuracy, calibration of trust and decision time, tested in human-factors studies that include clinicians from the intended deployment settings? Evidence that explanations alone improve safety is limited (Ghassemi et al., 2021).
+Where an inherently interpretable model performs comparably, it is preferred (Rudin, 2019).
+5.6 Clinician-facing reporting standard
+Every output shown to a clinician carries the elements below. The wording and layout are co-designed with clinicians and tested for comprehension, following evidence that clinicians interpret probabilistic information inconsistently unless it is carefully presented (Kompa et al., 2021).
+Element
+Content
+Purpose
+Risk estimate with interval
+Calibrated probability and an interval, with plain-language framing such as natural frequencies
+Support proportionate action
+Prediction set
+Plausible diagnoses at the stated coverage level
+Show alternatives the model cannot rule out
+Reliability for this patient
+Whether the patient resembles the validated population by sex, age, language, site and device; coverage and calibration evidence for that subgroup
+Reveal where the model is less trustworthy
+Known limitations
+Subgroups with insufficient evidence or known gaps
+Prevent silent extrapolation
+Abstention notice
+Reason for deferral, such as low input quality or out-of-distribution flag
+Make deferral actionable
+Key drivers
+Faithfulness-tested explanation, labelled with its limits
+Aid review without implying causation
+Provenance
+Model version, validation date, intended use, contact for incident reporting
+Support accountability and audit
+6. Experimental Protocol and Validation Plan
+This section specifies the planned validation. No results are reported here. Site partners, datasets and approvals named below are design requirements, not completed arrangements.
+6.1 Staged design
+1.  Phase 0: method validation on public benchmarks. Test the metrics, intervals and conformal procedures on open datasets where subgroup labels exist, such as chest radiograph collections (Johnson et al., 2019; Irvin et al., 2019) and a dermatology collection annotated by skin tone (Groh et al., 2021). The purpose is to check that the evaluation toolkit detects known disparities and produces correctly calibrated intervals, using simulated bias injection as a positive control.
+2.  Phase 1: retrospective local validation. Apply the framework to candidate tools using retrospective, de-identified data from partner facilities in South Africa, Nigeria and Angola, under local ethics approval and data-sharing agreements.
+3.  Phase 2: silent prospective evaluation. Run the tool in the background at partner sites, without influencing care, to measure real-world performance, shift and subgroup gaps.
+4.  Phase 3: clinician-in-the-loop evaluation. Study the effect of the tool and its uncertainty reporting on clinician decisions, using DECIDE-AI reporting (Vasey et al., 2022) and, if a trial is warranted, CONSORT-AI (Liu et al., 2020).
+6.2 Hypotheses and pre-specified success criteria
+ID
+Hypothesis
+Primary measure
+Pre-specified criterion (illustrative)
+H1
+The toolkit detects injected subgroup performance gaps in public benchmarks
+Detection rate and false discovery rate in simulation
+Detection of injected gaps of 0.10 or more with controlled false discovery rate at 5%
+H2
+Marginal performance conceals subgroup gaps in at least some candidate tools
+Worst-group versus overall sensitivity
+Worst-group interval lower bound falls below the clinical floor in at least one tool despite adequate overall performance
+H3
+Group-conditional conformal calibration reduces subgroup coverage gaps relative to marginal calibration
+Coverage gap per subgroup at 90% nominal
+Gap reduced to within 0.03 of nominal in adequately sampled subgroups
+H4
+Performance degrades under geographic or language shift
+Leave-one-site-out and per-language metrics
+Quantified drop with intervals, and a mitigation plan for any drop beyond the pre-specified margin
+H5
+The clinician reporting standard improves appropriate reliance without increasing decision time beyond an agreed limit
+Clinician accuracy, calibration of trust, time to decision
+Non-inferior time to decision and improved appropriate reliance in a human-factors study
+Criteria are illustrative defaults. Final values are fixed in the registered evaluation plan for each tool, with input from clinicians, patient representatives and regulators.
+6.3 Candidate use cases
+The framework is tool-agnostic. Early candidates are those with high clinical stakes and available data: imaging triage (for example chest radiography for tuberculosis and pneumonia), skin and wound assessment, maternal and child risk stratification, and speech or text tools for clinical documentation and multilingual patient communication. Selection will weigh data availability, clinical need and the feasibility of subgroup sampling.
+6.4 Data governance, ethics and community engagement
+• Ethics review by the relevant research ethics committees in each country before any patient data are used.
+• Compliance with South Africa's POPIA, Nigeria's Data Protection Act and Angola's data protection law, with data kept under local control where required and with transfer limits respected.
+• De-identification, access controls and an auditable record of who accessed what.
+• Participatory design of attribute categories, especially ethnicity and disability, with community and patient representatives, so that categories are meaningful locally and are not imported without scrutiny.
+• Return of findings to partner institutions, including negative findings, in accessible formats and in local languages where possible.
+6.5 Reproducibility
+The evaluation toolkit, plans and analysis code will be versioned, and results will be reproducible from registered plans. Where patient data cannot leave a jurisdiction, the toolkit is designed to run locally and to export only aggregate, non-identifying results.
+7. Governance, Safeguards Against Bias and Misuse
+The AU Continental AI Strategy calls for safeguards against AI bias and misuse. We read that call as requiring mechanisms that can be checked by an independent party, not statements of intent. The table maps safeguard areas to concrete requirements in this framework.
+Safeguard area
+Requirement in this framework
+Auditable artefact
+Bias detection and mitigation
+Stratified and intersectional evaluation; release gate on worst-group performance, gap margins and calibration
+Registered evaluation plan, subgroup results with intervals, gate decision record
+Transparency
+Model card, datasheets and clinician-facing reliability reporting
+Published model card and dataset documentation, version history
+Accountability and human oversight
+Named responsible clinician and organisation; deferral pathways; human decision retained
+Role assignment, oversight protocol, override log
+Misuse prevention
+Intended-use statement; use-case restrictions; ban on using inferred sensitive attributes for exclusion or denial of care
+Use restriction clauses in licences and procurement terms, access logs
+Data protection and sovereignty
+Local data control, consent, minimisation and lawful transfer
+Data protection impact assessment, data-sharing agreements
+Safety and incident response
+Incident reporting, rollback and suspension criteria
+Incident register, post-incident review, suspension record
+Contestability and redress
+Patients and clinicians can query and challenge a tool-informed decision
+Complaint and review procedure
+Inclusion and capacity
+Local clinicians, engineers and community representatives take part in design and audit
+Participation record, training and capacity plan
+7.1 Misuse and dual-use risks
+Subgroup data created for fairness testing can be misused. Examples include using ethnicity or disability inferences to limit insurance or access to services, re-identifying small groups, or repurposing a diagnostic model for surveillance or screening that patients did not agree to. The framework counters these risks through purpose limitation, aggregation rules that suppress very small cells in published results, strict access controls and contractual use restrictions. It also treats attempts to game fairness metrics, for example by tuning thresholds to pass the gate while leaving real-world harm in place, as a governance risk, which is addressed by independent audit and by post-deployment monitoring rather than by the pre-release gate alone.
+7.2 Post-deployment monitoring
+Fairness at release does not guarantee fairness in use. Deployed tools are monitored for input drift, subgroup performance, calibration, conformal coverage, deferral rates and clinician override patterns. Monitoring dashboards are stratified by the same six axes. Pre-specified alert thresholds trigger investigation, recalibration, restriction or withdrawal, and the actions taken are recorded. Where outcome labels arrive late, proxy indicators and periodic audit samples fill the gap.
+7.3 Roles and accountability
+Evaluation should be separable from development. Developers produce the evaluation plan and documentation. An independent reviewer, which may be a hospital committee, a regulator or an academic partner, verifies the results and signs the gate decision. NeuroGrowth Labs proposes to apply the same standard to its own tools and to publish the outcomes of those assessments, including failures, subject to its internal governance approval. Clinicians remain accountable for care decisions, and procurement contracts should state the responsibilities of vendors and health facilities for monitoring and incident reporting.
+7.4 Alignment with regional and international frameworks
+The approach is designed to be compatible with WHO guidance on ethics and governance of AI for health (WHO, 2021), good machine learning practice principles, and risk-based regimes such as the EU AI Act, while remaining adaptable to emerging African regulatory frameworks and to the continental data protection architecture, including the Malabo Convention. It aims to support, not replace, national health regulators, whose authority and capacity vary across the continent.
+8. Limitations, Ethical Considerations and Future Work
+8.1 Limitations
+• No empirical results. The framework is specified but not yet validated. Hypotheses H1 to H5 are testable claims, not findings, and the illustrative thresholds may need revision.
+• Sample size. Many clinically important subgroups, especially intersections, will have too few cases for firm conclusions. Partial pooling and honest reporting of insufficient evidence reduce but do not remove this problem.
+• Attribute quality. Ethnicity, disability and language categories are heterogeneous, context-dependent and sometimes sensitive. Poorly defined categories can create the appearance of rigour without meaning.
+• Fairness trade-offs. No metric set resolves the mathematical conflicts between fairness criteria (Kleinberg et al., 2017). The framework makes the choice explicit and reviewable; it cannot make it for clinicians and communities.
+• Conformal assumptions. Coverage guarantees rely on exchangeability. Under shift they hold only approximately, and adaptive methods need monitoring data that may arrive slowly.
+• Limits of explanation. Even tested explanations are partial. They should not be read as causal accounts of disease.
+• Fairness is not sufficiency. A tool can satisfy parity criteria and still be ineffective or unsafe for everyone. The framework complements, and does not replace, clinical validation and safety assessment.
+8.2 Ethical considerations
+Collecting sensitive attributes for fairness testing carries risks as well as benefits. The framework applies consent, minimisation and purpose limitation, avoids inference of sensitive attributes for use in care decisions, and involves communities in defining categories. It also recognises that a decision not to collect attributes can prevent detection of harm, so the choice is made case by case with ethics oversight. Evaluation resources should not be limited to well-resourced institutions, so the toolkit is designed to run with modest computing capacity and local data control.
+8.3 Future work
+• Run Phases 0 to 3 and publish the results, including negative and null findings.
+• Extend the toolkit to generative and multimodal clinical models, where outputs are free text and standard metrics do not apply directly.
+• Build clinical-concept test sets in African languages with native-speaker clinicians.
+• Develop methods for fairness assessment with small samples, such as Bayesian multilevel and sequential designs.
+• Study clinician and patient comprehension of uncertainty displays across languages and levels of numeracy.
+• Work with regulators and standards bodies to align the release gate with national approval pathways.
+9. Conclusion
+Clinical AI will reach African patients whether or not the evidence of equity is ready. This paper proposes that the evidence be built into the evaluation itself: performance tested across sex, age, ethnicity, disability, geography and language and their intersections; uncertainty calibrated, tested by subgroup and shown to clinicians; explanations treated as claims to be audited; and AU safeguards against bias and misuse expressed as release gates, documents and monitoring duties that an independent party can verify. The framework is a specification and a plan, and its value will be established only by the validation described in Section 6. NeuroGrowth Labs invites clinicians, regulators, researchers and patient communities to test, challenge and improve it.
+References
+Citation details were compiled without live database access and should be verified against the original sources before external publication.
+Scholarly sources
+• Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., and Kim, B. (2018). Sanity checks for saliency maps. Advances in Neural Information Processing Systems 31.
+• Angelopoulos, A. N., and Bates, S. (2023). Conformal prediction: a gentle introduction. Foundations and Trends in Machine Learning 16(4), 494-591.
+• Barber, R. F., Candes, E. J., Ramdas, A., and Tibshirani, R. J. (2021). Predictive inference with the jackknife+. Annals of Statistics 49(1), 486-507.
+• Barber, R. F., Candes, E. J., Ramdas, A., and Tibshirani, R. J. (2023). Conformal prediction beyond exchangeability. Annals of Statistics 51(2), 816-845.
+• Benjamini, Y., and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society, Series B 57(1), 289-300.
+• Blasi, D., Anastasopoulos, A., and Neubig, G. (2022). Systematic inequalities in language technology performance across the world's languages. Proceedings of ACL 2022.
+• Buolamwini, J., and Gebru, T. (2018). Gender shades: intersectional accuracy disparities in commercial gender classification. Proceedings of Machine Learning Research 81, 77-91.
+• Chouldechova, A. (2017). Fair prediction with disparate impact: a study of bias in recidivism prediction instruments. Big Data 5(2), 153-163.
+• Collins, G. S., et al. (2024). TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ 385, e078378.
+• Crenshaw, K. (1989). Demarginalizing the intersection of race and sex. University of Chicago Legal Forum 1989(1), 139-167.
+• Daneshjou, R., et al. (2022). Disparities in dermatology AI performance on a diverse, curated clinical image set. Science Advances 8(32), eabq6147.
+• Finlayson, S. G., et al. (2021). The clinician and dataset shift in artificial intelligence. New England Journal of Medicine 385, 283-286.
+• Gal, Y., and Ghahramani, Z. (2016). Dropout as a Bayesian approximation: representing model uncertainty in deep learning. Proceedings of Machine Learning Research 48, 1050-1059.
+• Gebru, T., et al. (2021). Datasheets for datasets. Communications of the ACM 64(12), 86-92.
+• Geifman, Y., and El-Yaniv, R. (2017). Selective classification for deep neural networks. Advances in Neural Information Processing Systems 30.
+• Ghassemi, M., Oakden-Rayner, L., and Beam, A. L. (2021). The false hope of current approaches to explainable artificial intelligence in health care. Lancet Digital Health 3(11), e745-e750.
+• Gibbs, I., and Candes, E. (2021). Adaptive conformal inference under distribution shift. Advances in Neural Information Processing Systems 34.
+• Gneiting, T., and Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association 102(477), 359-378.
+• Groh, M., et al. (2021). Evaluating deep neural networks trained on clinical images in dermatology with the Fitzpatrick 17k dataset. CVPR Workshops 2021.
+• Guo, C., Pleiss, G., Sun, Y., and Weinberger, K. Q. (2017). On calibration of modern neural networks. Proceedings of Machine Learning Research 70, 1321-1330.
+• Hardt, M., Price, E., and Srebro, N. (2016). Equality of opportunity in supervised learning. Advances in Neural Information Processing Systems 29.
+• Irvin, J., et al. (2019). CheXpert: a large chest radiograph dataset with uncertainty labels and expert comparison. Proceedings of the AAAI Conference on Artificial Intelligence 33, 590-597.
+• Johnson, A. E. W., et al. (2019). MIMIC-CXR, a de-identified publicly available database of chest radiographs with free-text reports. Scientific Data 6, 317.
+• Kearns, M., Neel, S., Roth, A., and Wu, Z. S. (2018). Preventing fairness gerrymandering: auditing and learning for subgroup fairness. Proceedings of Machine Learning Research 80, 2564-2572.
+• Kleinberg, J., Mullainathan, S., and Raghavan, M. (2017). Inherent trade-offs in the fair determination of risk scores. Innovations in Theoretical Computer Science (ITCS).
+• Koh, P. W., et al. (2021). WILDS: a benchmark of in-the-wild distribution shifts. Proceedings of Machine Learning Research 139, 5637-5664.
+• Kompa, B., Snoek, J., and Beam, A. L. (2021). Second opinion needed: communicating uncertainty in medical machine learning. npj Digital Medicine 4, 4.
+• Kusner, M. J., Loftus, J., Russell, C., and Silva, R. (2017). Counterfactual fairness. Advances in Neural Information Processing Systems 30.
+• Lakshminarayanan, B., Pritzel, A., and Blundell, C. (2017). Simple and scalable predictive uncertainty estimation using deep ensembles. Advances in Neural Information Processing Systems 30.
+• Larrazabal, A. J., et al. (2020). Gender imbalance in medical imaging datasets produces biased classifiers for computer-aided diagnosis. Proceedings of the National Academy of Sciences 117(23), 12592-12594.
+• Liu, X., et al. (2020). Reporting guidelines for clinical trial reports for interventions involving artificial intelligence: the CONSORT-AI extension. Nature Medicine 26, 1364-1370.
+• Lundberg, S. M., and Lee, S.-I. (2017). A unified approach to interpreting model predictions. Advances in Neural Information Processing Systems 30.
+• Mehrabi, N., et al. (2021). A survey on bias and fairness in machine learning. ACM Computing Surveys 54(6), 115.
+• Mitchell, M., et al. (2019). Model cards for model reporting. Proceedings of the Conference on Fairness, Accountability, and Transparency, 220-229.
+• Nekoto, W., et al. (2020). Participatory research for low-resourced machine translation: a case study in African languages. Findings of EMNLP 2020.
+• Obermeyer, Z., Powers, B., Vogeli, C., and Mullainathan, S. (2019). Dissecting racial bias in an algorithm used to manage the health of populations. Science 366(6464), 447-453.
+• Ovadia, Y., et al. (2019). Can you trust your model's uncertainty? Evaluating predictive uncertainty under dataset shift. Advances in Neural Information Processing Systems 32.
+• Paulus, J. K., and Kent, D. M. (2020). Predictably unequal: understanding and addressing concerns that algorithmic clinical prediction may increase health disparities. npj Digital Medicine 3, 99.
+• Pleiss, G., Raghavan, M., Wu, F., Kleinberg, J., and Weinberger, K. Q. (2017). On fairness and calibration. Advances in Neural Information Processing Systems 30.
+• Rajkomar, A., Hardt, M., Howell, M. D., Corrado, G., and Chin, M. H. (2018). Ensuring fairness in machine learning to advance health equity. Annals of Internal Medicine 169(12), 866-872.
+• Ribeiro, M. T., Singh, S., and Guestrin, C. (2016). "Why should I trust you?": explaining the predictions of any classifier. Proceedings of the ACM SIGKDD Conference, 1135-1144.
+• Romano, Y., Sesia, M., and Candes, E. (2020). Classification with valid and adaptive coverage. Advances in Neural Information Processing Systems 33.
+• Rudin, C. (2019). Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead. Nature Machine Intelligence 1, 206-215.
+• Seyyed-Kalantari, L., Zhang, H., McDermott, M. B. A., Chen, I. Y., and Ghassemi, M. (2021). Underdiagnosis bias of artificial intelligence algorithms applied to chest radiographs in under-served patient populations. Nature Medicine 27, 2176-2182.
+• Sjoding, M. W., Dickson, R. P., Iwashyna, T. J., Gay, S. E., and Valley, T. S. (2020). Racial bias in pulse oximetry measurement. New England Journal of Medicine 383, 2477-2478.
+• Subbaswamy, A., and Saria, S. (2020). From development to deployment: dataset shift, causality, and shift-robust prediction for healthcare applications. Biostatistics 21(2), 345-352.
+• Sundararajan, M., Taly, A., and Yan, Q. (2017). Axiomatic attribution for deep networks. Proceedings of Machine Learning Research 70, 3319-3328.
+• Trewin, S. (2018). AI fairness for people with disabilities: point of view. arXiv:1811.10670.
+• Van Calster, B., et al. (2019). Calibration: the Achilles heel of predictive analytics. BMC Medicine 17, 230.
+• Vasey, B., et al. (2022). Reporting guideline for the early-stage clinical evaluation of decision support systems driven by artificial intelligence: DECIDE-AI. Nature Medicine 28, 924-933.
+• Vovk, V. (2012). Conditional validity of inductive conformal predictors. Proceedings of Machine Learning Research 25, 475-490.
+• Vovk, V., Gammerman, A., and Shafer, G. (2005). Algorithmic Learning in a Random World. Springer.
+• Vyas, D. A., Eisenstein, L. G., and Jones, D. S. (2020). Hidden in plain sight: reconsidering the use of race correction in clinical algorithms. New England Journal of Medicine 383, 874-882.
+• Wahl, B., Cossy-Gantner, A., Germann, S., and Schwalbe, N. R. (2018). Artificial intelligence (AI) and global health: how can AI contribute to health in resource-poor settings? BMJ Global Health 3, e000798.
+• Wolff, R. F., et al. (2019). PROBAST: a tool to assess the risk of bias and applicability of prediction model studies. Annals of Internal Medicine 170(1), 51-58.
+• Zech, J. R., et al. (2018). Variable generalization performance of a deep learning model to detect pneumonia in chest radiographs: a cross-sectional study. PLOS Medicine 15(11), e1002683.
+Policy and legal sources
+• African Union (2024). Continental Artificial Intelligence Strategy: Harnessing AI for Africa's Development and Prosperity. Endorsed by the AU Executive Council, July 2024.
+• African Union (2014). Convention on Cyber Security and Personal Data Protection (Malabo Convention).
+• Angola (2011). Lei n.o 22/11 de Protecao de Dados Pessoais (Law 22/11 on Personal Data Protection).
+• European Union (2024). Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence (Artificial Intelligence Act).
+• Federal Republic of Nigeria (2023). Nigeria Data Protection Act 2023.
+• Republic of South Africa (2013). Protection of Personal Information Act 4 of 2013 (POPIA).
+• World Health Organization (2021). Ethics and Governance of Artificial Intelligence for Health: WHO Guidance. Geneva: WHO.

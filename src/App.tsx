@@ -26,6 +26,14 @@ import { ThemeProvider } from './components/ThemeContext';
 import TebogoChatbot from './components/ui/TebogoChatbot';
 import SEO from './components/SEO';
 
+import CourseClassroom from './pages/CourseClassroom';
+import ResearchArticle from './pages/ResearchArticle';
+import CertificateVerification from './pages/CertificateVerification';
+import CourseReviewsPage from './pages/CourseReviewsPage';
+import LearnerAuth from './pages/LearnerAuth';
+import NotificationCenterPage from './pages/NotificationCenterPage';
+import { ResearchAudioProvider } from './components/ResearchAudioContext';
+
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
@@ -55,6 +63,21 @@ function AnimatedRoutes() {
         <Route path="/academy" element={<PageTransition><Academy /></PageTransition>} />
         <Route path="/courses" element={<PageTransition><Academy /></PageTransition>} />
         <Route path="/research" element={<PageTransition><Academy /></PageTransition>} />
+
+        {/* Dedicated Complete Webpages (Transformed from Modals) */}
+        <Route path="/course/:courseId" element={<PageTransition><CourseClassroom /></PageTransition>} />
+        <Route path="/academy/course/:courseId" element={<PageTransition><CourseClassroom /></PageTransition>} />
+        <Route path="/research/:paperId" element={<PageTransition><ResearchArticle /></PageTransition>} />
+        <Route path="/academy/research/:paperId" element={<PageTransition><ResearchArticle /></PageTransition>} />
+        <Route path="/certificate/:courseId" element={<PageTransition><CertificateVerification /></PageTransition>} />
+        <Route path="/academy/certificate/:courseId" element={<PageTransition><CertificateVerification /></PageTransition>} />
+        <Route path="/verify/:code" element={<PageTransition><CertificateVerification /></PageTransition>} />
+        <Route path="/reviews/:courseId" element={<PageTransition><CourseReviewsPage /></PageTransition>} />
+        <Route path="/academy/reviews/:courseId" element={<PageTransition><CourseReviewsPage /></PageTransition>} />
+        <Route path="/learner/auth" element={<PageTransition><LearnerAuth /></PageTransition>} />
+        <Route path="/academy/auth" element={<PageTransition><LearnerAuth /></PageTransition>} />
+        <Route path="/academy/notifications" element={<PageTransition><NotificationCenterPage /></PageTransition>} />
+
         <Route path="/admin/recruitment" element={<PageTransition><AdminDashboard /></PageTransition>} />
         <Route path="/privacy-policy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
         <Route path="/terms-of-service" element={<PageTransition><TermsOfService /></PageTransition>} />
@@ -73,9 +96,11 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <Router>
-            <SEO />
-            <AnimatedRoutes />
-            <TebogoChatbot />
+            <ResearchAudioProvider>
+              <SEO />
+              <AnimatedRoutes />
+              <TebogoChatbot />
+            </ResearchAudioProvider>
           </Router>
         </AuthProvider>
       </ThemeProvider>

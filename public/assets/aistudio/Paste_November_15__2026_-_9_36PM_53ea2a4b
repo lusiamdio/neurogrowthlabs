@@ -1,0 +1,263 @@
+African-Language Foundation Models: A Research and Development Framework for Inclusive Speech, Translation and Text Understanding
+NeuroGrowth Labs, AI Research & Development Department Technical Research Paper | Version 1.0 | November 2026 Correspondence: Lusimadio, Founder & CEO, NeuroGrowth Labs, Cape Town, South Africa
+Status note: This paper presents a research programme, its design rationale, methodology and evaluation protocol. It does not report experimental results. All quantitative figures labelled as targets are design objectives to be validated, not achieved outcomes.
+Abstract
+More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. The resulting gap is not merely technical: it determines who can read, speak to, and be served by AI systems. The African Union’s Continental Artificial Intelligence Strategy identifies African-language and cultural representation as essential to inclusive AI adoption. This paper sets out the research and development framework of NeuroGrowth Labs for building multilingual foundation models for major and low-resource African languages, with strong speech, machine translation and text-understanding capabilities. We propose (i) a three-tier language coverage strategy that sequences effort by data availability and societal need; (ii) a community-governed data pipeline built on consent, provenance and data-sovereignty principles; (iii) a modular model family spanning text, speech, translation and embeddings, trained through vocabulary-aware continued pretraining, parameter-efficient adaptation and distillation; (iv) a benchmark-led evaluation protocol combining public benchmarks, dialect-aware held-out sets and native-speaker human evaluation; and (v) an application-anchored deployment path through NeuroGrowth Labs’ operating ventures. We state explicit hypotheses, success criteria, risks and limitations, and we argue that disciplined, evaluation-first engineering, rather than parameter count alone, is the most credible path to equitable African-language AI.
+Keywords: African languages; low-resource NLP; multilingual foundation models; automatic speech recognition; machine translation; cross-lingual transfer; data sovereignty; inclusive AI.
+1. Introduction
+1.1 Motivation
+Language is the interface through which people access economic opportunity. When an AI system cannot understand a farmer’s question in Kinyarwanda, a trader’s voice note in Hausa, or a micro-entrepreneur’s record-keeping in isiZulu, the system is not neutral: it excludes. Joshi et al. (2020) showed that the world’s languages are distributed extremely unevenly in terms of the resources available to them, with most African languages falling in the categories with little or no labelled or unlabelled data. The consequences compound as foundation models become the substrate of downstream products. Tokenizers, training corpora and evaluation sets that under-represent a language produce models that are less accurate, more costly to run and more error-prone in that language (Ahia et al., 2023; Petrov et al., 2023).
+1.2 Policy context
+The African Union’s Continental Artificial Intelligence Strategy, endorsed in 2024, frames AI as a tool for inclusive development and explicitly treats African-language and cultural representation as a condition of inclusive adoption. This paper takes that framing as a design requirement rather than an aspiration: a model that performs well only in English, French, Portuguese or Arabic cannot be described as serving the continent. Representation, in our view, must be measurable, which is why evaluation sits at the centre of the framework proposed here.
+1.3 Why NeuroGrowth Labs
+NeuroGrowth Labs is an AI-native technology and managed IT services company based in Cape Town, with operations in South Africa and Angola. Its portfolio creates direct, recurring demand for African-language capability and, importantly, a channel for real-world feedback. Examples include IBOS (an operating system for informal and micro-enterprise formalisation), CogniSacra (decentralised education with verifiable credentials), AfriQuantX (capital-markets infrastructure) and AfriTranslate (a multilingual translation API covering 27 African languages). Angola adds a distinctive requirement: Portuguese-medium institutions coexisting with Bantu languages such as Umbundu, Kimbundu, Kikongo and Chokwe, which are comparatively under-served in current language technology.
+1.4 Contributions
+This paper contributes:
+1.  A tiered language strategy and selection criteria for sequencing coverage.
+2.  A data governance and collection design grounded in community consent and data sovereignty.
+3.  A modular architecture and training recipe designed for compute-constrained African research settings.
+4.  A comprehensive evaluation protocol, including dialect, code-switching and cultural-competence assessment.
+5.  A deployment, risk and responsible-AI framework linked to concrete applications.
+2. Background and Related Work
+2.1 Community-led NLP for Africa
+The most important advances in African-language NLP have come from community-driven research. Nekoto et al. (2020) demonstrated that participatory research can produce machine translation resources for low-resourced African languages that conventional pipelines overlook. The Masakhane community subsequently produced benchmarks and datasets across tasks, including named entity recognition (MasakhaNER; Adelani et al., 2021; Adelani et al., 2022a) and news-domain and translation resources such as MAFAND-MT (Adelani et al., 2022b), which showed that a few thousand carefully curated translations can yield substantial improvements when paired with strong multilingual pretrained models.
+2.2 Pretrained language models for African languages
+Several models have targeted African languages directly. AfriBERTa (Ogueji et al., 2021) showed that small multilingual encoders pretrained on under 1 GB of text across eleven African languages can be competitive with larger models on selected tasks. AfroLM (Dossou et al., 2022) used active learning for self-supervised pretraining, and SERENGETI (Adebara et al., 2023) scaled multilingual coverage to several hundred African languages. Alabi et al. (2022) introduced multilingual adaptive fine-tuning (MAFT), which adapts an existing multilingual model to African languages and, with vocabulary reduction, retains cross-lingual benefit while lowering cost. More recently, InkubaLM (Tonja et al., 2024) demonstrated a small generative model for several African languages, underscoring that compact, purpose-built models are a viable direction.
+2.3 Massively multilingual translation and speech
+The No Language Left Behind project (NLLB Team, 2022) released translation models covering 200 languages and the FLORES-200 evaluation set, substantially extending coverage for African languages, though quality remains uneven for the lowest-resource varieties. In speech, Meta’s Massively Multilingual Speech project (Pratap et al., 2023) extended ASR and TTS coverage to over a thousand languages, while Whisper (Radford et al., 2022) offered strong multilingual recognition with limited African-language coverage. The FLEURS benchmark (Conneau et al., 2023) provides parallel read speech across many languages, including numerous African ones. Mozilla’s Common Voice has contributed crowdsourced speech for languages such as Kinyarwanda and Swahili, and funders such as the Lacuna Fund have supported community-owned datasets.
+2.4 Instruction-following and reasoning evaluation
+General-purpose LLM performance on African languages has been probed by benchmarks including AfriSenti for sentiment (Muhammad et al., 2023), IrokoBench for natural language inference, mathematical reasoning and multiple-choice knowledge tasks across 16 African languages (Adelani et al., 2024), and AfroBench (Ojo et al., 2023), which spans a broad task suite. The consistent finding across these works is a large performance gap between African languages and high-resource languages, and between open and proprietary models, with the gap widest for generative and reasoning tasks. The Aya initiative (Singh et al., 2024; Üstün et al., 2024) showed that participatory, multilingual instruction data can improve coverage, motivating similar community-sourced instruction data for African languages.
+2.5 Gap analysis
+Despite this progress, five gaps motivate our programme:
+• Task breadth: few efforts combine text, speech and translation within one coherent, jointly evaluated model family.
+• Depth for Lusophone and Central/Southern African languages: languages such as Umbundu, Kimbundu and Chokwe remain especially thin.
+• Real-world robustness: code-switching, informal orthography, noisy audio and domain terminology (finance, trade, education) are rarely benchmarked.
+• Evaluation of culture: benchmarks measure linguistic competence far more often than cultural competence.
+• Deployment evidence: published results seldom show how models perform inside products serving real users.
+3. Problem Statement and Research Questions
+We define the central problem as follows: how can an organisation with limited compute and data build multilingual models that deliver measurably strong speech, translation and text-understanding performance across major and low-resource African languages, while respecting community data rights and remaining deployable in the settings where African users actually are?
+We organise the programme around five research questions:
+• RQ1 (Transfer): Which source languages and language families provide the most effective cross-lingual transfer for each target language, and does family-aware transfer outperform English-centric transfer?
+• RQ2 (Tokenization): How much do vocabulary extension and morphology-aware tokenization improve quality and inference cost for agglutinative and tonal African languages?
+• RQ3 (Data efficiency): What is the minimum quantity and quality of curated data per language at which parameter-efficient adaptation yields production-useful speech and translation quality?
+• RQ4 (Robustness): How do models degrade under dialectal variation, code-switching and noisy acoustic conditions, and which interventions most reduce that degradation?
+• RQ5 (Culture and safety): How can cultural knowledge, appropriateness and safety be evaluated and improved in African-language settings beyond translated English benchmarks?
+4. Language Coverage Strategy
+We sequence coverage in three tiers. Tier membership is revisited each release cycle using data availability audits and application demand.
+Tier
+Definition
+Illustrative languages
+Primary approach
+Tier 1: Major
+Large speaker populations; meaningful public text and speech resources
+Swahili, Hausa, Yoruba, Igbo, Amharic, isiZulu, isiXhosa, Afrikaans, Somali, Oromo, Kinyarwanda, Shona, Arabic (including Maghrebi varieties)
+Full pretraining adaptation, instruction tuning, ASR, TTS and MT with strong benchmark targets
+Tier 2: Mid-resource
+Substantial speakers but fragmented or domain-limited data
+Lingala, Wolof, Twi/Akan, Luganda, Chichewa, Setswana, Sesotho, Tigrinya, Bambara, Ewe, Kirundi
+Transfer from family relatives, targeted data collection, synthetic augmentation with human verification
+Tier 3: Low-resource
+Limited or no digital text; sparse speech; high social value
+Umbundu, Kimbundu, Kikongo, Chokwe, Tshiluba, Tshivenda, Xitsonga and others identified through community partners
+Community-owned data creation, few-shot adaptation, language-family transfer, human-in-the-loop MT
+The initial release wave targets the 27-language footprint already served by AfriTranslate, extended deliberately to Tier 3 Angolan languages through Angola-based partners engaged under contractor arrangements. Pivot languages (English, French, Portuguese, Arabic) are retained for interoperability and for the evaluation of cross-lingual transfer.
+Selection criteria. Languages are prioritised using four weighted factors: (a) speaker population and geographic reach; (b) availability of seed data and community partners; (c) demand from NeuroGrowth Labs applications and public-interest use cases; and (d) marginal benefit from family-level transfer. The framework also reserves capacity for languages with small speaker populations that face intergenerational-transmission risk, where documentation value may outweigh commercial demand.
+5. Data Strategy and Governance
+5.1 Principles
+Data is the binding constraint for African-language AI, and it is also where trust is won or lost. We adopt the following principles, informed by the CARE Principles for Indigenous Data Governance (Carroll et al., 2020) and the participatory model of Nekoto et al. (2020):
+• Community benefit and authority: language communities and their institutions participate in decisions on collection, use and release.
+• Informed consent and provenance: every record carries documented consent and source metadata, following datasheet practice (Gebru et al., 2021).
+• Fair compensation: contributors, transcribers, translators and validators are paid fairly, in local currency where practicable.
+• Legal compliance: processing complies with South Africa’s POPIA, Angola’s personal data protection law, and the principles of the African Union Convention on Cyber Security and Personal Data Protection.
+• Tiered release: datasets are released openly, under restricted licences, or retained, according to community preference and risk.
+5.2 Sources and collection
+We draw on four categories of data.
+1.  Existing open resources, including FLORES-200, MasakhaNER, MAFAND-MT, AfriSenti, Common Voice, FLEURS and publicly licensed web and religious, news and governmental corpora, each audited for licence, quality and contamination.
+2.  Community-sourced and commissioned data, including read and spontaneous speech, parallel translations, and instruction-response pairs written by native speakers, modelled on participatory methods.
+3.  Application-derived data, collected only with explicit user opt-in and de-identification, from NeuroGrowth Labs products such as IBOS and CogniSacra.
+4.  Synthetic data, generated by translation, back-translation or model distillation, always flagged as synthetic and sampled for native-speaker verification, because uncontrolled synthetic data can propagate translationese and systematic errors.
+5.3 Data quality pipeline
+The pipeline applies language identification tuned for closely related languages, orthographic normalisation that preserves diacritics and tone marks, deduplication, toxicity and personal-data filtering, and decontamination against all evaluation sets. Each language receives a data card documenting size, domain mix, dialect coverage, speaker demographics (where consented), known gaps and licence status. We measure gender, age, regional and register balance for speech data and report it, since skews here directly translate into recognition disparities.
+6. Model Architecture and Training Methodology
+6.1 Design philosophy
+We pursue a modular family rather than a single monolith, because different deployment contexts impose different constraints on latency, memory, connectivity and cost. The family, referred to here by the working name AfriFM, comprises four components.
+Component
+Function
+Design emphasis
+AfriFM-Text
+Multilingual language understanding and generation, instruction following
+Open-weight base adapted for African languages; small and mid-sized variants
+AfriFM-MT
+Many-to-many translation among African languages and pivots
+Direct African-to-African translation, avoiding English as a mandatory pivot
+AfriFM-Speech
+ASR and TTS for priority languages
+Robustness to accents, code-switching and noise; on-device small variants
+AfriFM-Embed
+Multilingual embeddings for retrieval, classification and search
+Low-latency semantic search for local-language documents
+6.2 Tokenization and vocabulary
+Tokenization is a first-order determinant of quality and cost. Subword vocabularies trained predominantly on English fragment African words into many tokens, inflating sequence length, latency and price (Ahia et al., 2023; Petrov et al., 2023). We will extend the base vocabulary using language-balanced sampling, evaluate morphology-aware segmentation for agglutinative Bantu languages and tonal marking in languages such as Yoruba and Igbo, and measure tokens-per-word fertility by language as a standing metric. Embedding initialisation for new tokens will use mean-of-subword or alignment-based methods to preserve transfer from the base model. This addresses RQ2.
+6.3 Continued pretraining and adaptation
+Our text recipe has three stages.
+1.  Continued pretraining of a strong open-weight multilingual base on a curated, language-balanced African corpus with temperature-based sampling that up-weights low-resource languages while mixing in high-resource data to limit catastrophic forgetting. MAFT-style adaptation (Alabi et al., 2022) is the reference method.
+2.  Instruction tuning on a blend of translated and natively authored instruction data, with native-authored examples prioritised for cultural and domain content, in the spirit of participatory instruction data collection (Singh et al., 2024).
+3.  Preference tuning and safety alignment using native-speaker feedback, with attention to culturally specific harms, misinformation risks and local-language jailbreak vectors.
+For low-resource languages we use parameter-efficient methods, including LoRA and quantised variants (Hu et al., 2022; Dettmers et al., 2023), language-specific adapters and family-level adapter sharing. This allows rapid per-language iteration within constrained compute and supports RQ1 and RQ3, since adapters can be compared systematically across source-language choices.
+6.4 Translation
+We fine-tune translation models using high-quality parallel data, back-translation of monolingual text, and data from direct African-to-African pairs where available. Because many African-to-African pairs have essentially no parallel data, we use multilingual training with shared encoders, pivoting through related languages and constrained use of synthetic data with human validation. Evaluation uses FLORES-200 together with domain sets for finance, commerce and education built with partners. Following Adelani et al. (2022b), we expect carefully curated in-domain data, even in small quantities, to deliver outsized gains.
+6.5 Speech
+For ASR we build on self-supervised speech representations and multilingual encoders (such as wav2vec 2.0-family and MMS-style models; Pratap et al., 2023), fine-tuning with CTC or sequence-to-sequence objectives on transcribed speech, and exploring pseudo-labelling of untranscribed audio with confidence filtering. Priority concerns are tonal and orthographic complexity, code-switching between African languages and colonial-era languages, and recognition for spontaneous rather than read speech. For TTS we target intelligible, natural voices with explicit handling of tone, built from consented studio and field recordings, with voice-cloning safeguards (Section 9). Small distilled variants are designed for on-device use, reflecting unreliable connectivity and data costs in many deployment settings.
+6.6 Efficiency and compute strategy
+Compute is scarce in the African research ecosystem, and our programme is explicitly designed around that constraint. We favour (i) adaptation over from-scratch pretraining; (ii) distillation from larger teacher models into compact students suitable for edge devices; (iii) quantisation and efficient inference; (iv) shared experiment tracking and reproducible recipes to avoid wasted runs; and (v) partnerships and compute grants with universities, cloud providers and research networks. Our view, consistent with the emerging evidence on compact African-language models (Tonja et al., 2024), is that smaller models trained on higher-quality, better-balanced data can be the most practical route to production quality in many languages.
+7. Evaluation Framework
+Evaluation is the programme’s organising principle. No model is released for a language unless it clears pre-registered thresholds on that language’s evaluation suite.
+7.1 Benchmark suite
+Capability
+Public benchmarks
+Primary metrics
+Machine translation
+FLORES-200; MAFAND-MT; NTREX-style sets where available
+chrF++, spBLEU, AfriCOMET (Wang et al., 2024), human adequacy and fluency ratings
+Speech recognition
+FLEURS; Common Voice; community test sets
+Word error rate, character error rate, per-demographic disaggregation
+Speech synthesis
+Native-speaker listening tests
+Mean opinion score, intelligibility, tone accuracy
+Text understanding
+MasakhaNER; AfriSenti; MasakhaNEWS; topic and intent classification sets
+F1, accuracy
+Reasoning and knowledge
+IrokoBench (Adelani et al., 2024); AfroBench (Ojo et al., 2023)
+Accuracy by language and task
+Embeddings and retrieval
+Cross-lingual retrieval and classification sets
+Recall@k, nDCG
+7.2 Beyond public benchmarks
+Public benchmarks are necessary but insufficient. We add four layers.
+1.  Dialect and register sets. Held-out data for major dialects, urban and rural speech, and formal and informal registers, reporting results per dialect rather than a single aggregate.
+2.  Code-switching sets. Realistic mixed-language utterances (for example, Swahili-English, isiZulu-English, Portuguese with Angolan Bantu languages).
+3.  Cultural-competence assessment. Questions about local history, institutions, norms, idioms, proverbs and everyday practices, authored natively rather than translated from English, scored by native-speaker panels.
+4.  Domain tasks. Finance, trade, microenterprise record-keeping and education scenarios drawn from anchor applications.
+7.3 Human evaluation
+Automatic metrics can mislead for low-resource languages, particularly when reference translations are scarce or of variable quality. Each release is therefore accompanied by blinded human evaluation by paid, qualified native speakers, using calibrated rubrics and inter-annotator agreement reporting. We follow established practice of reporting confidence intervals, and we avoid collapsing results across languages into a single headline number, since averages obscure the weakest-served languages.
+7.4 Contamination, fairness and reporting
+We decontaminate training data against all test sets and maintain private held-out sets for internal use. Model cards (Mitchell et al., 2019) report per-language performance, known failure modes, intended and out-of-scope uses, and the data composition behind each model. A standing equity metric tracks the ratio of the worst-performing priority language to the median priority language, with explicit targets to narrow it each cycle.
+8. Hypotheses, Success Criteria and Targets
+We state hypotheses to be tested rather than asserted.
+• H1: Family-aware transfer adapters outperform English-centric adaptation for Tier 2 and Tier 3 languages in the same family (RQ1).
+• H2: Vocabulary extension with balanced sampling reduces token fertility for target languages materially and improves downstream accuracy at equal or lower inference cost (RQ2).
+• H3: A few thousand to a few tens of thousands of high-quality, natively validated examples per language suffice for production-useful translation and classification when combined with strong multilingual initialisation (RQ3).
+• H4: Targeted augmentation with code-switched and noisy audio reduces ASR degradation on realistic speech more than scaling clean data alone (RQ4).
+• H5: Natively authored cultural evaluation reveals gaps that translated benchmarks fail to detect (RQ5).
+The table below lists design targets for the first major release. These are planning objectives, set before experiments, and will be revised openly as evidence accumulates.
+Dimension
+Design target (to be validated)
+Language coverage
+Text and translation for the 27 AfriTranslate languages; speech for a prioritised subset of Tier 1 and Tier 2 languages; initial Tier 3 pilots for Angolan languages
+Translation
+Statistically significant improvement over the best open baseline on FLORES-200 for a majority of priority languages, with human-evaluated adequacy above a pre-agreed threshold
+Speech
+ASR word error rate on FLEURS and in-domain sets competitive with or better than the best open baseline for each Tier 1 language, with demographic disaggregation published
+Text understanding
+Meaningful gains over baselines on MasakhaNER, AfriSenti and IrokoBench-style tasks, reported per language
+Efficiency
+At least one variant deployable on commodity mobile hardware for priority languages
+Equity
+Narrowing gap between weakest and median priority language each release cycle
+9. Responsible AI, Safety and Data Sovereignty
+Cultural integrity. Models can flatten or misrepresent languages and traditions. We involve language experts and community reviewers in dataset design, evaluation and red-teaming, and we document who was consulted.
+Safety in local languages. Safety measures developed in English frequently fail in other languages. We build native-language red-team sets covering hate speech, ethnic and political incitement, health misinformation, financial scams and election-related harms, with attention to regionally specific risks.
+Speech and voice risks. Voice cloning and synthetic speech carry impersonation and fraud risks. We require documented consent for any voice used in TTS, restrict release of cloning-capable components, and consider watermarking of synthetic audio.
+Privacy. Speech and text from users can be highly identifying. We minimise retention, de-identify data, apply opt-in consent for any training use, and conduct data-protection impact assessments for each application.
+Sovereignty and benefit-sharing. We commit to transparency about data origins, to benefit-sharing arrangements with contributing communities and institutions, and to open or restricted-access releases that keep African researchers able to build on this work. Where appropriate, models and evaluation sets will be released under licences aligned with community preferences.
+Labour practices. Annotators and validators are central to the programme’s quality; fair pay, reasonable working conditions and credit for contribution are non-negotiable.
+10. Application Anchors and Deployment Pathway
+The programme’s technical choices are validated against deployments in which language quality has direct consequences.
+• IBOS: voice-first and local-language interfaces for microenterprise record-keeping, compliance guidance and formalisation workflows, where ASR, intent understanding and domain terminology are decisive.
+• CogniSacra: multilingual educational content, assessment and credential explanations, supporting learners in their first language.
+• AfriQuantX: multilingual financial and market-information services where translation accuracy and terminology consistency carry regulatory and economic weight.
+• AfriTranslate: the production translation API, which serves as the first release channel and as a continuous source of evaluation feedback through opt-in quality signals.
+Deployment proceeds in stages: offline evaluation, shadow deployment, limited release with human fallback, and general availability only after thresholds are met. Production monitoring tracks per-language quality, latency, escalation rates and user-reported errors, feeding a continuous improvement loop. Because the AI R&D Department is structured to work closely with these anchor products, research priorities are grounded in observed user need rather than in leaderboard performance alone.
+11. Programme Roadmap
+Phase
+Focus
+Principal outputs
+Phase 0: Foundations
+Language audit, data inventory, benchmark harness, governance framework, baseline measurement
+Baseline report; data cards; evaluation harness; consent and licensing templates
+Phase 1: Core models
+Tier 1 and Tier 2 text and translation adaptation; initial ASR for priority languages
+AfriFM-MT and AfriFM-Text alpha; first model cards; AfriTranslate integration
+Phase 2: Speech and robustness
+Speech depth, code-switching and dialect robustness, cultural evaluation sets
+AfriFM-Speech beta; dialect and cultural benchmarks; safety red-team suites
+Phase 3: Low-resource expansion
+Tier 3 pilots with community partners; family-level transfer
+Tier 3 pilot models and datasets; community-owned data releases
+Phase 4: Scale and open ecosystem
+Compact on-device variants; public benchmark contributions; partner enablement
+Distilled models; open evaluation sets; reproducibility package
+Resourcing. The department is designed to begin as a lean research cell anchored in the CTO’s organisation, with a full-time technical lead, a small number of engineers and contractors (including Angola-based linguists and annotators), and a network of academic and community collaborators. Early phases therefore prioritise work that is feasible without large cash outlay, namely benchmark construction, data governance, adapter-based adaptation and partnership-funded compute, with larger training runs contingent on securing funding or compute grants.
+12. Risks and Mitigations
+Risk
+Description
+Mitigation
+Data scarcity and noise
+Insufficient or low-quality data for Tier 3 languages
+Community partnerships; paid data creation; active learning; transparent quality audits
+Benchmark overfitting
+Optimising for public sets rather than real use
+Private held-out sets; domain and dialect evaluations; production monitoring
+Synthetic-data drift
+Translationese and propagated errors
+Flagging, sampling-based human verification, caps on synthetic share
+Compute limits
+Insufficient resources for large runs
+Adapter-based methods, distillation, grants and partnerships
+Community trust
+Perceived extraction of data without benefit
+Consent, benefit-sharing, governance participation, transparent reporting
+Safety failures
+Harmful or misleading outputs in local languages
+Native red-teaming, staged rollout, human fallback, incident response
+Talent retention
+Competition for scarce expertise
+Equity participation, research autonomy, publication support, academic ties
+13. Limitations
+This paper is a framework and research plan, not an empirical study. Its hypotheses are untested, its targets provisional, and its estimates of data and compute requirements will change with evidence. Language tiering is necessarily coarse, because linguistic boundaries, dialect continua and orthographic standards are contested for many African languages, and our choices may not reflect every community’s own categorisation. Existing public benchmarks cover only a fraction of African languages and are frequently built by translation from English, which can bias what they measure. Reliance on open-weight base models inherits their pretraining biases, licences and limitations. Finally, the application anchors are NeuroGrowth Labs’ own products; findings from them may not generalise to all domains or user populations, and we intend to test that explicitly through external partnerships and independent evaluation.
+14. Conclusion
+Inclusive AI in Africa requires models that understand how Africans speak, write and reason, in the languages they actually use. The African Union’s emphasis on language and cultural representation is therefore best read as an engineering and evaluation mandate. The framework in this paper proposes a pragmatic route: sequence languages by need and data readiness, build data with communities rather than extracting it, adapt strong open models using efficient methods, evaluate honestly and per language, and validate in real products. NeuroGrowth Labs will publish its baselines, evaluation sets, model cards and findings as the programme progresses, and invites researchers, language communities, universities and institutions across the continent to collaborate, critique and contribute.
+Acknowledgements
+This framework builds on the work of the Masakhane community, the NLLB, MMS, Aya and AfroBench teams, and numerous African researchers, linguists, annotators and language communities whose labour underpins the field. Errors and omissions in this paper are the responsibility of NeuroGrowth Labs.
+References
+Adebara, I., Elmadany, A., Abdul-Mageed, M., & Alcoba Inciarte, A. (2023). SERENGETI: Massively multilingual language models for Africa. Findings of ACL 2023.
+Adelani, D. I., et al. (2021). MasakhaNER: Named entity recognition for African languages. Transactions of the ACL, 9.
+Adelani, D. I., et al. (2022a). MasakhaNER 2.0: Africa-centric transfer learning for named entity recognition. EMNLP 2022.
+Adelani, D. I., et al. (2022b). A few thousand translations go a long way! Leveraging pre-trained models for African news translation. NAACL 2022.
+Adelani, D. I., et al. (2024). IrokoBench: A new benchmark for African languages in the age of large language models. arXiv:2406.03368.
+African Union. (2024). Continental Artificial Intelligence Strategy. Addis Ababa: African Union.
+Ahia, O., et al. (2023). Do all languages cost the same? Tokenization in the era of commercial language models. EMNLP 2023.
+Alabi, J. O., Adelani, D. I., Mosbach, M., & Klakow, D. (2022). Adapting pre-trained language models to African languages via multilingual adaptive fine-tuning. COLING 2022.
+Carroll, S. R., et al. (2020). The CARE Principles for Indigenous Data Governance. Data Science Journal, 19(1), 43.
+Conneau, A., et al. (2023). FLEURS: Few-shot learning evaluation of universal representations of speech. IEEE SLT 2022 / arXiv:2205.12446.
+Dettmers, T., Pagnoni, A., Holtzman, A., & Zettlemoyer, L. (2023). QLoRA: Efficient finetuning of quantized LLMs. NeurIPS 2023.
+Dossou, B. F. P., et al. (2022). AfroLM: A self-active learning-based multilingual pretrained language model for 23 African languages. SustaiNLP Workshop, EMNLP 2022.
+Gebru, T., et al. (2021). Datasheets for datasets. Communications of the ACM, 64(12).
+Hu, E. J., et al. (2022). LoRA: Low-rank adaptation of large language models. ICLR 2022.
+Joshi, P., Santy, S., Budhiraja, A., Bali, K., & Choudhury, M. (2020). The state and fate of linguistic diversity and inclusion in the NLP world. ACL 2020.
+Mitchell, M., et al. (2019). Model cards for model reporting. FAT* 2019.
+Muhammad, S. H., et al. (2023). AfriSenti: A Twitter sentiment analysis benchmark for African languages. EMNLP 2023.
+Nekoto, W., et al. (2020). Participatory research for low-resourced machine translation: A case study in African languages. Findings of EMNLP 2020.
+NLLB Team. (2022). No language left behind: Scaling human-centered machine translation. arXiv:2207.04672.
+Ogueji, K., Zhu, Y., & Lin, J. (2021). Small data? No problem! Exploring the viability of pretrained multilingual language models for low-resourced languages. Multilingual Representation Learning Workshop, EMNLP 2021.
+Ojo, J., et al. (2023). How good are large language models on African languages? (AfroBench). arXiv:2311.07978.
+Petrov, A., La Malfa, E., Torr, P., & Bibi, A. (2023). Language model tokenizers introduce unfairness between languages. NeurIPS 2023.
+Pratap, V., et al. (2023). Scaling speech technology to 1,000+ languages. arXiv:2305.13516.
+Radford, A., et al. (2022). Robust speech recognition via large-scale weak supervision. arXiv:2212.04356.
+Singh, S., et al. (2024). Aya dataset: An open-access collection for multilingual instruction tuning. ACL 2024.
+Tonja, A. L., et al. (2024). InkubaLM: A small language model for low-resource African languages. arXiv:2408.17024.
+Üstün, A., et al. (2024). Aya model: An instruction finetuned open-access multilingual language model. ACL 2024.
+Wang, J., et al. (2024). AfriMTE and AfriCOMET: Enhancing COMET to embrace under-resourced African languages. NAACL 2024.
+Reference note: Citations are provided from the authors’ working knowledge and should be verified against primary sources (titles, venues and years) before external publication or submission.

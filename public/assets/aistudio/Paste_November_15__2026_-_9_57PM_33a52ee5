@@ -1,0 +1,268 @@
+African-Contextual Vision Models: Datasets, Methods and Deployment Science for Crops, Livestock, Roads, Buildings, Informal Settlements and Local Visual Conditions
+NeuroGrowth Labs, AI Research & Development Department Cape Town, South Africa, with operations in Angola Research Paper, Version 1.0, November 2026
+Abstract
+Computer-vision research on and in Africa now has a substantial publication base, spanning plant-disease recognition, satellite-based building and road extraction, wildlife monitoring and poverty mapping. Yet the gap between published performance and dependable field deployment remains wide. We argue that the principal cause is not a shortage of algorithms but a shortage of local, representative, well-governed visual data, together with evaluation practices that do not measure the shifts that matter in African operating conditions. Models trained predominantly on imagery from North America, Europe and East Asia encounter different crop varieties, intercropping systems, livestock breeds, construction materials, road surfaces, settlement morphologies, illumination, atmospheric conditions, camera hardware and connectivity constraints.
+This paper sets out the research programme of NeuroGrowth Labs for African-contextual vision models: the creation of open, documented datasets and models for six domains (crops, livestock, roads, buildings, informal settlements and local visual conditions) and a methodology for building them. We contribute (i) a taxonomy of the local-data gap expressed as distinct, testable distribution shifts; (ii) a domain-by-domain programme specifying tasks, data acquisition, annotation protocols and evaluation targets; (iii) a data-governance framework aligned with the CARE principles, South Africa's Protection of Personal Information Act (POPIA) and Angola's data-protection law; (iv) a modelling strategy combining foundation-model adaptation, self-supervised pre-training on unlabelled local imagery, domain generalisation and edge-efficient distillation; and (v) a deployment-oriented evaluation framework that reports performance stratified by region, season, sensor and community rather than by a single aggregate score. This is a programme and methodology paper. It reports no new empirical benchmark results; where we describe targets and hypotheses, we state them as such.
+Keywords: computer vision, African context, dataset curation, domain shift, precision agriculture, livestock monitoring, remote sensing, informal settlements, edge AI, responsible AI, data governance
+1. Introduction
+1.1 Motivation
+Visual perception systems are increasingly proposed as infrastructure for agriculture, urban planning, public health, logistics, insurance, housing finance and environmental monitoring. In Africa, the potential value is considerable: smallholder farming remains the primary livelihood for a large share of the population, urbanisation is rapid, and administrative records for land, buildings and roads are frequently incomplete. Imagery from smartphones, drones and satellites can partly compensate for missing records, provided that models interpret that imagery correctly.
+The difficulty is that most widely used vision models are trained on data collected elsewhere. Evidence on geographic bias in large image corpora is longstanding. Shankar et al. (2017) showed that ImageNet and Open Images are heavily skewed towards Western countries, with measurable degradation in classification of household items from lower-income regions. De Vries et al. (2019) found that object-recognition accuracy falls systematically for households with lower income. Rojas et al. (2022) later introduced the Dollar Street dataset to study these effects with images from homes across the world. Related findings on shift between environments appear in wildlife monitoring, where Beery et al. (2018) demonstrated poor generalisation to unseen camera locations, and in the broader WILDS benchmark (Koh et al., 2021), which collects real-world distribution shifts, including geographic shift, for which standard training does not guarantee robustness.
+African researchers and practitioners have contributed substantially to this literature, for example in cassava disease diagnosis (Ramcharan et al., 2017; Mwebaze et al., 2019), satellite-derived estimation of economic well-being (Jean et al., 2016; Yeh et al., 2020) and large-scale building extraction (Sirko et al., 2021). Community initiatives such as Deep Learning Indaba, Masakhane and Zindi have expanded participation. Nevertheless, a recurring pattern is that models achieve strong results on curated benchmarks and degrade on new fields, farms, neighbourhoods, devices or seasons. Local-data gaps, rather than modelling novelty, are the binding constraint on practical deployment.
+1.2 Research Questions
+This programme is organised around five questions.
+1.  RQ1. How large, and of what kind, are the performance losses when globally trained vision models are applied to African crops, livestock, roads, buildings, settlements and imaging conditions?
+2.  RQ2. Which data-collection and annotation designs yield the greatest improvement in field reliability per unit of cost, given constraints on connectivity, annotator expertise and licensing?
+3.  RQ3. Which modelling strategies (fine-tuning of foundation models, self-supervised adaptation, domain generalisation, or hybrid approaches) most reduce cross-region and cross-season degradation?
+4.  RQ4. How should models be compressed and evaluated for low-cost devices and intermittent connectivity without eroding accuracy in the minority conditions that matter most?
+5.  RQ5. What governance structures allow datasets to be shared openly while protecting individuals, communities and farmers' economic interests?
+1.3 Contributions
+We contribute a gap taxonomy (Section 3), a six-domain programme (Section 4), a governance framework (Section 5), a modelling strategy (Section 6), an evaluation framework (Section 7), a deployment architecture (Section 8), a risk analysis (Section 9) and a phased roadmap (Section 10).
+1.4 Scope and Epistemic Status
+This document is a research programme. The hypotheses and targets in Sections 4 to 7 are design intentions to be tested, not findings. Cited literature is used to motivate the programme; specific claims should be verified against the primary sources before reuse.
+2. Background and Related Work
+2.1 Foundation Models and Representation Learning
+Large pre-trained models have changed the economics of vision. Vision Transformers (Dosovitskiy et al., 2021), contrastive language-image pre-training (Radford et al., 2021), self-supervised representation learning at scale (Oquab et al., 2023) and promptable segmentation (Kirillov et al., 2023) provide general-purpose features that transfer to many tasks with limited labelled data. For African applications, this is encouraging because labelled data are scarce. It is also a risk: the pre-training distribution determines which visual concepts are well represented. A model may segment a rectangular roofed building reliably yet fragment a dense cluster of corrugated-iron dwellings with irregular footprints and shared walls. Whether foundation models close the local-data gap or merely mask it is an empirical question that our evaluation framework is designed to answer.
+2.2 Agriculture
+Image-based plant disease recognition gained momentum with Mohanty et al. (2016) and Hughes and Salathé (2015), whose PlantVillage corpus used leaf images captured under controlled backgrounds. It is widely documented that classifiers trained on such data can lose accuracy on in-field images with clutter, variable lighting and co-occurring stresses. Work on cassava in Tanzania and Uganda (Ramcharan et al., 2017) and the associated community competition (Mwebaze et al., 2019) moved closer to field conditions by using images collected in farmers' plots. The FAO's Fall Armyworm Monitoring and Early Warning System illustrates how mobile imagery and community reporting can be integrated into operational surveillance. Remaining gaps include intercropped and mixed-stand plots, staple crops such as sorghum, millet, cowpea, teff, yam and bananas relative to the major global commodities, and nutrient or water stress that is visually confounded with disease.
+2.3 Livestock and Wildlife
+Aerial detection of animals has been explored most extensively for wildlife (Kellenberger et al., 2018; Tuia et al., 2022), where small object size, occlusion and class imbalance are well known challenges. Livestock monitoring, including counting, body-condition scoring, lameness and identification, has been studied mainly for confined dairy and beef systems. Pastoral and agro-pastoral systems across the Sahel, the Horn of Africa and Southern Africa feature free-ranging mixed herds, indigenous breeds with distinct coat patterns, and open-range imaging geometry, and are comparatively under-documented in public datasets.
+2.4 Roads, Buildings and Settlements
+Road extraction from aerial and satellite imagery has well developed benchmarks (for example SpaceNet; Van Etten et al., 2018) and methods (Bastani et al., 2018), but these concentrate on cities with paved, well-delineated networks. Unpaved, seasonally variable and informally maintained roads, which carry most rural traffic in much of Africa, are less well covered. For buildings, the Open Buildings dataset (Sirko et al., 2021) demonstrated continental-scale extraction, and humanitarian mapping efforts, including the Open Cities AI Challenge, have produced labelled imagery for African cities. Informal settlement mapping has a long methodological history (Kuffer et al., 2016) and has been advanced by transfer learning for segmentation (Wurm et al., 2019). The conceptual definition of an "informal settlement" is contested and context-dependent, which complicates labelling and evaluation.
+2.5 Satellite Data as a Distinct Modality
+Satellite imagery differs from natural photographs in spectral bands, revisit pattern, resolution and label sparsity, and recent position work argues that it should be treated as a distinct modality in machine learning (Rolf et al., 2024). Our programme therefore treats ground-level, aerial and satellite imagery as complementary sources and does not assume that models developed for one transfer to another.
+3. The Local-Data Gap: A Taxonomy of Shifts
+We decompose the gap between benchmark performance and field reliability into seven shift types. Each can be isolated experimentally.
+Shift type
+Description
+African examples
+Diagnostic
+Semantic / class shift
+Classes present locally are rare or absent in training taxonomies
+Indigenous crop varieties, local breeds, vernacular building types
+Class coverage audit against local taxonomy
+Appearance shift
+Same class, different visual presentation
+Soil colour, roof material, coat patterns, crop phenology
+Per-class accuracy by region
+Compositional shift
+Different context and co-occurring objects
+Intercropping, mixed herds, dense informal layouts
+Performance on multi-object scenes
+Sensor shift
+Different cameras and imaging geometry
+Low-cost smartphones, consumer drones, varied satellite providers
+Hold-out by device
+Environmental shift
+Illumination, atmosphere and season
+Harmattan dust, high-sun-angle glare, cloud cover in humid zones, rainy-season road degradation
+Hold-out by season and weather
+Label shift
+Different class prevalence
+Disease incidence varies by year and location
+Calibration under prior change
+Annotation shift
+Different labelling conventions or expertise
+Contested boundaries of informal settlements
+Inter-annotator agreement by group
+Two observations follow. First, most published African datasets address one or two of these shifts. Second, calibration (whether predicted confidence reflects true accuracy) is rarely audited across shifts, even though decision-makers in agriculture and housing finance act on model confidence.
+Hypothesis H1. For each domain in Section 4, a model pre-trained on global data will exhibit a statistically significant drop in macro-averaged performance and in calibration on held-out African regions, seasons and devices relative to in-distribution test data.
+Hypothesis H2. The largest share of recoverable error will be attributable to a small number of shift types per domain (for example, compositional and environmental shift for crops; annotation and appearance shift for informal settlements).
+These hypotheses are falsifiable, and we will report results regardless of direction.
+4. Domain Programme
+Each domain is specified by task definition, data acquisition, annotation protocol, principal risks and evaluation targets.
+4.1 Crops
+Tasks. Crop-type recognition, growth-stage estimation, disease, pest and nutrient-stress detection, field-boundary delineation, yield-relevant phenotyping and post-harvest quality grading.
+Data acquisition. Three tiers: (a) smartphone imagery collected by trained field enumerators and, with consent, by extension workers and farmers, using a protocol that fixes capture distance, includes whole-plant and close-up views, and records GPS, date, device model and agronomic metadata; (b) low-altitude drone imagery of plots; (c) multi-temporal satellite imagery linked to ground-truth field records. Collection spans multiple agro-ecological zones and at least two growing seasons to capture phenological and weather variation.
+Annotation. Expert agronomists adjudicate disease and stress labels, with a protocol permitting multiple co-occurring labels and an explicit "uncertain" class. Pathology confirmation by laboratory assay is obtained for a stratified subset to estimate label noise.
+Principal risks. Label noise from visually similar conditions; selection bias toward accessible farms; seasonal imbalance.
+Evaluation targets. Leave-one-region-out and leave-one-season-out splits; per-class recall for economically damaging but rare conditions; expected calibration error; accuracy of abstention decisions.
+4.2 Livestock
+Tasks. Herd counting from aerial imagery, breed recognition, body-condition scoring, lameness and visible-disease screening, individual animal identification, and detection of animals at water points and corridors.
+Data acquisition. Drone surveys over rangelands and kraals, fixed cameras at water points, and ground-level smartphone imagery. Imaging protocols account for open-range geometry, dust and heat shimmer. Collaboration with veterinary services and pastoral communities defines taxonomy and consent.
+Annotation. Point and box annotation for counting and detection; veterinarian-scored body condition; individual identity labels where owners consent and where identification supports owner benefit (for example, theft recovery and traceability).
+Principal risks. Dense overlapping animals, small apparent size, and the possibility that identification data could be used against herders. Governance addresses the latter explicitly (Section 5).
+Evaluation targets. Counting error as a function of density; breed-level confusion matrices; performance across altitude and illumination; repeatability across survey dates.
+4.3 Roads
+Tasks. Road network extraction, surface-type classification (paved, gravel, earth, track), condition assessment (potholes, erosion, waterlogging, washouts), and seasonal passability.
+Data acquisition. Dashcam and smartphone imagery from vehicles in logistics and transport partnerships, drone corridors, and high-resolution satellite imagery, with multi-season coverage so that rainy-season degradation is represented. Street-level imagery from open platforms is used subject to licence review.
+Annotation. Hierarchical labels for surface and condition, with cross-validation against engineering assessments such as roughness measurements for a calibration subset.
+Principal risks. Footpaths and tracks that are not formally classified yet are economically vital; vegetation occlusion; rapid change.
+Evaluation targets. Topological connectivity metrics in addition to pixel overlap; surface-classification accuracy stratified by season; agreement with engineering condition indices.
+4.4 Buildings
+Tasks. Footprint extraction, roof-material classification, storey and height estimation, building-use classification, damage assessment, and attributes relevant to energy and resource efficiency.
+Data acquisition. Satellite and aerial imagery with oblique and ground-level photographs for attributes not visible from above, such as wall material, openings and shading. Our building-science and green-building advisory work provides a route to expert attribute labels aligned with resource-efficiency certification criteria, and our real-estate platform work provides a channel for use-case validation.
+Annotation. Footprint polygons with explicit rules for attached structures, courtyards and partially built dwellings; attribute labels by trained annotators with architect review of a sample.
+Principal risks. Over-segmentation or merging in dense areas; roofs with similar spectral signatures to surroundings; inconsistent definitions across jurisdictions.
+Evaluation targets. Instance-level precision and recall at multiple intersection-over-union thresholds; building-count error at neighbourhood scale (the quantity most used by planners); material-classification accuracy by city.
+4.5 Informal Settlements
+Tasks. Delineation of informal settlement extents, within-settlement structure (density, access paths, open space), change detection over time, and exposure-relevant indicators such as flood-prone location and access to roads.
+Definition and labelling. Because the concept is contested (Kuffer et al., 2016), we do not treat "informal settlement" as a single objective label. Labels are produced under a documented ontology that combines morphological indicators (density, irregularity, roof type), administrative designations and, wherever possible, community-validated boundaries. We retain annotator provenance so that annotation shift can be modelled rather than hidden.
+Participation. Community mapping organisations and residents' groups are engaged as co-designers, with the aim that outputs support service delivery and tenure advocacy rather than enforcement. Linkages to our work on informal business formalisation are pursued only with explicit community agreement.
+Principal risks. The most serious risks in the programme sit here: outputs could be misused for evictions, surveillance or discriminatory targeting. Release of high-resolution outputs is therefore staged and subject to the access rules in Section 5.
+Evaluation targets. Boundary accuracy against community-validated references; performance across cities with different morphologies; sensitivity of metrics to the definitional ontology used.
+4.6 Local Visual Conditions
+This cross-cutting domain curates conditions, not objects, so that robustness can be measured directly.
+• Atmospheric: Harmattan haze and dust, biomass-burning smoke, persistent cloud over humid regions.
+• Illumination: High-sun-angle glare, deep shadow, low-light capture in unelectrified settings.
+• Sensor and hardware: Low-cost smartphone cameras, cracked lenses, compression artefacts from messaging applications, and variable drone altitude.
+• Surface: Mud, dust and water on lenses, and soiled or damaged crop leaves.
+• Linguistic and graphic context: Local signage and hand-painted lettering in multiple scripts and languages, relevant to scene text recognition and to multimodal systems that must follow the language of users in Portuguese, French, English, Swahili and other languages.
+Each condition is captured as paired or matched imagery where feasible, enabling controlled estimates of degradation and the training of augmentation and restoration models grounded in observed rather than synthetic corruption.
+5. Data Engineering and Governance
+5.1 Collection Principles
+1.  Representativeness by design. Sampling plans are stratified by agro-ecological zone, urban form, income context, season and device class, with explicit targets, rather than relying on convenience sampling.
+2.  Provenance. Each record carries structured metadata: location precision, date, device, collector, consent scope and licence.
+3.  Documentation. Every dataset is released with a datasheet (Gebru et al., 2021) and every model with a model card (Mitchell et al., 2019), extended with stratified performance tables.
+4.  Annotation quality. Redundant labelling on a subset, adjudication by domain experts, tracked inter-annotator agreement, and fair compensation of annotators.
+5.2 Legal and Ethical Framework
+The programme operates under South Africa's Protection of Personal Information Act (POPIA) and Angola's data-protection legislation, with additional national requirements applied where fieldwork occurs in other countries. Imagery of people, homes, vehicles with identifiable plates, and identifiable livestock can constitute or reveal personal information. We therefore apply: informed consent with locally appropriate language and format; face and plate blurring at ingestion; precision reduction of coordinates for private dwellings; and data-minimisation by default. Legal review precedes any cross-border transfer. This document does not constitute legal advice, and compliance details are confirmed with counsel for each jurisdiction.
+5.3 Community Benefit and Data Sovereignty
+We adopt the CARE principles for Indigenous data governance (Collective benefit, Authority to control, Responsibility, Ethics; Carroll et al., 2020) as a guide for community-derived data, alongside the FAIR principles. In practice this means benefit-sharing agreements with participating communities and cooperatives, local advisory boards with veto authority over sensitive releases, capacity-building for local annotators and researchers, and licensing that keeps outputs available for public-interest use.
+5.4 Tiered Access
+Tier
+Content
+Access
+Open
+Crop leaf imagery, de-identified road imagery, building footprints, benchmark splits
+Public, permissive licence with attribution
+Registered
+Higher-resolution livestock and settlement imagery
+Agreement stating permitted purposes
+Restricted
+Identifiable livestock records, fine-grained settlement outputs
+Review by data-access committee including community representatives
+6. Modelling Methodology
+6.1 Baselines
+Every domain begins with transparent baselines: (a) standard supervised convolutional and transformer networks (He et al., 2016; Dosovitskiy et al., 2021) pre-trained on global data; (b) zero-shot and few-shot use of vision-language and segmentation foundation models (Radford et al., 2021; Kirillov et al., 2023); and (c) linear probing of self-supervised features (Oquab et al., 2023). These establish the size of the local-data gap (RQ1) before any local-specific innovation is claimed.
+6.2 Adaptation with Local Data
+• Parameter-efficient fine-tuning of foundation models (adapters and low-rank updates) to limit compute and avoid catastrophic forgetting.
+• Self-supervised continued pre-training on large unlabelled local imagery, which is far cheaper to collect than labelled data and directly targets appearance, sensor and environmental shift.
+• Multi-task and multi-modal learning that combines ground-level photographs with satellite and weather data, so that, for example, crop-stress predictions use phenology and rainfall context.
+• Active learning and weak supervision to direct expert annotation toward uncertain or under-represented samples, with programmatic labels from existing maps and records as noisy supervision.
+6.3 Robustness and Generalisation
+We will compare empirical risk minimisation with domain-adversarial training (Ganin et al., 2016), invariance-promoting objectives, group-robust optimisation and test-time adaptation, following the evaluation discipline of WILDS (Koh et al., 2021): because no single method dominates across shifts, comparisons are made under identical held-out protocols. Augmentation and restoration models are trained on measured local degradations (Section 4.6) rather than only synthetic corruptions.
+6.4 Uncertainty, Calibration and Abstention
+Models must indicate when they do not know. We evaluate temperature scaling, ensembles and conformal prediction for calibrated, coverage-guaranteed outputs, and design workflows where low-confidence cases are escalated to human experts, such as extension officers, veterinarians or field mappers. The goal is selective reliability: high accuracy on the cases a model chooses to answer, with transparent deferral on the rest.
+6.5 Efficiency and Edge Deployment
+Target devices are low-cost Android phones, single-board computers at cooperatives and clinics, and drones with limited onboard compute. Methods include knowledge distillation from large teacher models, quantisation, pruning and architecture search under latency and memory budgets. A key constraint (RQ4) is that compression frequently degrades minority conditions first. We therefore report compression results per stratum and treat any disproportionate loss on rare classes or difficult conditions as a failure criterion, not merely an average-accuracy trade-off.
+7. Evaluation Framework
+7.1 Principles
+Aggregate accuracy conceals the failures that matter. Our evaluation framework requires that every released model and benchmark report:
+1.  Stratified performance by country, agro-ecological zone or urban form, season, device class and community group.
+2.  Out-of-distribution splits (leave-one-region-out, leave-one-season-out, leave-one-device-out) as primary rather than supplementary results.
+3.  Worst-group performance alongside averages.
+4.  Calibration and abstention quality, including coverage-risk curves.
+5.  Operational metrics appropriate to the decision: building-count error for planners, network connectivity for routing, recall on damaging diseases for extension services.
+6.  Efficiency metrics: latency, memory and energy on target hardware.
+7.  Annotation-sensitivity analysis: results recomputed under alternative label ontologies or annotator subsets, particularly for informal settlements.
+7.2 Benchmark Design
+Benchmarks are released with fixed splits, a public leaderboard of stratified results, held-out private test sets collected after model release to reduce contamination, and a periodic refresh to track temporal drift.
+7.3 Field Validation
+Offline metrics are necessary but insufficient. For each domain we plan prospective pilots with partners (for example farmer cooperatives, veterinary services, municipal planners and transport operators), measuring task-level outcomes such as diagnostic agreement with experts, time saved, and decisions changed, and collecting qualitative feedback from users on trust and usability.
+8. Reference System Architecture
+We propose a layered architecture that separates data, model and application concerns.
+1.  Capture layer. Mobile and drone capture applications with guided protocols, offline operation, on-device quality checks (blur, exposure, framing) and consent management.
+2.  Ingestion and curation layer. Secure upload when connectivity is available, automated de-identification, deduplication, metadata validation and queueing for annotation.
+3.  Annotation layer. Expert and community annotation tools with adjudication, agreement tracking and active-learning selection.
+4.  Training and registry layer. Reproducible pipelines, experiment tracking, a model registry linked to datasheets and model cards, and automated stratified evaluation on every candidate.
+5.  Serving layer. Cloud inference APIs for connected users and compressed on-device models for offline users, with confidence-aware responses and escalation routes.
+6.  Feedback layer. Opt-in correction signals from end users feed continual learning, with drift monitoring that triggers re-evaluation and, where warranted, retraining.
+This architecture is intended to integrate with other NeuroGrowth Labs platforms through documented interfaces, while keeping research datasets and their governance independent of commercial products.
+9. Risks, Limitations and Responsible AI
+Risk
+Description
+Mitigation
+Misuse for surveillance or displacement
+Settlement, building and livestock outputs could support evictions, taxation or targeting
+Tiered access, community veto, purpose limitation, staged release
+Privacy harm
+Imagery may capture people, homes and plates
+De-identification at ingestion, coordinate generalisation, consent
+Representation gaps
+Data concentrate in accessible, connected regions
+Explicit sampling targets, partner networks in under-served areas, coverage reporting
+Overconfidence in the field
+Users act on incorrect predictions
+Calibration, abstention, human escalation, clear intended-use statements
+Label ambiguity
+Contested definitions and noisy expert labels
+Ontology documentation, annotator provenance, sensitivity analyses
+Extractive data practices
+Value from community data accrues elsewhere
+Benefit-sharing, capacity-building, local authorship and co-ownership
+Environmental cost
+Training and inference energy use
+Efficient methods, reuse of foundation models, reporting of compute
+Temporal drift
+Climate, land use and construction change distributions
+Scheduled refresh, drift monitoring
+9.1 Limitations of This Paper
+This paper does not report empirical results. Several hypotheses may be falsified; for instance, strong foundation models may reduce certain gaps substantially, which would shift effort from modelling to evaluation and governance. Coverage across the continent's roughly fifty-four countries cannot be achieved quickly, and our initial footprint (South Africa, Angola and partner geographies) will not represent North African, Sahelian or Central African contexts equally. Generalisation claims will be restricted to regions actually sampled.
+10. Roadmap and Milestones
+Phase
+Duration
+Objectives
+Deliverables
+0. Foundations
+Months 0 to 3
+Governance framework, ethics and legal review, partner agreements, sampling plans, annotation ontologies
+Governance charter, sampling design, annotation guides, evaluation harness
+1. Gap quantification
+Months 3 to 9
+Baseline evaluation of global models on pilot local data in each domain (RQ1, H1)
+Baseline report, first stratified benchmark releases
+2. Dataset expansion
+Months 6 to 18
+Multi-season, multi-region collection; annotation at scale; datasheets
+Open and registered datasets across six domains, public leaderboards
+3. Model development
+Months 9 to 24
+Adaptation, robustness and calibration studies; edge compression (RQ3, RQ4)
+Released models with model cards, ablation studies, peer-reviewed publications
+4. Field pilots
+Months 15 to 30
+Prospective deployments with partners; outcome measurement
+Pilot evaluation reports, usability findings
+5. Consolidation
+Months 24 to 36
+Public-interest release, community handover, benchmark stewardship
+Sustained benchmark, training materials, long-term governance body
+10.1 Team and Capability Requirements
+The programme requires computer-vision and remote-sensing researchers, ML engineers for edge deployment, data engineers, domain experts (agronomy, veterinary science, civil and building engineering, urban planning), community-engagement specialists, and legal and ethics advisers. Partnerships with African universities and research networks are intended to provide both expertise and a pipeline of local talent, with joint authorship norms agreed from the outset.
+10.2 Success Criteria
+The programme will be judged by (i) demonstrated, statistically supported reduction in worst-group error relative to global baselines on held-out African regions; (ii) adoption of released benchmarks by independent groups; (iii) documented field outcomes in at least one pilot per domain; (iv) governance conduct that withstands external review; and (v) the share of research outputs authored and co-owned by African researchers and communities.
+11. Conclusion
+African computer-vision research has outgrown the stage at which the principal question is whether deep learning works. The question now is whether it works reliably, fairly and affordably in the conditions where decisions are made. We have argued that the answer depends chiefly on local, representative, well-documented data; on evaluation that exposes rather than averages away failure under shift; and on governance that gives communities authority and benefit. The programme proposed here translates these arguments into concrete datasets, models, protocols and milestones for crops, livestock, roads, buildings, informal settlements and local visual conditions. Its value will be established not by this paper but by the open benchmarks, stratified results and field outcomes that follow, including those that disconfirm our hypotheses.
+Acknowledgements
+NeuroGrowth Labs thanks prospective partners among farmer cooperatives, veterinary services, municipal agencies, universities and community organisations whose participation will determine the quality and legitimacy of this work.
+References
+Note: citations are provided from the authors' knowledge of the literature and should be verified against primary sources, including volume, page and DOI details, before formal submission.
+Bastani, F., He, S., Abbar, S., Alizadeh, M., Balakrishnan, H., Chawla, S., Madden, S., and DeWitt, D. (2018). RoadTracer: Automatic extraction of road networks from aerial images. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR).
+Beery, S., Van Horn, G., and Perona, P. (2018). Recognition in Terra Incognita. Proceedings of the European Conference on Computer Vision (ECCV).
+Carroll, S. R., Garba, I., Figueroa-Rodríguez, O. L., et al. (2020). The CARE Principles for Indigenous Data Governance. Data Science Journal, 19(1).
+De Vries, T., Misra, I., Wang, C., and van der Maaten, L. (2019). Does object recognition work for everyone? Proceedings of the IEEE/CVF CVPR Workshops.
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., et al. (2021). An image is worth 16x16 words: Transformers for image recognition at scale. International Conference on Learning Representations (ICLR).
+Ganin, Y., Ustinova, E., Ajakan, H., et al. (2016). Domain-adversarial training of neural networks. Journal of Machine Learning Research, 17(59).
+Gebru, T., Morgenstern, J., Vecchione, B., et al. (2021). Datasheets for datasets. Communications of the ACM, 64(12).
+He, K., Zhang, X., Ren, S., and Sun, J. (2016). Deep residual learning for image recognition. Proceedings of the IEEE CVPR.
+Hughes, D. P., and Salathé, M. (2015). An open access repository of images on plant health to enable the development of mobile disease diagnostics. arXiv:1511.08060.
+Jean, N., Burke, M., Xie, M., Davis, W. M., Lobell, D. B., and Ermon, S. (2016). Combining satellite imagery and machine learning to predict poverty. Science, 353(6301).
+Kellenberger, B., Marcos, D., and Tuia, D. (2018). Detecting mammals in UAV images: Best practices to address a substantially imbalanced dataset with deep learning. Remote Sensing of Environment, 216.
+Kirillov, A., Mintun, E., Ravi, N., et al. (2023). Segment Anything. Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV).
+Koh, P. W., Sagawa, S., Marklund, H., et al. (2021). WILDS: A benchmark of in-the-wild distribution shifts. Proceedings of the International Conference on Machine Learning (ICML).
+Kuffer, M., Pfeffer, K., and Sliuzas, R. (2016). Slums from space: 15 years of slum mapping using remote sensing. Remote Sensing, 8(6).
+Mitchell, M., Wu, S., Zaldivar, A., et al. (2019). Model cards for model reporting. Proceedings of the Conference on Fairness, Accountability, and Transparency (FAT*).
+Mohanty, S. P., Hughes, D. P., and Salathé, M. (2016). Using deep learning for image-based plant disease detection. Frontiers in Plant Science, 7.
+Mwebaze, E., Gebru, T., Frome, A., Nsumba, S., and Tusubira, J. (2019). iCassava 2019 fine-grained visual categorization challenge. arXiv:1908.02900.
+Oquab, M., Darcet, T., Moutakanni, T., et al. (2023). DINOv2: Learning robust visual features without supervision. arXiv:2304.07193.
+Radford, A., Kim, J. W., Hallacy, C., et al. (2021). Learning transferable visual models from natural language supervision. Proceedings of the International Conference on Machine Learning (ICML).
+Ramcharan, A., Baranowski, K., McCloskey, P., Ahmed, B., Legg, J., and Hughes, D. P. (2017). Deep learning for image-based cassava disease detection. Frontiers in Plant Science, 8.
+Rojas, W. A. G., Diamos, S., Kini, K., Kanter, D., Reddi, V. J., and Coleman, C. (2022). The Dollar Street Dataset: Images representing the geographic and socioeconomic diversity of the world. Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track.
+Rolf, E., Klemmer, K., Robinson, C., and Kerner, H. (2024). Position: Mission Critical, satellite data is a distinct modality in machine learning. Proceedings of the International Conference on Machine Learning (ICML).
+Shankar, S., Halpern, Y., Breck, E., Atwood, J., Wilson, J., and Sculley, D. (2017). No classification without representation: Assessing geodiversity issues in open data sets for the developing world. NIPS Workshop on Machine Learning for the Developing World.
+Sirko, W., Kashubin, S., Ritter, M., et al. (2021). Continental-scale building detection from high resolution satellite imagery. arXiv:2107.12283.
+Tuia, D., Kellenberger, B., Beery, S., et al. (2022). Perspectives in machine learning for wildlife conservation. Nature Communications, 13.
+Van Etten, A., Lindenbaum, D., and Bacastow, T. M. (2018). SpaceNet: A remote sensing dataset and challenge series. arXiv:1807.01232.
+Wurm, M., Stark, T., Zhu, X. X., Weigand, M., and Taubenböck, H. (2019). Semantic segmentation of slums in satellite images using transfer learning on fully convolutional neural networks. ISPRS Journal of Photogrammetry and Remote Sensing, 150.
+Yeh, C., Perez, A., Driscoll, A., et al. (2020). Using publicly available satellite imagery and deep learning to understand economic well-being in Africa. Nature Communications, 11.

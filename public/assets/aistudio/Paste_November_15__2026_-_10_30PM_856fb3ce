@@ -1,0 +1,316 @@
+Data Sovereignty and Governance Frameworks for AI Research and Development in Africa
+Consent, Provenance, Indigenous-Knowledge Protection, Cross-Border Data Flows, and African Data-Rights Standards
+NeuroGrowth Labs, AI Research and Development Series Technical and Policy Paper, Version 1.0, November 2026
+Document type: Conceptual framework and position paper. The framework proposed here is a design proposal and has not yet been empirically validated; the evaluation protocol in Section 9 specifies how that validation should proceed.
+Abstract
+The performance of contemporary AI systems depends on large-scale data, yet the governance of that data remains uneven, extractive in many contexts, and poorly aligned with the rights and interests of the communities from whom it originates. For Africa, a continent with the world's youngest population, more than two thousand languages, rich oral and embodied knowledge traditions, and rapidly expanding digital infrastructure, these asymmetries carry strategic consequences. This paper examines data sovereignty as a practical governance problem for AI research and development. We analyse five interlocking domains: (i) research consent, (ii) data provenance, (iii) protection of indigenous and traditional knowledge, (iv) cross-border data flows, and (v) emerging African data-rights standards, with particular attention to the African Union (AU) policy architecture, which prioritises data governance and safeguards against misuse. We argue that existing instruments, whether consent forms, data protection statutes, or open-data norms, are individually necessary but jointly insufficient for governing machine learning pipelines in which data is repurposed, transformed, and embedded in model parameters. We propose the Sovereign Data Lifecycle Governance Framework (SDLGF), a layered model that couples legal and ethical commitments with enforceable technical controls, and we set out an evaluation protocol and a phased implementation roadmap for research institutions, regulators, and communities.
+Keywords: data sovereignty; data governance; consent; provenance; indigenous data sovereignty; cross-border data flows; African Union; Malabo Convention; AI governance
+1. Introduction
+1.1 Problem statement
+Modern machine learning converts data into durable capability. Once personal records, cultural expressions, speech, text, imagery, or genomic and health data are absorbed into training corpora and model weights, they are difficult to withdraw, trace, or attribute. This creates a governance gap: the legal and ethical instruments designed for discrete data transactions do not map cleanly onto continuous, multi-stage, multi-jurisdictional AI pipelines.
+The gap is sharper where historical power asymmetries already shape data relationships. Scholars have described patterns of extraction in which data from the Global South is collected, processed, and monetised elsewhere with limited benefit returning to source communities (Couldry and Mejias, 2019; Birhane, 2020; Mohamed, Png and Isaac, 2020). Contributions to the African data-sharing debate have also cautioned against both uncritical openness and reflexive restriction, and have called for governance grounded in local context, reciprocity, and accountability (Abebe et al., 2021).
+1.2 Scope and contributions
+This paper makes four contributions:
+1.  A conceptual clarification of data sovereignty at individual, community, national, and continental scales, and the tensions among them.
+2.  A critical analysis of consent, provenance, indigenous-knowledge protection, and cross-border transfer as they apply to AI R&D.
+3.  A mapping of the African policy and legal landscape, including AU-level instruments and national regimes.
+4.  The SDLGF, a proposed framework, together with an evaluation protocol and implementation roadmap.
+1.3 Methodology
+The analysis is a structured policy and technical review. It draws on primary legal and policy instruments, peer-reviewed scholarship in data ethics and AI governance, and established practice in research data stewardship. Where instruments have been revised or are under active development, readers should consult the issuing body for the current authoritative text. No primary data collection was undertaken.
+2. Conceptual Foundations
+2.1 Defining data sovereignty
+Data sovereignty is used inconsistently across policy and scholarship. We distinguish four related but non-identical notions:
+Notion
+Locus of authority
+Typical instrument
+Primary concern
+Individual data self-determination
+The data subject
+Data protection law, consent
+Autonomy, privacy, dignity
+Community or collective data sovereignty
+A people or community
+Community protocols, indigenous data governance
+Collective rights, cultural integrity, benefit
+National data sovereignty
+The state
+Localisation, sectoral regulation, adequacy regimes
+Jurisdiction, security, economic development
+Continental data governance
+A regional bloc
+AU policy frameworks, harmonised standards
+Integration, bargaining power, interoperability
+These scales can reinforce one another but can also conflict. A state may assert control over data in ways that weaken the autonomy of individuals or minority communities; a community may legitimately restrict access to data that a national research agenda would prefer to share. A mature governance approach treats these tensions as design constraints rather than anomalies.
+2.2 Sovereignty is not isolation
+Data sovereignty is sometimes equated with data localisation or closure. We take the contrary view that sovereignty is best understood as the capacity to decide, and to enforce those decisions: who may use data, for what purposes, under what conditions, with what benefit-sharing, and with what means of redress. Under this view, data may lawfully travel across borders while sovereignty is preserved, provided that authority and accountability travel with it. Conversely, data held entirely in-country may offer little sovereignty if control over the infrastructure, models, and economic value is exercised elsewhere.
+2.3 From FAIR to FAIR-and-CARE
+The FAIR principles (Findable, Accessible, Interoperable, Reusable) optimise data for machine and human reuse (Wilkinson et al., 2016) but are silent on power, ethics, and benefit. The CARE Principles for Indigenous Data Governance (Collective Benefit, Authority to Control, Responsibility, Ethics) were developed to complement FAIR by centring people and purpose (Carroll et al., 2020). Related community-developed frameworks include OCAP® (Ownership, Control, Access, Possession) from First Nations in Canada and the work of Te Mana Raraunga on Māori data sovereignty. NeuroGrowth Labs adopts the integrated position that technical reusability must be conditioned on legitimate authority and demonstrable benefit.
+3. Research Consent in AI Pipelines
+3.1 Limits of the classical consent model
+Informed consent assumes that the purposes of data use can be specified at collection and that the participant can understand and evaluate them. AI R&D strains each assumption:
+• Purpose drift. Datasets collected for one study are routinely reused for model training, benchmarking, or commercial deployment.
+• Opacity of downstream use. Participants cannot meaningfully anticipate how a foundation model may reuse or reproduce their data.
+• Irreversibility. Withdrawal of consent is difficult to honour once data has influenced model parameters.
+• Asymmetry and literacy. Language, digital literacy, and unequal bargaining power can reduce consent to a formality.
+• Collective stakes. Speech, language, cultural, and genomic data implicate groups and relatives, not only the signatory.
+3.2 Toward layered, dynamic, and collective consent
+We recommend a consent architecture with the following properties.
+1.  Layered and plain-language. A short, comprehensible summary supported by deeper documentation, delivered in the participant's own language and, where appropriate, orally or through trusted intermediaries.
+2.  Granular and purpose-bound. Separate, revocable permissions for collection, research use, model training, redistribution, commercial use, and synthetic-data generation.
+3.  Dynamic. A mechanism, such as a consent registry or participant portal, through which permissions can be reviewed and changed over time, with notification when material uses change.
+4.  Collective. Where data pertains to a community, free, prior, and informed consent at the community level, through legitimate representative institutions, in addition to individual consent. This reflects principles articulated in the UN Declaration on the Rights of Indigenous Peoples (2007).
+5.  Withdrawal-aware. Honest disclosure of what withdrawal can and cannot achieve, and engineering commitments (Section 8) to maximise practical effect, including exclusion from future training runs and retirement of derived datasets.
+3.3 Consent and legal basis
+Many African data protection statutes recognise consent as one lawful basis among several, and some impose conditions for special categories such as health, biometric, and genetic data, and for children. Research exemptions vary in scope. Institutions should therefore avoid treating consent as a universal legal key; the governing basis, the applicable research exemption, ethics-committee approval, and community authorisation should be documented independently and reconciled.
+4. Data Provenance and Accountability
+4.1 Why provenance is a governance primitive
+Provenance, the verifiable record of where data came from, under what terms, and how it has been transformed, is the precondition for nearly every other governance goal. Without it, consent cannot be honoured, licences cannot be enforced, indigenous restrictions cannot be respected, cross-border obligations cannot be tracked, and harms cannot be traced to their source. Audits of widely used AI training collections have found that licence and attribution information is frequently missing, miscategorised, or inconsistent with the terms originally attached to the data (Longpre et al., 2023; Longpre et al., 2024).
+4.2 Provenance requirements
+We propose that every dataset used in AI R&D carry a machine-readable provenance record capturing at minimum:
+Field
+Purpose
+Origin and collector
+Establishes accountable custodian
+Collection context and date
+Anchors legal and ethical assessment
+Legal basis and consent scope
+Defines permitted uses
+Community authority and protocols
+Records collective and cultural conditions
+Licence and usage restrictions
+Enables automated compliance checks
+Sensitivity classification
+Drives security and transfer controls
+Transformations and derivations
+Supports lineage tracing
+Jurisdictions of storage and processing
+Supports cross-border governance
+Benefit-sharing commitments
+Operationalises reciprocity
+Contact and redress channel
+Provides recourse
+These fields can be expressed using existing standards and practices, including the W3C PROV data model, dataset documentation practices such as datasheets for datasets (Gebru et al., 2021) and data statements (Bender and Friedman, 2018), and machine-learning dataset metadata vocabularies such as Croissant. Cryptographic hashing and append-only audit logs can add tamper evidence without requiring public disclosure of sensitive content.
+4.3 Model-level provenance
+Provenance must extend beyond datasets to models. A model data card should record which datasets, under which terms, contributed to training and fine-tuning; what restrictions propagate to the model and its outputs; and what evaluation was undertaken for leakage, memorisation, and cultural harm. Where full lineage cannot be established, that limitation should be disclosed rather than concealed.
+5. Protection of Indigenous and Traditional Knowledge
+5.1 Nature of the problem
+Indigenous and local communities hold knowledge in forms that fit poorly within conventional intellectual property and open-data regimes: oral histories, medicinal and agricultural knowledge, cosmologies, songs, languages, and ecological knowledge held collectively and transmitted intergenerationally, often with cultural rules about who may know or speak what, and when. Conventional IP systems tend to favour individual authorship and fixed duration, and open-science norms tend to favour unrestricted reuse. AI intensifies both risks: models can ingest, generalise, and reproduce culturally restricted material at scale, and may generate plausible but distorted representations that misrepresent communities.
+5.2 Normative and legal sources
+Several instruments are relevant:
+• UN Declaration on the Rights of Indigenous Peoples (2007), which affirms rights to maintain, control, protect, and develop cultural heritage, traditional knowledge, and related data.
+• Convention on Biological Diversity and the Nagoya Protocol (2010), which establish access and benefit-sharing for genetic resources and associated traditional knowledge.
+• WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge (2024), which introduces disclosure obligations in patent systems for relevant inventions.
+• National frameworks, such as South Africa's Protection, Promotion, Development and Management of Indigenous Knowledge Act (2019), which establishes institutional mechanisms for recording and protecting indigenous knowledge.
+• Community-authored protocols, including the San Code of Research Ethics (2017), which sets conditions for research engagement with San communities in southern Africa and is an influential example of community-originated governance.
+5.3 Exemplary practice
+Community-led initiatives demonstrate that governance and technical development can proceed together. Te Hiku Media in Aotearoa New Zealand developed speech technology for te reo Māori under community control, and publicly articulated a licensing approach intended to ensure that benefits remain with the originating community. In Africa, grassroots research collectives such as Masakhane have shown that language technology can be built by and for African communities, and collaborative speech and text collection efforts for African languages illustrate both the opportunity and the need for explicit stewardship terms.
+5.4 Governance requirements for AI R&D
+1.  Community authority first. Identify the legitimate governing body and obtain community authorisation before collection or reuse; do not assume that a national agency or individual informant can consent on behalf of a people.
+2.  Tiered access. Distinguish public, restricted, and sacred or secret knowledge, and apply technical access controls corresponding to community-defined tiers.
+3.  Cultural labels and protocols. Attach machine-readable labels, such as those developed by the Local Contexts initiative (Traditional Knowledge and Biocultural Labels), that communicate community conditions and travel with the data.
+4.  Benefit-sharing. Agree in advance on monetary and non-monetary benefits, including capacity building, co-authorship, infrastructure, and community ownership of derivative assets.
+5.  Right to refuse and to withdraw. Recognise that some knowledge should not be digitised or used for training at all.
+6.  Output governance. Assess whether model outputs misrepresent, commodify, or disclose restricted knowledge, and give communities review and redress.
+6. Cross-Border Data Flows
+6.1 The tension
+AI R&D benefits from scale and collaboration, which favour data movement; sovereignty, security, and rights protection favour control. Regulatory models differ. The European Union's General Data Protection Regulation conditions transfers on adequacy decisions or appropriate safeguards, a regime reshaped by the Court of Justice's Schrems II judgment (2020). Other systems rely on accountability-based approaches and certification schemes. Several African jurisdictions combine transfer conditions with sector-specific or category-specific localisation requirements, particularly for sensitive, financial, health, or government data, while others rely principally on adequacy-like tests or safeguards.
+6.2 Typology of cross-border approaches
+Approach
+Mechanism
+Strengths
+Limitations
+Free flow with accountability
+Controller remains liable wherever data goes
+Supports collaboration
+Enforcement against foreign actors is difficult
+Adequacy or equivalence
+Recipient jurisdiction assessed as comparable
+Predictability
+Slow; politically contingent
+Contractual and corporate safeguards
+Standard clauses, binding rules
+Flexible
+Depends on contract enforcement and recipient's local law
+Localisation (broad)
+Data must remain in-country
+Jurisdictional clarity
+Cost, fragmentation, limited security benefit by itself
+Targeted localisation or mirroring
+Sensitive classes stored locally, copies permitted under conditions
+Proportionate
+Requires robust classification
+Compute-to-data
+Analysis travels to data; data does not leave
+Preserves control while enabling research
+Requires secure infrastructure and trust in tooling
+6.3 Position
+NeuroGrowth Labs advocates a proportionate, risk-tiered approach. Blanket localisation can raise costs, deter investment, and may not by itself improve security or rights protection. Unrestricted transfer, conversely, can entrench dependency and expose communities to unaccountable use. We recommend classifying data by sensitivity and by community and legal constraints, and then matching transfer conditions to class. Highly sensitive and community-restricted data should preferentially be handled through compute-to-data architectures, trusted research environments, federated learning, or locally governed enclaves, with movement of raw data a last resort.
+6.4 Continental integration
+The AU's work on harmonisation matters here because fragmentation imposes real costs on African researchers and firms. The AfCFTA Digital Trade Protocol, adopted in 2024, brings data governance and cross-border data flow principles into the continental trade architecture. Interoperable but rights-respecting transfer rules would allow African institutions to pool data and compute, build regionally representative datasets, and negotiate collectively with external partners.
+7. African Data-Rights Standards and the AU Policy Architecture
+7.1 Continental instruments
+The AU policy architecture treats data as a strategic resource whose governance must support development, integration, and protection of rights. Principal elements include:
+• African Union Convention on Cyber Security and Personal Data Protection (Malabo Convention, 2014). The Convention addresses electronic transactions, personal data protection, and cybersecurity. It entered into force in June 2023 following the required number of ratifications, although ratification and domestic implementation remain uneven across Member States.
+• AU Data Policy Framework (2022). The Framework provides a common continental approach to data governance, aiming to enable data-driven development while promoting trust, safeguards against misuse, and the development of data infrastructure, standards, and interoperability. It addresses categorisation of data, data rights, and the establishment of institutions and mechanisms for governance and coordination.
+• AU Continental Artificial Intelligence Strategy (2024). The Strategy sets out an Africa-centred, development-oriented approach to AI, and treats high-quality, appropriately governed data, local capacity, and safeguards against harm as foundations of responsible AI adoption.
+• AfCFTA Digital Trade Protocol (2024). As noted above, it connects digital trade, data flows, and governance within the continental market.
+Collectively, these instruments prioritise data governance and safeguards against misuse, and they provide a legitimate mandate for the type of framework proposed in this paper.
+7.2 National and regional regimes
+A substantial and growing number of African states have enacted comprehensive data protection laws. Examples include South Africa's Protection of Personal Information Act (2013), Kenya's Data Protection Act (2019), Nigeria's Data Protection Act (2023) and the establishment of the Nigeria Data Protection Commission, Rwanda's personal data protection law (2021), Ghana's Data Protection Act (2012), Egypt's Personal Data Protection Law (2020), and Ethiopia's personal data protection proclamation (2024). Regional frameworks, such as those of the Economic Community of West African States and the Southern African Development Community, also contribute model approaches. Supervisory authorities have increasingly published guidance and begun enforcement, and several have signalled attention to automated decision-making and AI.
+7.3 Gaps in the current landscape
+Our review identifies recurring gaps relevant to AI R&D:
+1.  Implementation and capacity. Statutes outpace regulator resources, technical expertise, and public awareness.
+2.  Fragmentation. Divergent definitions, transfer rules, and research exemptions complicate multi-country research.
+3.  Collective and indigenous rights. Most data protection statutes centre the individual and give limited recognition to community authority over collective data.
+4.  Model-level governance. Few instruments address training-data rights, model memorisation, or the status of derived data and models.
+5.  Public-sector and non-personal data. Governance of non-personal, public-interest, and government-held data, including language and environmental data, remains less developed.
+6.  Infrastructure dependence. Reliance on foreign cloud and compute can undermine formal legal sovereignty.
+7.4 Toward an African approach
+An African data-rights approach should combine rights-based data protection with collective and developmental concerns, reflecting philosophies of communal responsibility such as ubuntu, while avoiding essentialism or the instrumentalisation of tradition to justify weak rights protection. Data governance should be treated as an enabler of local innovation, not solely as a restriction on it.
+8. The Sovereign Data Lifecycle Governance Framework (SDLGF)
+8.1 Design principles
+The SDLGF rests on seven principles:
+1.  Authority-aware. Every data asset has an identifiable legitimate authority (individual, community, institution, or state), recorded and respected.
+2.  Purpose-bound. Use is limited to purposes within granted permissions.
+3.  Provenance-complete. Lineage is recorded from source to model.
+4.  Proportionate. Controls scale with sensitivity and risk.
+5.  Reciprocal. Benefits are shared with data originators in agreed forms.
+6.  Verifiable. Compliance is demonstrable through technical and organisational evidence, not merely asserted.
+7.  Remediable. Affected parties have effective channels for complaint, correction, withdrawal, and redress.
+8.2 Architecture
+The framework has four layers.
+Layer 1: Normative layer. Legal bases, ethical commitments, community protocols, and institutional policy. This layer integrates applicable statutes, the AU instruments, CARE and related principles, and research ethics approval.
+Layer 2: Policy-as-metadata layer. Normative commitments are translated into machine-readable metadata attached to data and models: consent scope, community labels, licence terms, sensitivity class, permitted jurisdictions, retention limits, and benefit-sharing terms.
+Layer 3: Technical enforcement layer. Controls that make policy operational:
+• Attribute-based and purpose-based access control, enforcing metadata at query and training time.
+• Trusted research environments and secure enclaves for sensitive data.
+• Federated learning and compute-to-data to avoid raw-data movement, combined with differential privacy and secure aggregation where appropriate. These techniques reduce risk but are not complete guarantees; they should be calibrated and tested.
+• Data minimisation, de-identification, and re-identification risk assessment, acknowledging that de-identification is fallible for high-dimensional and genomic data.
+• Tamper-evident audit logging and cryptographic attestation of training-data lineage.
+• Memorisation and leakage testing prior to model release, and output filtering for restricted content.
+• Machine unlearning and retraining protocols, with transparent statements about the limits of approximate unlearning; where strong guarantees are required, retraining from filtered data or architectural separation (for example, modular models trained on separately governed corpora) should be preferred.
+Layer 4: Accountability and redress layer. Governance bodies and processes: a data governance board with community and independent representation, a consent and complaints registry, periodic audit, incident response and breach notification, and public reporting.
+8.3 Lifecycle controls
+Stage
+Key governance actions
+Planning
+Community engagement; ethics review; data protection impact assessment; benefit-sharing agreement
+Collection
+Layered consent; community authorisation; minimisation; provenance record created at source
+Storage and processing
+Classification; jurisdiction-aware storage; access control; encryption
+Model development
+Purpose-binding; lineage capture; privacy-preserving training; leakage and bias testing
+Release and deployment
+Model data card; output governance; licence propagation; monitoring
+Sharing and transfer
+Risk-tiered transfer decision; compute-to-data preference; contractual safeguards
+Withdrawal and retirement
+Withdrawal handling; derived-asset review; retraining or unlearning; documented disposal
+8.4 Data governance structures
+NeuroGrowth Labs recommends that research institutions consider mechanisms such as data trusts, data cooperatives, and community data stewardship bodies, in which a fiduciary or community-controlled entity holds and licenses data on behalf of originators. These structures can negotiate terms with developers, hold bargaining power collectively, and administer benefit-sharing. Their legal form will vary by jurisdiction, and their legitimacy depends on genuine representativeness and transparent accountability.
+8.5 Roles and responsibilities
+Actor
+Principal responsibilities
+Researchers and developers
+Respect scope; document lineage; implement technical controls; report incidents
+Institutions and ethics committees
+Review consent and community authority; audit; maintain registries
+Communities and data stewards
+Define protocols; participate in governance; review outputs
+Regulators
+Provide guidance; enforce; recognise collective and model-level issues
+Funders
+Condition funding on governance compliance and benefit-sharing; resource community capacity
+Regional bodies
+Harmonise standards; support shared infrastructure and cross-border mechanisms
+External partners
+Accept sovereignty-respecting terms; transfer capability and share value
+9. Evaluation Protocol
+Because the SDLGF is a proposal, we specify how it should be evaluated before and during adoption.
+Research questions.
+1.  Does the framework improve the completeness and accuracy of provenance records relative to baseline practice?
+2.  Does policy-as-metadata enforcement reduce policy violations (for example, use outside consent scope) without unacceptable burden on researchers?
+3.  How do community partners assess the legitimacy, usability, and benefit of the governance structures?
+4.  What are the costs, in time, compute, and utility, of privacy-preserving and sovereignty-preserving techniques?
+Proposed measures.
+Dimension
+Illustrative indicators
+Provenance quality
+Share of datasets with complete records; lineage coverage from model to source
+Compliance
+Rate of detected scope violations; time to honour withdrawal requests
+Privacy and leakage
+Membership-inference and extraction test results; re-identification risk estimates
+Utility
+Model performance under governance controls versus an ungoverned baseline
+Community outcomes
+Community-reported trust, perceived benefit, and decision-making influence; benefit-sharing delivered
+Operational burden
+Researcher time, cost, and adoption rates
+Design. We recommend mixed-methods pilot studies across at least two jurisdictions and data types (for example, a speech or language corpus and a health or genomic dataset), using participatory evaluation with community partners and independent audit. Findings should be published, including negative results, and the framework revised accordingly.
+10. Implementation Roadmap
+Phase 1 (0 to 6 months): Foundation. Map applicable law and community protocols; adopt provenance and consent templates; establish a governance board; inventory existing datasets and classify sensitivity; begin community engagement.
+Phase 2 (6 to 18 months): Pilot. Deploy policy-as-metadata and access controls on pilot datasets; stand up a trusted research environment; run federated or compute-to-data pilots; implement model data cards; conduct the evaluation in Section 9.
+Phase 3 (18 to 36 months): Scale and harmonise. Extend to additional datasets and partners; engage regulators and regional bodies on interoperable transfer mechanisms; support data trust or cooperative formation where communities wish; publish open tooling and templates.
+Phase 4 (ongoing): Assurance. Periodic independent audit, public reporting, framework revision in light of legal change, technical advances, and community feedback.
+11. Risks, Limitations, and Open Problems
+• Technical limits. Differential privacy, federated learning, and unlearning are imperfect; leakage may persist and guarantees depend on parameters and threat models.
+• Representativeness and legitimacy. Determining who speaks for a community is itself contested; poorly designed stewardship bodies can reproduce exclusion or capture.
+• Governance burden. Heavy compliance can disadvantage under-resourced African researchers and favour well-funded foreign entities. Controls must be proportionate and supported by shared infrastructure and funding.
+• Innovation and access trade-offs. Excessive restriction can limit beneficial research, such as health and language technology; open and restricted regimes must be balanced deliberately rather than by default.
+• Legal uncertainty. The legal status of training on personal and cultural data, of models as derived works, and of cross-border enforcement remains unsettled in many jurisdictions.
+• Enforcement gaps. Frameworks depend on regulators and courts able to act against powerful, often foreign, actors.
+• Evidence base. The SDLGF has not been empirically validated; claims of effectiveness should be treated as hypotheses.
+12. Recommendations
+For AI researchers and institutions
+1.  Adopt layered, granular, dynamic consent and treat community authorisation as a distinct requirement where collective data is involved.
+2.  Make provenance records mandatory for datasets and models, using interoperable metadata standards.
+3.  Prefer compute-to-data and privacy-preserving architectures for sensitive and community-restricted data.
+4.  Establish benefit-sharing agreements before data collection.
+For regulators and policymakers
+5.  Ratify and implement the Malabo Convention and align national laws with the AU Data Policy Framework to reduce fragmentation.
+6.  Recognise collective and indigenous data rights and community protocols in statute and guidance.
+7.  Clarify the status of training data, model memorisation, and derived models, and build supervisory capacity for AI.
+8.  Adopt risk-tiered cross-border rules, favouring targeted rather than blanket localisation, and mutual recognition mechanisms within the AfCFTA framework.
+For funders and development partners
+9.  Condition funding on governance compliance, and fund community stewardship capacity and sovereign compute and storage infrastructure.
+10.  Support African-led datasets, benchmarks, and institutions, with ownership and value retained locally.
+For communities and civil society
+11.  Develop and publish community data protocols and labels, and, where desired, form data trusts or cooperatives to negotiate collectively.
+12.  Participate in audit and oversight of AI systems affecting community knowledge and interests.
+13. Conclusion
+Data sovereignty in AI is not a single legal status but an ongoing capacity to decide, to verify, and to obtain redress across the entire data lifecycle. The AU's emphasis on data governance and safeguards against misuse provides a legitimate continental foundation, and Africa's growing body of national law and community-led practice offers a base for innovation in governance, not merely imitation of external models. Realising that potential requires moving from documents to infrastructure: consent that is dynamic, provenance that is verifiable, indigenous authority that is honoured in code as well as in law, cross-border rules that are proportionate, and institutions with the capacity to enforce them. The SDLGF is offered as a practical step in that direction, and NeuroGrowth Labs invites collaboration with researchers, regulators, and communities to test, critique, and improve it.
+Glossary
+CARE Principles: Collective Benefit, Authority to Control, Responsibility, Ethics; principles for indigenous data governance.
+Compute-to-data: An architecture in which algorithms are sent to data held by its custodian, rather than data being transferred to the analyst.
+Data trust: A legal or fiduciary structure in which a trustee manages data on behalf of its beneficiaries.
+FAIR Principles: Findable, Accessible, Interoperable, Reusable.
+Provenance: The documented history of data's origin, custody, and transformation.
+Trusted research environment: A secure computing environment in which approved researchers analyse sensitive data without exporting it.
+References
+The following sources informed this paper. Readers should verify citation details and consult current authoritative texts, especially for legal and policy instruments that may have been amended or newly adopted.
+Abebe, R., Aruleba, K., Birhane, A., Kingsley, S., Obaido, G., Remy, S. L., and Sadagopan, S. (2021). Narratives and counternarratives on data sharing in Africa. Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency (FAccT).
+African Union (2014). African Union Convention on Cyber Security and Personal Data Protection (Malabo Convention).
+African Union (2022). AU Data Policy Framework.
+African Union (2024). Continental Artificial Intelligence Strategy: Harnessing AI for Africa's Development and Prosperity.
+African Union (2024). AfCFTA Protocol on Digital Trade.
+Bender, E. M., and Friedman, B. (2018). Data statements for natural language processing: Toward mitigating system bias and enabling better science. Transactions of the Association for Computational Linguistics, 6, 587-604.
+Birhane, A. (2020). Algorithmic colonization of Africa. SCRIPTed, 17(2), 389-409.
+Carroll, S. R., Garba, I., Figueroa-Rodriguez, O. L., et al. (2020). The CARE Principles for Indigenous Data Governance. Data Science Journal, 19(1), 43.
+Convention on Biological Diversity (2010). Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization.
+Couldry, N., and Mejias, U. A. (2019). The Costs of Connection: How Data Is Colonizing Human Life and Appropriating It for Capitalism. Stanford University Press.
+Court of Justice of the European Union (2020). Data Protection Commissioner v Facebook Ireland Ltd and Maximillian Schrems (Case C-311/18).
+First Nations Information Governance Centre. The First Nations Principles of OCAP®.
+Gebru, T., Morgenstern, J., Vecchione, B., et al. (2021). Datasheets for datasets. Communications of the ACM, 64(12), 86-92.
+Longpre, S., Mahari, R., Chen, A., et al. (2023). The Data Provenance Initiative: A large scale audit of dataset licensing and attribution in AI. arXiv preprint.
+Longpre, S., Mahari, R., Lee, A., et al. (2024). Consent in crisis: The rapid decline of the AI data commons. arXiv preprint.
+Mohamed, S., Png, M.-T., and Isaac, W. (2020). Decolonial AI: Decolonial theory as sociotechnical foresight in artificial intelligence. Philosophy and Technology, 33, 659-684.
+Republic of South Africa (2013). Protection of Personal Information Act, No. 4 of 2013.
+Republic of South Africa (2019). Protection, Promotion, Development and Management of Indigenous Knowledge Act, No. 6 of 2019.
+South African San Institute (2017). San Code of Research Ethics.
+United Nations (2007). United Nations Declaration on the Rights of Indigenous Peoples.
+Wilkinson, M. D., Dumontier, M., Aalbersberg, I. J., et al. (2016). The FAIR Guiding Principles for scientific data management and stewardship. Scientific Data, 3, 160018.
+World Intellectual Property Organization (2024). WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge.
+W3C (2013). PROV-DM: The PROV Data Model.
+© 2026 NeuroGrowth Labs. This paper is provided for research and policy discussion and does not constitute legal advice.

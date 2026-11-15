@@ -7,15 +7,8 @@ import { useAuth } from '../components/AuthContext';
 import { 
   ACADEMY_COURSES, RESEARCH_PAPERS, Course, ResearchPaper 
 } from '../data/academyData';
-import AuthGateModal from '../components/academy/AuthGateModal';
-import CertificateModal from '../components/academy/CertificateModal';
-import CoursePlayerModal from '../components/academy/CoursePlayerModal';
-import CourseReviewsModal from '../components/academy/CourseReviewsModal';
-import EmailNotificationCenterModal from '../components/academy/EmailNotificationCenterModal';
-import ArticleReaderModal from '../components/academy/ArticleReaderModal';
 import { 
-  sendCourseEnrollmentNotification, sendCertificateReadyNotification, 
-  getStoredEmailNotifications, EmailNotificationRecord 
+  sendCourseEnrollmentNotification 
 } from '../services/emailNotificationService';
 import { 
   getReviewsForCourse, calculateCourseRatingStats 
@@ -29,13 +22,22 @@ import {
   GraduationCap, Search, Filter, Share2, Terminal, Check,
   Layers, Compass, Cpu, Network, Shield, Bookmark, User,
   Calendar, Hash, X, Youtube, SlidersHorizontal, RotateCcw,
-  Mail, Bell, ThumbsUp, MessageSquare
+  Mail, Bell, ThumbsUp, MessageSquare, Headphones, Table2,
+  Pause, Loader2
 } from 'lucide-react';
+import { useResearchAudio } from '../components/ResearchAudioContext';
 
 export default function Academy() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, updateDisplayName } = useAuth();
+  const {
+    activePaper: activeAudioPaper,
+    isPlaying: isAudioPlaying,
+    isSynthesizing: isAudioSynthesizing,
+    playPaperChapter,
+    togglePlayPause,
+  } = useResearchAudio();
 
   // Active view tab & search query
   const [activeTab, setActiveTab] = useState<'all' | 'courses' | 'papers' | 'my-learning'>(() => {
@@ -111,41 +113,7 @@ export default function Academy() {
     }
   });
 
-  // Modal states
-  const [authModalState, setAuthModalState] = useState<{
-    isOpen: boolean;
-    contextType: 'course' | 'paper' | 'general';
-    itemTitle?: string;
-    itemCode?: string;
-    targetCourse?: Course;
-    targetPaper?: ResearchPaper;
-  }>({
-    isOpen: false,
-    contextType: 'general'
-  });
-
-  const [activePlayerCourse, setActivePlayerCourse] = useState<Course | null>(null);
-
-  const [activeCertificateData, setActiveCertificateData] = useState<{
-    isOpen: boolean;
-    data?: any;
-  }>({
-    isOpen: false
-  });
-
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  // Reviews modal state
-  const [activeReviewsCourse, setActiveReviewsCourse] = useState<Course | null>(null);
-
-  // Article Reader modal state
-  const [activeReaderPaper, setActiveReaderPaper] = useState<ResearchPaper | null>(null);
-
-  // SendGrid Email Notification Center state
-  const [isEmailCenterOpen, setIsEmailCenterOpen] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState<EmailNotificationRecord[]>(() => 
-    getStoredEmailNotifications(user?.uid || user?.email)
-  );
 
   // Live course ratings stats map
   const [courseStatsMap, setCourseStatsMap] = useState<Record<string, { averageRating: number; totalCount: number }>>({});
@@ -179,11 +147,8 @@ export default function Academy() {
     });
   }, []);
 
-  // Listen for real-time dispatched emails and reviews
+  // Listen for real-time reviews submitted
   useEffect(() => {
-    const handleEmailEvent = () => {
-      setEmailNotifications(getStoredEmailNotifications(user?.uid || user?.email));
-    };
     const handleReviewEvent = (e: any) => {
       const detail = e.detail;
       if (detail?.courseId) {
@@ -196,13 +161,11 @@ export default function Academy() {
         });
       }
     };
-    window.addEventListener('ngl_email_sent', handleEmailEvent);
     window.addEventListener('ngl_review_submitted', handleReviewEvent);
     return () => {
-      window.removeEventListener('ngl_email_sent', handleEmailEvent);
       window.removeEventListener('ngl_review_submitted', handleReviewEvent);
     };
-  }, [user]);
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -232,16 +195,10 @@ export default function Academy() {
 
   const hasActiveFilters = selectedDifficulty.length > 0 || selectedCourseType.length > 0 || searchQuery.trim().length > 0;
 
-  // Enrollment click handler
+  // Enrollment click handler - navigates to dedicated classroom webpage
   const handleEnrollClick = (course: Course) => {
     if (!user) {
-      setAuthModalState({
-        isOpen: true,
-        contextType: 'course',
-        itemTitle: course.title,
-        itemCode: course.code,
-        targetCourse: course
-      });
+      navigate(`/learner/auth?redirect=/course/${course.id}&context=course&item=${encodeURIComponent(course.title)}`);
       return;
     }
 
@@ -255,18 +212,13 @@ export default function Academy() {
       }).catch(err => console.warn('Notification err:', err));
     }
 
-    setActivePlayerCourse(course);
+    navigate(`/course/${course.id}`);
   };
 
-  // Download paper click handler
+  // Download paper click handler - navigates or downloads directly
   const handleDownloadClick = async (paper: ResearchPaper) => {
     if (!user) {
-      setAuthModalState({
-        isOpen: true,
-        contextType: 'paper',
-        itemTitle: paper.title,
-        targetPaper: paper
-      });
+      navigate(`/learner/auth?redirect=/research/${paper.id}&context=paper&item=${encodeURIComponent(paper.title)}`);
       return;
     }
 
@@ -275,98 +227,9 @@ export default function Academy() {
     showToast(`Downloading: "${paper.title}" (PDF/Full-Text)`);
   };
 
-  // Post-auth callback
-  const handleAuthSuccess = (authenticatedUser: any) => {
-    if (authModalState.targetCourse) {
-      const course = authModalState.targetCourse;
-      if (!enrolledCourseIds.includes(course.id)) {
-        setEnrolledCourseIds(prev => [...prev, course.id]);
-      }
-      setActivePlayerCourse(course);
-      showToast(`Enrolled in ${course.code}. Welcome to your learning path!`);
-      
-      // Dispatch SendGrid email notification
-      sendCourseEnrollmentNotification({ user: authenticatedUser, course }).then(() => {
-        showToast(`📧 Enrollment confirmation email dispatched to ${authenticatedUser.email} via SendGrid!`);
-      }).catch(err => console.warn('Notification err:', err));
-    } else if (authModalState.targetPaper) {
-      const paper = authModalState.targetPaper;
-      downloadAcademicPaper(paper, authenticatedUser);
-      setDownloadedPaperIds(prev => prev.includes(paper.id) ? prev : [...prev, paper.id]);
-      showToast(`Downloading: "${paper.title}"`);
-    } else {
-      showToast('Successfully signed in to your Sovereign Academy profile.');
-    }
-  };
-
-  const handleToggleModule = (courseId: string, moduleId: string) => {
-    setCompletedModulesByCourse(prev => {
-      const current = prev[courseId] || [];
-      const updated = current.includes(moduleId)
-        ? current.filter(id => id !== moduleId)
-        : [...current, moduleId];
-      return { ...prev, [courseId]: updated };
-    });
-  };
-
-  // Save exam score
-  const handleSaveExamScore = (courseId: string, score: number) => {
-    setCourseExamScores(prev => ({ ...prev, [courseId]: score }));
-    if (score >= 70) {
-      showToast(`Capstone passed with ${score}%! You can now claim your Certificate.`);
-    }
-  };
-
-  // Open Certificate generator
-  const handleOpenCertificate = (course: Course, passedScore?: number) => {
-    const recordedScore = passedScore !== undefined ? passedScore : (courseExamScores[course.id] || 0);
-
-    // Enforce 70% mark
-    if (recordedScore < 70) {
-      showToast(`Final assignment score must be at least 70% to issue a certificate. Current score: ${recordedScore}%.`);
-      setActivePlayerCourse(course);
-      return;
-    }
-
-    const studentName = user?.displayName || user?.email?.split('@')[0] || 'African AI & Cybersecurity Scholar';
-    const studentEmail = user?.email || 'scholar@neurogrowthlabs.co.za';
-    
-    const randomHash = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const certId = `NGL-CERT-${course.code.replace(/[^0-9]/g, '')}-${new Date().getFullYear()}-${randomHash.substring(0, 6).toUpperCase()}`;
-
-    // Dispatch SendGrid certificate ready email notification
-    sendCertificateReadyNotification({
-      user: {
-        uid: user?.uid || 'learner-id',
-        email: studentEmail,
-        displayName: studentName
-      },
-      course: {
-        id: course.id,
-        code: course.code,
-        title: course.title
-      },
-      certificateId: certId,
-      verificationCode: randomHash,
-      issuedDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      grade: `Pass with Honors (${recordedScore}% on Capstone Assessment)`
-    }).then(() => {
-      showToast(`📧 Certificate ready alert dispatched to ${studentEmail} via SendGrid!`);
-    }).catch(err => console.warn('Certificate notification err:', err));
-
-    setActiveCertificateData({
-      isOpen: true,
-      data: {
-        certificateId: certId,
-        studentName,
-        studentEmail,
-        courseCode: course.code,
-        courseTitle: course.title,
-        issuedDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        verificationHash: randomHash,
-        grade: `Pass with Honors (${recordedScore}% on Capstone Assessment)`
-      }
-    });
+  // Open Certificate webpage
+  const handleOpenCertificate = (course: Course) => {
+    navigate(`/certificate/${course.id}`);
   };
 
   // Filtered courses based on:
@@ -518,7 +381,7 @@ export default function Academy() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#080b11] via-[#080b11]/30 to-transparent" />
 
-              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-lg bg-[#0c111c]/90 backdrop-blur-md border border-white/15 flex items-center justify-between gap-3">
+              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-lg bg-[#0c111c]/90 backdrop-blur-md flex items-center justify-between gap-3 shadow-lg">
                 <div className="flex items-center gap-2.5">
                   <Award className="w-5 h-5 text-ai-cyan shrink-0" />
                   <div>
@@ -528,7 +391,7 @@ export default function Academy() {
                 </div>
 
                 <button
-                  onClick={() => handleOpenCertificate(ACADEMY_COURSES[0], 85)}
+                  onClick={() => handleOpenCertificate(ACADEMY_COURSES[0])}
                   className="px-3 py-1 rounded-md bg-ai-cyan text-midnight-black text-xs font-bold hover:bg-white transition-colors shrink-0"
                 >
                   Preview Sample
@@ -794,7 +657,7 @@ export default function Academy() {
                               </div>
 
                               <button
-                                onClick={() => setActiveReviewsCourse(course)}
+                                onClick={() => navigate(`/reviews/${course.id}`)}
                                 className="flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-mono transition-colors cursor-pointer shrink-0"
                                 title="View peer ratings & reviews"
                               >
@@ -856,7 +719,7 @@ export default function Academy() {
 
                               {hasPassedExam ? (
                                 <button
-                                  onClick={() => handleOpenCertificate(course, examScore)}
+                                  onClick={() => handleOpenCertificate(course)}
                                   className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#c5a059] hover:bg-white text-midnight-black transition-colors flex items-center gap-1 shadow-sm"
                                   title="Download Certificate"
                                 >
@@ -865,7 +728,7 @@ export default function Academy() {
                                 </button>
                               ) : (
                                 <button
-                                  onClick={() => setActiveReviewsCourse(course)}
+                                  onClick={() => navigate(`/reviews/${course.id}`)}
                                   className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-amber-400 hover:text-white bg-amber-500/10 hover:bg-amber-500/20 transition-colors flex items-center gap-1"
                                   title="Read scholar feedback"
                                 >
@@ -936,93 +799,142 @@ export default function Academy() {
             {/* VIEW 2: RESEARCH PAPERS IN COMPACT GRID                  */}
             {/* ======================================================== */}
             {activeTab === 'papers' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {filteredPapers.map((paper) => {
                   const isBibtexOpen = expandedBibtexId === paper.id;
+                  const isThisPaperAudio = activeAudioPaper?.id === paper.id;
 
                   return (
-                    <div 
+                    <article
                       key={paper.id}
-                      className="bg-[#0c1018] hover:bg-[#0e1422] rounded-xl p-5 transition-all duration-300 shadow-md flex flex-col justify-between"
+                      className="bg-[#0c111b] light:bg-white hover:bg-[#101725] light:hover:bg-stone-50 rounded-xl p-6 transition-colors duration-200 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)] light:shadow-[inset_0_0_0_1px_rgba(28,25,23,0.12)] flex flex-col justify-between"
                     >
                       <div>
-                        {/* Top Metadata Line */}
-                        <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-400 font-mono mb-2">
-                          <span className="text-[#c5a059] font-bold truncate max-w-[170px]">{paper.category}</span>
-                          <div className="flex items-center gap-1.5">
+                        {/* Quiet Unboxed Metadata Strip */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 light:text-stone-600 mb-3">
+                          <span className="text-[11px] uppercase tracking-wider text-[#c5a059] light:text-[#78350F] font-semibold truncate max-w-[210px]">
+                            {paper.category}
+                          </span>
+                          <div className="flex items-center gap-1.5 font-mono tabular-nums text-[11px]">
                             <span>{paper.publishDate}</span>
                             <span aria-hidden="true">·</span>
-                            <span>{paper.pages}P</span>
+                            <span>{paper.pages} pp.</span>
                             {paper.pdfUrl && (
-                              <span className="text-emerald-400 font-semibold flex items-center gap-0.5">
-                                <FileText className="w-2.5 h-2.5" /> PDF
-                              </span>
+                              <>
+                                <span aria-hidden="true">·</span>
+                                <span className="text-emerald-400 light:text-emerald-700 font-semibold">
+                                  PDF
+                                </span>
+                              </>
                             )}
                           </div>
                         </div>
 
-                        {/* Paper Title */}
-                        <h3 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug line-clamp-2 min-h-[3rem]">
+                        {/* Editorial Paper Title */}
+                        <h3
+                          onClick={() => navigate(`/research/${paper.id}`)}
+                          className="font-serif text-lg sm:text-xl font-medium text-white light:text-stone-900 hover:text-[#c5a059] transition-colors leading-snug line-clamp-2 min-h-[3.25rem] cursor-pointer"
+                        >
                           {paper.title}
                         </h3>
 
                         {/* Subtitle */}
-                        <p className="text-slate-400 text-xs font-medium line-clamp-1 mt-1">
+                        <p className="text-slate-400 light:text-stone-600 text-xs font-medium line-clamp-1 mt-1.5">
                           {paper.subtitle}
                         </p>
 
                         {/* Authors */}
-                        <div className="text-[11px] text-slate-400 line-clamp-1 mt-2">
-                          <span className="text-slate-300 font-medium">Authors: </span>
-                          {paper.authors.map(a => `${a.name} (${a.affiliation})`).join(', ')}
+                        <div className="text-xs text-slate-400 light:text-stone-600 line-clamp-1 mt-2">
+                          {paper.authors.map((a) => `${a.name} · ${a.affiliation}`).join(', ')}
                         </div>
 
-                        {/* Abstract */}
-                        <div className="p-2.5 rounded-lg bg-white/[0.02] text-xs text-slate-300 leading-relaxed mt-2.5 line-clamp-3">
+                        {/* Abstract Excerpt */}
+                        <p className="mt-3 p-3.5 rounded-lg bg-white/[0.025] light:bg-[#F7F4EE] text-xs text-slate-300 light:text-stone-700 leading-relaxed line-clamp-3">
                           {paper.abstract}
-                        </div>
+                        </p>
                       </div>
 
-                      {/* Paper Footer with Stats and Actions */}
-                      <div className="mt-4 pt-3 space-y-2.5">
-                        <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-                          <span>{paper.downloadCount.toLocaleString()} downloads</span>
-                          <div className="flex items-center gap-2">
-                            <span>{paper.citationCount} citations</span>
-                            <button
-                              onClick={() => setExpandedBibtexId(isBibtexOpen ? null : paper.id)}
-                              className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer"
-                            >
-                              {isBibtexOpen ? 'Hide BibTeX' : 'Cite'}
-                            </button>
-                          </div>
+                      {/* Footer Stats & Actions */}
+                      <div className="mt-5 pt-3 space-y-3">
+                        <div className="flex items-center justify-between text-xs text-slate-400 light:text-stone-600 font-mono tabular-nums">
+                          <span>{paper.downloadCount.toLocaleString()} downloads · {paper.citationCount} citations</span>
+                          <button
+                            type="button"
+                            onClick={() => setExpandedBibtexId(isBibtexOpen ? null : paper.id)}
+                            className="text-xs font-sans font-medium text-slate-300 light:text-stone-700 hover:text-[#c5a059] underline cursor-pointer"
+                          >
+                            {isBibtexOpen ? 'Hide BibTeX' : 'Cite'}
+                          </button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           <button
-                            onClick={() => setActiveReaderPaper(paper)}
-                            className="py-2 px-3 rounded-lg text-xs font-bold bg-ai-cyan/15 hover:bg-ai-cyan text-ai-cyan hover:text-midnight-black transition-all flex items-center justify-center gap-1 shadow-sm"
+                            type="button"
+                            onClick={() => navigate(`/research/${paper.id}`)}
+                            className="h-9 px-3 rounded-lg text-xs font-semibold bg-white text-[#080b11] light:bg-stone-900 light:text-white hover:bg-[#c5a059] hover:text-[#080b11] transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
                           >
-                            <BookOpen className="w-3.5 h-3.5" />
-                            <span>Read Article</span>
+                            <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                            <span>Read</span>
                           </button>
 
                           <button
-                            onClick={() => handleDownloadClick(paper)}
-                            className="py-2 px-3 rounded-lg text-xs font-bold bg-[#c5a059] hover:bg-white text-midnight-black transition-colors flex items-center justify-center gap-1 shadow-sm"
+                            type="button"
+                            onClick={() => {
+                              if (isThisPaperAudio) {
+                                togglePlayPause();
+                              } else {
+                                void playPaperChapter(paper, 'brief');
+                              }
+                            }}
+                            disabled={isThisPaperAudio && isAudioSynthesizing}
+                            className={`h-9 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                              isThisPaperAudio && isAudioPlaying
+                                ? 'bg-[#c5a059] text-[#080b11]'
+                                : 'bg-white/[0.05] light:bg-stone-100 hover:bg-white/[0.1] light:hover:bg-stone-200 text-slate-200 light:text-stone-800'
+                            }`}
                           >
-                            <Download className="w-3.5 h-3.5" />
-                            <span>Download PDF</span>
+                            {isThisPaperAudio && isAudioSynthesizing ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                            ) : isThisPaperAudio && isAudioPlaying ? (
+                              <Pause className="w-3.5 h-3.5 shrink-0" />
+                            ) : (
+                              <Headphones className="w-3.5 h-3.5 text-[#c5a059] shrink-0" />
+                            )}
+                            <span>
+                              {isThisPaperAudio && isAudioSynthesizing
+                                ? 'Loading'
+                                : isThisPaperAudio && isAudioPlaying
+                                  ? 'Pause'
+                                  : 'Audio'}
+                            </span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/research/${paper.id}?tab=tables`)}
+                            className="h-9 px-3 rounded-lg text-xs font-semibold bg-white/[0.05] light:bg-stone-100 hover:bg-white/[0.1] light:hover:bg-stone-200 text-slate-200 light:text-stone-800 transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
+                          >
+                            <Table2 className="w-3.5 h-3.5 text-[#c5a059] shrink-0" />
+                            <span>Tables</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadClick(paper)}
+                            className="h-9 px-3 rounded-lg text-xs font-semibold bg-[#c5a059]/15 light:bg-[#EBE6DF] hover:bg-[#c5a059] text-[#e7c888] light:text-stone-900 hover:text-[#080b11] transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5 shrink-0" />
+                            <span>{paper.pdfUrl ? 'PDF' : 'Save'}</span>
                           </button>
                         </div>
 
                         {isBibtexOpen && (
-                          <pre className="p-2 rounded bg-[#06080d] font-mono text-[10px] text-slate-300 overflow-x-auto">
+                          <pre className="p-3 rounded-lg bg-[#06080d] light:bg-stone-100 font-mono text-[11px] text-slate-300 light:text-stone-800 overflow-x-auto">
                             {paper.bibtex}
                           </pre>
                         )}
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -1034,18 +946,18 @@ export default function Academy() {
             {activeTab === 'my-learning' && (
               <div className="space-y-6">
                 {!user ? (
-                  <div className="p-10 rounded-xl bg-white/[0.02] border border-white/10 text-center space-y-3">
+                  <div className="p-10 rounded-xl bg-white/[0.02] text-center space-y-3 shadow-inner">
                     <p className="text-base font-bold text-white">Sign In to View Your Learning Transcript</p>
                     <p className="text-xs text-slate-400">Track your progress, watch required YouTube lectures, and claim certificates.</p>
                     <button
-                      onClick={() => setAuthModalState({ isOpen: true, contextType: 'general' })}
+                      onClick={() => navigate('/learner/auth?redirect=/academy')}
                       className="px-5 py-2.5 rounded-lg bg-ai-cyan text-midnight-black text-xs font-bold hover:bg-white transition-colors"
                     >
                       Sign In or Register
                     </button>
                   </div>
                 ) : enrolledCourseIds.length === 0 ? (
-                  <div className="p-10 rounded-xl bg-white/[0.02] border border-white/10 text-center space-y-3">
+                  <div className="p-10 rounded-xl bg-white/[0.02] text-center space-y-3 shadow-inner">
                     <p className="text-base font-bold text-white">No Courses Enrolled</p>
                     <p className="text-xs text-slate-400">Select any of our 5 courses to begin learning for free.</p>
                     <button
@@ -1077,7 +989,7 @@ export default function Academy() {
 
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => setActivePlayerCourse(course)}
+                              onClick={() => navigate(`/course/${course.id}`)}
                               className="flex-1 py-2 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-colors flex items-center justify-center gap-1.5"
                             >
                               <BookOpen className="w-3.5 h-3.5 text-ai-cyan" />
@@ -1086,7 +998,7 @@ export default function Academy() {
 
                             {hasPassed ? (
                               <button
-                                onClick={() => handleOpenCertificate(course, score)}
+                                onClick={() => navigate(`/certificate/${course.id}`)}
                                 className="px-3.5 py-2 rounded-lg bg-[#c5a059] text-midnight-black text-xs font-bold hover:bg-white transition-colors flex items-center gap-1"
                               >
                                 <Award className="w-3.5 h-3.5" />
@@ -1096,7 +1008,7 @@ export default function Academy() {
                               <button
                                 onClick={() => {
                                   showToast('Pass final exam with 70%+ to unlock certificate.');
-                                  setActivePlayerCourse(course);
+                                  navigate(`/course/${course.id}`);
                                 }}
                                 className="px-3 py-2 rounded-lg bg-white/5 text-xs text-slate-400 hover:text-white transition-colors"
                               >
@@ -1115,114 +1027,6 @@ export default function Academy() {
           </main>
         </div>
       </div>
-
-      {/* ======================================================== */}
-      {/* MODALS: AUTH, CLASSROOM PLAYER, AND CERTIFICATE          */}
-      {/* ======================================================== */}
-      <AuthGateModal
-        isOpen={authModalState.isOpen}
-        onClose={() => setAuthModalState(prev => ({ ...prev, isOpen: false }))}
-        onSuccess={handleAuthSuccess}
-        contextType={authModalState.contextType}
-        itemTitle={authModalState.itemTitle}
-        itemCode={authModalState.itemCode}
-      />
-
-      {activePlayerCourse && (
-        <CoursePlayerModal
-          isOpen={!!activePlayerCourse}
-          onClose={() => setActivePlayerCourse(null)}
-          course={activePlayerCourse}
-          completedModuleIds={completedModulesByCourse[activePlayerCourse.id] || []}
-          onToggleModuleCompletion={(modId) => handleToggleModule(activePlayerCourse.id, modId)}
-          passedExamScore={courseExamScores[activePlayerCourse.id] || null}
-          onSaveExamScore={handleSaveExamScore}
-          currentUser={user}
-          onOpenAuth={() => {
-            setAuthModalState({
-              isOpen: true,
-              contextType: 'course',
-              itemTitle: activePlayerCourse.title,
-              itemCode: activePlayerCourse.code,
-              targetCourse: activePlayerCourse
-            });
-          }}
-          onClaimCertificate={(score) => {
-            const course = activePlayerCourse;
-            setActivePlayerCourse(null);
-            handleOpenCertificate(course, score);
-          }}
-        />
-      )}
-
-      {/* Course Reviews and Star-Rating Modal */}
-      {activeReviewsCourse && (
-        <CourseReviewsModal
-          isOpen={!!activeReviewsCourse}
-          onClose={() => setActiveReviewsCourse(null)}
-          course={activeReviewsCourse}
-          currentUser={user}
-          onOpenAuth={() => {
-            const crs = activeReviewsCourse;
-            setActiveReviewsCourse(null);
-            setAuthModalState({
-              isOpen: true,
-              contextType: 'course',
-              itemTitle: crs.title,
-              itemCode: crs.code,
-              targetCourse: crs
-            });
-          }}
-          onReviewAdded={() => {
-            showToast('Review submitted and added to course profile!');
-            if (activeReviewsCourse) {
-              getReviewsForCourse(activeReviewsCourse.id).then(list => {
-                const s = calculateCourseRatingStats(list);
-                setCourseStatsMap(prev => ({
-                  ...prev,
-                  [activeReviewsCourse.id]: { averageRating: s.averageRating, totalCount: s.totalCount }
-                }));
-              });
-            }
-          }}
-        />
-      )}
-
-      {/* SendGrid Email Notification Center Modal */}
-      {isEmailCenterOpen && (
-        <EmailNotificationCenterModal
-          isOpen={isEmailCenterOpen}
-          onClose={() => setIsEmailCenterOpen(false)}
-          currentUser={user}
-        />
-      )}
-
-      {/* Full Article & PDF Reader Modal */}
-      {activeReaderPaper && (
-        <ArticleReaderModal
-          isOpen={!!activeReaderPaper}
-          onClose={() => setActiveReaderPaper(null)}
-          paper={activeReaderPaper}
-          onDownload={handleDownloadClick}
-          isDownloaded={downloadedPaperIds.includes(activeReaderPaper.id)}
-        />
-      )}
-
-      {activeCertificateData.isOpen && activeCertificateData.data && (
-        <CertificateModal
-          isOpen={activeCertificateData.isOpen}
-          onClose={() => setActiveCertificateData({ isOpen: false })}
-          certificateData={activeCertificateData.data}
-          onUpdateName={(newName) => {
-            updateDisplayName(newName);
-            setActiveCertificateData(prev => ({
-              ...prev,
-              data: prev.data ? { ...prev.data, studentName: newName } : undefined
-            }));
-            showToast('Updated recipient name on certificate.');
-          }}
-        />
-      )}
 
       <Footer />
     </div>

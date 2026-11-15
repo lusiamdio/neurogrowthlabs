@@ -1,0 +1,366 @@
+AI Risk Auditing for Public Services
+A Practical Framework for Credit Scoring, Welfare Allocation, Policing, Health, and Education Systems
+
+NeuroGrowth Labs — Research and Development Paper
+Prepared for public-sector agencies, regulators, development-finance institutions, and AI assurance practitioners
+
+Abstract
+Artificial intelligence is increasingly used in public services to assess creditworthiness, allocate welfare benefits, support policing, triage health care, and personalize education. These systems can improve access, efficiency, and resource targeting, but they also create risks of discriminatory outcomes, inaccurate decisions, data breaches, opaque automation, and erosion of public trust. This paper develops a practical, sector-adapted audit methodology for AI systems in five high-impact public-service domains: credit scoring, welfare allocation, policing, health, and education. It proposes a common audit architecture based on governance, data, performance, security, fairness, explainability, human oversight, and post-deployment monitoring. The framework translates these dimensions into testable audit procedures, evidence requirements, risk thresholds, remediation pathways, and sector-specific metrics. The paper responds directly to the African Development Bank’s recommendation to operationalize AI-risk audits across sectors including credit, health, and policing, and provides an implementation pathway that public institutions can adopt without requiring perfect technical maturity.
+
+Keywords: AI auditing; public-sector AI; algorithmic accountability; bias testing; model validation; human oversight; credit scoring; welfare allocation; policing; health AI; education AI.
+
+1. Introduction
+Public-service AI systems increasingly influence decisions that affect fundamental rights, economic opportunity, safety, health, and educational advancement. AI-enabled credit scoring may expand financial inclusion by using alternative data such as mobile-money flows and transaction histories, but poorly governed models can exclude applicants or encode historical disadvantage. Similarly, welfare-allocation, policing, health, and education systems can deliver substantial public value only when their outputs are accurate, lawful, explainable, secure, and subject to meaningful human control.
+
+The central problem is not whether AI should be used in public services; it is whether institutions can demonstrate that a given system is fit for its intended purpose before and after deployment. AI risks are socio-technical: they arise from data quality, model design, procurement arrangements, deployment context, user behavior, institutional incentives, and the communities affected by automated decisions. Therefore, an effective audit must assess both the technical model and the organizational system surrounding it.
+
+The African Development Bank identifies the operationalization of AI-risk audits across sectors—including credit, health, and policing—as a priority action for building trustworthy AI capacity. This paper provides a practical audit blueprint for that recommendation. It is designed to be implementable by ministries, municipalities, regulators, public banks, health authorities, police services, and education agencies, including in contexts with limited audit capacity.
+
+2. Problem Statement
+Public-sector AI differs from commercial AI because its decisions may determine access to credit, income support, liberty, medical care, and educational opportunity. Errors are therefore not merely operational defects; they can produce material harm, reinforce inequality, and undermine democratic accountability. NIST characterizes trustworthy AI as valid and reliable, safe, secure and resilient, accountable and transparent, explainable and interpretable, privacy-enhanced, and fair with harmful bias managed.
+
+Existing governance documents often state broad principles but do not provide public institutions with a repeatable audit workflow. Agencies need answers to concrete questions:
+
+Is the system achieving its stated public-service objective?
+
+Which populations experience higher error rates or adverse outcomes?
+
+Can decision-makers explain and challenge an AI-supported recommendation?
+
+Are sensitive data lawfully collected, protected, and used only for authorized purposes?
+
+Can the system resist tampering, misuse, cyberattacks, and unauthorized model changes?
+
+Is a qualified human accountable for consequential decisions?
+
+What evidence exists that the system remains safe after deployment?
+
+Without a standardized audit method, AI adoption may outpace institutional capacity to detect harm. The African Development Bank notes that trust frameworks, model AI-risk laws, practical sandboxes, and routine audits are foundational enablers of responsible AI deployment.
+
+3. Research Objectives
+This paper has five objectives:
+
+Define a common AI-risk audit standard for public-service AI systems.
+
+Develop practical audit tests for bias, accuracy, security, privacy, explainability, and human oversight.
+
+Adapt the audit method to credit scoring, welfare allocation, policing, health, and education.
+
+Specify audit evidence, reporting formats, remediation actions, and escalation rules.
+
+Provide an implementation roadmap for public institutions and oversight bodies.
+
+4. Conceptual Framework
+The proposed framework is organized around eight audit domains. It draws on the NIST AI Risk Management Framework’s Govern, Map, Measure, and Manage functions, while translating them into public-service audit procedures.
+
+Audit domain	Core question	Primary evidence
+Governance and accountability	Who owns the system and its risks?	AI inventory, accountable executive, risk register, approval records
+Purpose and lawfulness	Is the use case legitimate, necessary, and proportionate?	Use-case specification, legal basis, impact assessment
+Data quality and provenance	Are inputs accurate, representative, and lawfully sourced?	Data lineage, quality reports, consent records, representativeness analysis
+Accuracy and reliability	Does the system perform adequately for its intended population?	Validation reports, confusion matrices, calibration tests, drift monitoring
+Fairness and bias	Are harms and benefits distributed equitably?	Disaggregated performance, adverse-impact analysis, redress records
+Security and resilience	Can the system be compromised or misused?	Access controls, penetration tests, incident-response plans, model-integrity checks
+Explainability and transparency	Can affected people and officials understand the decision?	Model documentation, reason codes, public notices, appeal procedures
+Human oversight and redress	Can people meaningfully challenge or override AI outputs?	Review logs, override rates, training records, appeals outcomes
+AI systems should not be treated as isolated technical artifacts. Their risks depend on how they are procured, integrated into workflows, monitored, and governed by humans with authority to intervene.
+
+5. Common Audit Method
+5.1 Audit lifecycle
+The audit method follows six stages:
+
+Scoping: Identify the AI system, decision rights, affected populations, data sources, vendors, and legal context.
+
+Risk classification: Classify the system by autonomy, sensitivity of data, reversibility of harm, scale of deployment, and vulnerability of affected groups.
+
+Control testing: Test governance, data, model, security, fairness, explainability, and human-oversight controls.
+
+Outcome testing: Measure real-world error, disparity, appeal, and override patterns.
+
+Remediation planning: Assign owners, deadlines, corrective actions, and retest requirements.
+
+Continuous assurance: Conduct scheduled and event-triggered audits after model updates, data changes, policy changes, or incidents.
+
+5.2 Risk-tiering model
+Public agencies should assign each AI system to one of four audit tiers.
+
+Tier	Definition	Minimum audit requirement
+Tier 1: Critical	Directly affects rights, liberty, health, livelihood, safety, or access to essential services	Independent pre-deployment audit, annual reassessment, incident-triggered audit
+Tier 2: High	Materially affects eligibility, pricing, placement, or service access	Pre-deployment validation and annual audit
+Tier 3: Moderate	Supports operational decisions with limited individual impact	Biennial audit and continuous monitoring
+Tier 4: Low	Internal, non-consequential, or easily reversible	Documentation review and periodic spot checks
+Tier 1 systems should require human review before adverse decisions, documented appeal rights, independent technical validation, and public transparency about the system’s role. NIST emphasizes that higher-risk systems—particularly those using sensitive data or directly affecting people—require more urgent prioritization and more thorough risk management.
+
+5.3 Core audit tests
+5.3.1 Governance audit
+Auditors should verify that the institution maintains:
+
+A complete inventory of AI systems, including vendor-provided models and embedded AI features.
+
+A named accountable executive for each high-risk system.
+
+A documented approval process before deployment and after material changes.
+
+A risk register containing identified harms, controls, residual risks, and mitigation owners.
+
+Clear separation between teams that develop or procure AI and teams that validate or audit it.
+
+The Institute of Internal Auditors similarly identifies governance, risk management, information management, human oversight, and cybersecurity as core elements of AI assurance.
+
+5.3.2 Data audit
+Auditors should assess whether training, validation, and operational data are accurate, complete, current, representative, and lawfully processed. They should test for missing values, duplicate records, stale data, proxy variables, and historical discrimination embedded in labels or outcomes.
+
+Required tests include:
+
+Data provenance test: Trace each critical input to its source, collection date, owner, and permitted use.
+
+Representativeness test: Compare the covered population with the eligible or affected population.
+
+Label-quality test: Determine whether the target variable accurately reflects the intended outcome.
+
+Proxy-discrimination test: Identify features that may indirectly encode protected or vulnerable characteristics.
+
+Data-retention test: Verify that retention, deletion, access, and cross-border transfer rules are enforced.
+
+5.3.3 Accuracy audit
+Accuracy must be evaluated against the system’s actual public-service objective, not merely against aggregate model scores. NIST defines accuracy as the closeness of results to accepted true values and requires that accuracy measures account for false positives, false negatives, human-AI collaboration, and external validity.
+
+Auditors should require:
+
+A pre-registered validation dataset that reflects real deployment conditions.
+
+Separate performance reporting for relevant subgroups.
+
+False-positive and false-negative analysis, with harm-weighted interpretation.
+
+Calibration testing, especially where scores are used to rank people or allocate scarce resources.
+
+Robustness testing under missing data, noisy inputs, distribution shift, and adversarial conditions.
+
+Drift monitoring after deployment, including data drift and concept drift.
+
+A model with high average accuracy may still be unacceptable if it systematically misclassifies a vulnerable subgroup. Audit reporting should therefore distinguish overall performance from subgroup performance.
+
+5.3.4 Bias and fairness audit
+Bias testing should examine whether an AI system produces unjustified disparities in access, treatment, error rates, or outcomes across protected or vulnerable groups. The UK Information Commissioner’s Office identifies approaches including anti-classification and outcome or error parity, while emphasizing that bias mitigation should begin during system design.
+
+The audit should include:
+
+Disparate performance testing: Compare false-positive, false-negative, precision, recall, and calibration rates across groups.
+
+Counterfactual testing: Assess whether changing only a protected or proxy attribute changes the recommendation.
+
+Feature-dependence testing: Identify whether sensitive or proxy variables materially drive decisions.
+
+Historical-bias testing: Determine whether training labels reproduce past discriminatory practices.
+
+Participatory review: Consult affected communities, frontline staff, and civil-society experts on plausible harms and acceptable trade-offs.
+
+NIST notes that diverse perspectives and stakeholder involvement throughout the AI lifecycle help identify unintended consequences, including bias and discrimination.
+
+5.3.5 Security audit
+Security testing should cover conventional cybersecurity and AI-specific threats. The Institute of Internal Auditors highlights risks including prompt injection, model poisoning, adversarial attacks, API vulnerabilities, model theft, and abuse monitoring.
+
+Minimum tests include:
+
+Role-based access control and segregation of duties.
+
+Encryption of data in transit and at rest.
+
+Audit logging of model inputs, outputs, overrides, and administrative changes.
+
+Vulnerability and penetration testing for APIs and user interfaces.
+
+Model-integrity checks to detect unauthorized modification or retraining.
+
+Red-team testing for adversarial inputs, prompt injection, data poisoning, and privilege escalation.
+
+Incident-response procedures with defined containment, notification, and recovery steps.
+
+Security controls should protect confidentiality, integrity, and availability across the model, data pipeline, interfaces, and third-party components.
+
+5.3.6 Explainability and transparency audit
+Auditors should assess whether officials and affected individuals can understand what the system does, why it produced a recommendation, and how to challenge it. Explainability does not require disclosure of proprietary source code; it requires decision-relevant information sufficient for review, appeal, and accountability.
+
+Required evidence includes:
+
+A model card or system fact sheet.
+
+A plain-language public notice describing AI use and its limits.
+
+Reason codes or feature-attribution summaries for adverse decisions.
+
+Documentation of known failure modes and prohibited uses.
+
+A public or user-facing appeal route.
+
+Records showing that explanations were understandable to trained reviewers and affected persons.
+
+5.3.7 Human-oversight audit
+Human oversight must be substantive, not symbolic. Reviewers should have the competence, authority, information, and time needed to challenge an AI recommendation. The ICO states that reviewers must weigh and interpret recommendations, consider all available information, and account for additional relevant factors.
+
+Auditors should test:
+
+Whether human reviewers can access the evidence behind an AI recommendation.
+
+Whether reviewers have authority to override adverse or consequential outputs.
+
+Whether override and acceptance rates are monitored for automation bias.
+
+Whether reviewers receive training on system limitations, bias, and escalation procedures.
+
+Whether accountability remains with a public official rather than the vendor or algorithm.
+
+Whether appeals are handled by personnel independent of the original decision pathway.
+
+NIST requires documented policies and procedures that define human-AI configurations and oversight responsibilities.
+
+6. Sector-Specific Audit Protocols
+6.1 Credit scoring
+AI credit scoring can assess risk using alternative data, including mobile-money activity, transaction patterns, and behavioral signals. This may expand access to finance for people without formal credit histories, but it can also create digital exclusion, opaque denial, and discriminatory pricing.
+
+Audit area	Required test	Pass condition
+Financial inclusion	Measure approval, denial, pricing, and default-error rates by income band, gender, geography, and formal credit-history status	No unjustified adverse disparity
+Alternative-data validity	Test whether mobile-money, utility, telecom, or behavioral data predict repayment without encoding exclusion	Documented predictive validity and data-quality controls
+Adverse-action explanation	Provide clear, specific reasons for denial or unfavorable terms	Applicant can understand and challenge the decision
+Proxy bias	Test indirect use of protected attributes and neighborhood, language, device, or network proxies	No unexplained disparate impact
+Security	Protect financial data, prevent model manipulation, and secure APIs	No critical unresolved vulnerability
+Human review	Require review for high-value, marginal, or contested credit decisions	Reviewer can override and document rationale
+A credit model should not be approved solely because it improves portfolio profitability. It must also demonstrate that it does not systematically deny credit or impose worse terms on protected, low-income, rural, informal-sector, or historically excluded populations.
+
+6.2 Welfare allocation
+Welfare-allocation AI may determine eligibility, benefit levels, fraud risk, prioritization, or service referrals. Errors can deny food, housing, health care, or income support to eligible people, while false fraud accusations can cause severe reputational and financial harm.
+
+Audit area	Required test	Pass condition
+Eligibility accuracy	Measure false denials, wrongful approvals, and benefit-level errors	Error rates within pre-approved public-interest thresholds
+Equity	Compare access, approval, delay, and error rates across disability, gender, language, rural/urban, and income groups	No unjustified disparity
+Fraud-risk fairness	Test whether fraud flags disproportionately target particular groups	No unjustified disparate impact
+Appealability	Verify that adverse determinations include reasons, evidence, and an accessible appeal route	Appeals are timely, independent, and effective
+Human oversight	Require human review before benefit termination, fraud referral, or denial	Reviewer has authority and evidence to challenge the output
+Data protection	Limit access to sensitive household, health, disability, and financial data	Access is least-privilege and logged
+For welfare systems, the audit should prioritize false negatives—eligible people incorrectly denied support—because these errors may cause immediate material deprivation. A high overall accuracy rate does not justify a system that systematically fails vulnerable applicants.
+
+6.3 Policing
+AI in policing may support facial recognition, crime forecasting, case triage, risk assessment, image analysis, and investigative lead generation. These systems require the strongest safeguards because errors can affect liberty, due process, surveillance, and community trust.
+
+Audit area	Required test	Pass condition
+Identification accuracy	Measure false-match and false-rejection rates across demographic groups	No material subgroup disparity
+Operational validity	Test performance under real-world conditions: lighting, image quality, occlusion, and database coverage	Performance is validated in deployment-like conditions
+Due process	Ensure AI output is investigative, not determinative, unless law authorizes otherwise	Human officer reviews and documents the basis for action
+Bias and surveillance harm	Assess disparate surveillance, stops, referrals, or predictive-policing exposure	No unjustified disparate treatment
+Security	Protect biometric and case data; prevent tampering and unauthorized access	Controls pass security testing
+Transparency	Maintain audit trails for searches, matches, overrides, and disclosures	Every consequential use is traceable
+Policing systems should generally be classified as Tier 1. A facial-recognition match, risk score, or predictive recommendation should not automatically determine arrest, detention, charging, or sentencing. Human oversight must be documented, and the audit must test whether officers can meaningfully challenge machine-generated leads rather than merely ratify them.
+
+6.4 Health
+Health AI may support diagnosis, triage, resource allocation, clinical documentation, patient risk prediction, and treatment recommendation. Errors can directly affect patient safety, while biased data can worsen existing disparities in care access and outcomes.
+
+Audit area	Required test	Pass condition
+Clinical validity	Validate sensitivity, specificity, calibration, and error consequences against clinical ground truth	Performance meets pre-approved clinical thresholds
+Population generalizability	Test across age, sex, ethnicity, language, disability, comorbidity, and care-setting groups	No material performance degradation
+Safety	Conduct failure-mode analysis, escalation testing, and clinical workflow simulation	Known failure modes have controls
+Privacy	Assess consent, minimization, de-identification, access controls, and secondary use	Data use is lawful and limited
+Human oversight	Require clinician review for diagnosis, triage, treatment, or resource-allocation decisions	Clinician retains final accountability
+Monitoring	Monitor drift, dataset shift, model degradation, and adverse events	Alerts trigger review and remediation
+Health AI audits should include clinicians, patients, data-protection officers, and clinical-safety leads. The audit should distinguish between decision support—where a clinician retains judgment—and autonomous action, which requires substantially stronger validation, monitoring, and accountability controls.
+
+6.5 Education
+AI in education may support admissions, learning personalization, assessment, dropout prediction, language support, and resource allocation. Risks include misclassification of learners, biased assessment, privacy violations involving minors, and narrowing educational opportunity through opaque recommendations.
+
+Audit area	Required test	Pass condition
+Learner equity	Compare predictions, recommendations, and outcomes by gender, disability, language, socioeconomic status, and school type	No unjustified disparity
+Assessment validity	Test whether automated scoring measures intended learning outcomes	Scores are valid, reliable, and consistent
+Accessibility	Verify usability for learners with disabilities and limited connectivity	Reasonable accommodation is available
+Child data protection	Assess consent, parental rights, minimization, retention, and profiling limits	Data use is lawful and proportionate
+Teacher oversight	Ensure educators can review, override, and explain consequential recommendations	Teacher authority is documented
+Educational impact	Measure whether AI use improves learning without narrowing opportunity	Benefits and harms are monitored
+Education systems should avoid using predictive models to deny opportunity or label children in ways that become self-fulfilling. Dropout-risk and performance-prediction systems should support early intervention, not punitive tracking or exclusion.
+
+7. Audit Evidence and Scoring
+7.1 Evidence matrix
+Each audit finding should be classified as:
+
+Rating	Definition	Required response
+Critical	Imminent or severe harm, legal violation, security breach, or systemic discrimination	Suspend or restrict deployment; immediate remediation
+High	Material risk to rights, safety, accuracy, or equity	Remediation plan with deadline and retest
+Moderate	Control weakness or limited performance concern	Corrective action within an agreed period
+Low	Documentation or monitoring improvement needed	Track in the risk register
+7.2 Audit scorecard
+A practical public-sector scorecard should assign weighted scores across eight domains:
+
+Domain	Suggested weight
+Governance and accountability	15%
+Purpose, lawfulness, and impact assessment	10%
+Data quality and provenance	15%
+Accuracy and reliability	15%
+Fairness and bias	15%
+Security and resilience	10%
+Explainability and transparency	10%
+Human oversight and redress	10%
+A system should not receive an overall “pass” if it contains a critical finding in any domain. For Tier 1 systems, auditors should report both a compliance score and a harm-based risk rating, because a technically compliant system may still produce unacceptable social outcomes.
+
+8. Implementation Roadmap
+Phase 1: Establish foundations — 0–6 months
+Create an AI-system inventory across ministries and agencies.
+
+Appoint accountable executives and establish an AI assurance function.
+
+Classify all AI systems using the four-tier model.
+
+Adopt minimum documentation requirements for vendors and internal developers.
+
+Prioritize Tier 1 systems in credit, welfare, policing, health, and education.
+
+Phase 2: Pilot operational audits — 6–12 months
+Conduct audits of two to five high-impact systems.
+
+Develop standardized audit templates, evidence checklists, and remediation workflows.
+
+Establish independent technical review capacity, including data scientists, legal experts, domain professionals, and community representatives.
+
+Publish summary audit findings, subject to lawful privacy and security protections.
+
+Phase 3: Institutionalize assurance — 12–24 months
+Require pre-deployment audits for all Tier 1 and Tier 2 systems.
+
+Integrate AI audits into procurement, budget approval, and internal-audit plans.
+
+Establish continuous monitoring for accuracy, drift, disparities, security incidents, and human-override patterns.
+
+Create a national or sectoral AI incident-reporting mechanism.
+
+Build auditor capability through certification, peer review, and shared testing resources.
+
+Phase 4: Scale and harmonize — 24–36 months
+Adopt common public-sector audit standards across agencies.
+
+Establish regional cooperation for shared test datasets, audit methods, and auditor training.
+
+Require vendors to provide audit access, model documentation, and performance evidence.
+
+Link AI procurement to audit readiness, remediation obligations, and termination rights.
+
+Report annually on AI assurance coverage, critical findings, remediation rates, and public-service outcomes.
+
+The African Development Bank’s roadmap similarly emphasizes coordinated action across data, compute, skills, trust frameworks, and capital, with routine audits and practical sandboxes as part of the trust enabler.
+
+9. Recommendations
+Mandate risk-based AI audits. Require independent or internal audits proportionate to the potential harm of each system, with mandatory audits for credit, welfare, policing, health, and education systems that affect individual rights or access to essential services.
+
+Audit the whole socio-technical system. Evaluate governance, procurement, data, model performance, security, explainability, human oversight, and real-world outcomes—not the algorithm alone.
+
+Require disaggregated performance reporting. Public agencies should publish or retain subgroup error, approval, denial, referral, and outcome metrics, subject to privacy safeguards.
+
+Protect appeal and redress rights. Every consequential adverse AI-supported decision should include an understandable reason, access to evidence, a competent human reviewer, and an independent appeal path.
+
+Make human oversight operational. Define who may override AI, what information they receive, how overrides are recorded, and how automation bias is monitored.
+
+Strengthen procurement. Public contracts should require vendor cooperation with audits, disclosure of training-data provenance where lawful, incident notification, retraining controls, and liability for material failures.
+
+Build audit capacity. Establish multidisciplinary audit teams combining technical, legal, domain, security, privacy, and community-engagement expertise.
+
+Use audits to improve services. Audit findings should lead to concrete remediation: model redesign, data correction, workflow change, suspension, or discontinuation where risks cannot be adequately controlled.
+
+10. Conclusion
+AI can strengthen public services, but only if institutions can prove that its use is accurate, fair, secure, transparent, and accountable. This paper proposes a practical audit framework that moves public-sector AI governance from principles to testable controls. By applying common audit methods and sector-specific protocols, governments can reduce harm, protect rights, improve service quality, and build the public trust required for responsible AI adoption.
+
+The proposed approach is deliberately implementable: it begins with an AI inventory, risk classification, and targeted audits of the highest-impact systems, then matures into routine assurance across the public sector. Operationalizing AI-risk audits in credit scoring, welfare allocation, policing, health, and education is therefore not merely a compliance exercise; it is a prerequisite for ensuring that AI expands, rather than restricts, equitable access to public goods.

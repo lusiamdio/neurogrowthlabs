@@ -1,0 +1,193 @@
+Smallholder Crop-Advisory AI: Localized Decision Support for Planting, Irrigation, Crop Protection, Fertilization and Harvest
+NeuroGrowth Labs · AI Research and Development Paper · Nov 15, 2026 · @Lusimadio Soki Simao
+Abstract
+NeuroGrowth Labs proposes a modular, locally adapted advisory system that turns satellite, weather and farmer-generated data into timely recommendations on planting, irrigation, pest and disease management, fertilizer use and harvest planning for smallholder farmers. Existing evidence shows that digital advisory raises adoption of recommended practices and yields modestly, at very low cost per farmer, yet most services remain generic, weakly localized and poorly validated against objective outcomes. We describe a five-layer architecture that fuses Sentinel-class remote sensing, probabilistic weather forecasts and structured farmer reports; an advisory engine that couples agronomic rules with calibrated machine-learning models and explicit uncertainty; and a multilingual delivery layer spanning voice, SMS, USSD, WhatsApp and extension agents. We specify an evaluation protocol that combines offline model benchmarking with a cluster-randomized field trial, to be piloted in South Africa, Nigeria and Angola. This paper reports a design and research agenda, not field results: all performance targets are hypotheses to be tested. Its intended contribution is a reproducible, governance-aware blueprint aligned with the African Union's 2026-2035 agrifood agenda.
+Keywords: smallholder agriculture, decision support, remote sensing, probabilistic forecasting, plant disease detection, localization, digital extension, Africa
+1. Introduction
+Agriculture is a core priority of the African Union, and the continent's next ten-year agenda makes smallholder productivity and resilience central to it. The Kampala CAADP Declaration and the CAADP Strategy and Action Plan (2026-2035) were adopted at an Extraordinary AU Summit in January 2025, building on the Maputo (2003) and Malabo (2014) declarations after the continent was assessed as off-track against Malabo commitments. The strategy seeks to raise agrifood output by 45%, mobilise US$100 billion in investment and triple intra-African agricultural trade, and it prioritizes the inclusion of smallholders, women and youth in value chains. Member states have pledged to integrate its targets into national and regional investment plans by 2028.
+Meeting such targets depends on millions of small, rain-fed farms making better daily decisions: when to plant, how much to irrigate or fertilize, what to spray and when to harvest. These decisions are made with little access to science-based advice. Reviews of the evidence conclude that digital advisory has modest absolute effects on practices and yields, but large effects relative to its delivery cost, while most smallholders still lack science-based advice.
+Three developments make a new generation of advisory systems feasible. Free, frequent satellite imagery now supports field-scale monitoring; AI weather models now produce skillful forecasts at low computational cost; and mobile channels reach farmers in their own languages. NeuroGrowth Labs, a pan-African venture studio operating in South Africa, Nigeria and Angola, proposes to integrate these capabilities into one governed, locally validated system. This paper sets out the problem, architecture, evaluation protocol and pilot design. It is a research and development plan; it does not report field results.
+2. Problem Statement and Research Questions
+Existing smallholder advisory fails in four recurring ways: advice is generic rather than field-specific, forecasts are not translated into decisions, disease diagnosis is unavailable at the moment of need, and impact is rarely verified against objective outcomes. A systematic review of digital agriculture adoption in Sub-Saharan Africa also identifies socio-cultural exclusion, including gender gaps, age-related digital divides and language misalignment, as a major barrier. The central problem is therefore to deliver field-specific, trustworthy and inclusive decision support at a cost that smallholder economics can bear.
+We pose five research questions.
+1.  RQ1 (Data). Can open satellite and weather data, combined with sparse farmer reports, support field-level inference of crop stage, moisture stress and crop condition for fields under roughly one hectare?
+2.  RQ2 (Decision). Do probabilistic, decision-oriented advisories on planting, irrigation, fertilizer and harvest outperform generic regional advice on adoption, yield and input cost?
+3.  RQ3 (Diagnosis). What accuracy and calibration can image-based pest and disease detection achieve under real field conditions, and how should uncertain diagnoses be escalated to humans?
+4.  RQ4 (Localization). How do language, channel and trusted-intermediary choices change comprehension, trust and use, particularly for women and older farmers?
+5.  RQ5 (Governance). What data-governance and consent arrangements allow farmer-generated data to improve the models while keeping value and control with farmers?
+We formulate three hypotheses for the pilots: H1, farmers with access to the system adopt more recommended practices than controls; H2, they obtain higher objectively measured yield or lower crop-loss incidence; H3, advisory cost per active farmer stays below an agreed ceiling set with partners before launch.
+3. Related Work and State of Practice
+The strongest evidence supports digital advisory as a low-cost complement to extension, with effects that depend on how well advice is localized. We review four strands.
+Digital advisory impact. A systematic review of 49 studies of mobile apps, SMS, video and voice services found that most reported higher adoption of good agricultural practices. A meta-analysis of experimental and quasi-experimental studies in Africa and Asia pooled 70 estimates from 20 studies. A randomized evaluation in Odisha, India, covering 13,675 rice farmers, found improved knowledge and adoption, a modest yield increase and a large reduction in crop-loss likelihood, and it used satellite-predicted yield to validate survey results while noting that remote-sensing outcome measurement still needs methodological work. A 2026 systematic review for Sub-Saharan Africa reports yield gains of 10-30%, documented mainly for mobile-based advisory. Evidence on personalization is mixed, which motivates a cluster-randomized trial of picture-based personalized advisories in Haryana and Kenya.
+Satellite monitoring of small fields. Sentinel-2 offers 10 m resolution and a roughly five-day revisit, but 10 m pixels challenge field-boundary delineation where farms are under one acre, and mixed pixels from trees and intercropping degrade field-level estimates in agroforestry systems. Research shows feasibility for mapping maize and intercropped systems in Nigeria, with accuracy limited by reference data, and super-resolution approaches are being tested to sharpen boundaries.
+AI weather forecasting. In 2025, a government-led program delivered AI-based monsoon onset forecasts to 38 million Indian farmers and captured an unusual weeks-long pause in monsoon progression. Its key design lesson is that forecasts should be probabilistic and decision-oriented because farmers' circumstances differ. Benchmarking of such models is now extending to East and West Africa, and a US$60 million initiative targets forecast delivery to 100 million farmers in South and Southeast Asia and East Africa.
+Image-based diagnosis. PlantVillage Nuru is an offline deep-learning diagnostic for cassava disease and fall armyworm damage. In field tests it diagnosed cassava symptoms at 65% accuracy against 40-58% for extension agents and 18-31% for farmers, and accuracy rose to 74-88% when six leaves per plant were assessed. These results show that field-ready diagnosis is achievable, and that protocol design matters as much as model architecture.
+Gap. To our knowledge, no widely evaluated system integrates all five decision domains with shared field-level data, probabilistic forecasts, local-language delivery and objective outcome measurement. That integration is the gap this program addresses.
+4. System Architecture
+The system has five layers in which each layer has one job, so that data sources, models and channels can be replaced independently as evidence improves.
+Data flow downward from sources to farmers, and a feedback arrow returns outcomes and corrections to the plot record. That return path is what turns a one-way information service into a learning system.
+Design principles. First, decision-first: each advisory module is defined by the farmer's decision and the cost of getting it wrong, not by the data available. Second, uncertainty-explicit: every output carries a confidence level and a provenance tag, and low-confidence cases are escalated to people. Third, offline-tolerant: diagnosis models run on the phone and messages degrade from app to SMS to voice without loss of the core instruction. Fourth, modular and open: layers communicate through documented interfaces, using open data and open models where they perform adequately, so that national partners can inspect, host and extend components. Fifth, governed by default: consent, oversight and fairness reporting cut across all layers (Section 10).
+5. Data Foundations
+The system treats each farm plot as a continuously updated digital record, and its accuracy depends mainly on how well three data families are fused. Table 1 summarizes the sources, their role and their principal limits.
+Data family
+Source (examples)
+Signal and role
+Principal limits
+Optical satellite
+Sentinel-2 (10 m, about 5-day revisit)
+Vegetation indices such as NDVI, crop stage, canopy stress, field boundaries
+Cloud cover in rainy seasons; mixed pixels in fields under one acre; intercropping
+Radar satellite
+Sentinel-1 SAR
+Cloud-independent structure and moisture signal for gap-filling
+Speckle noise; harder to interpret agronomically
+Weather observations
+Station networks, rainfall products (e.g. CHIRPS), reanalysis (e.g. ERA5)
+Rainfall, temperature and humidity history for calibration and water balance
+Sparse stations; coarse grid versus plot scale
+Weather forecasts
+National met services and open AI weather models
+Probabilistic onset, dry-spell, heat and harvest-rain forecasts
+Skill varies by region and lead time; needs local benchmarking
+Soil and terrain
+Open soil grids, elevation models, local soil tests
+Water-holding capacity, nutrient baseline, slope
+Coarse resolution; local tests are costly and rare
+Farmer-generated
+Plot registration, planting dates, photos, voice reports, outcome feedback
+Ground truth, labels for model training, advisory feedback loop
+Self-report bias; uneven participation; consent required
+Fusion approach. Field boundaries are first delineated from satellite imagery and then corrected by farmers during registration, which converts a weak automatic map into a verified one. Time series from optical and radar sources are gap-filled and aligned with weather data to estimate crop stage and stress. Farmer reports and photos serve two purposes: they are training labels for crop-type, stage and disease models, and they are the outcome data that tell the system whether its advice worked. Because self-reported surveys and national statistics are slow and difficult to verify at scale, objective remote-sensing outcomes will be used alongside surveys, following the approach used in the Odisha evaluation.
+Data quality controls. Every inferred value carries a confidence score and a provenance tag (observed, inferred or farmer-reported). Plots with low satellite confidence, such as small or intercropped fields, are routed to farmer confirmation instead of automated advice. Label noise is tracked explicitly, since its handling can matter more to downstream accuracy than architecture choices.
+6. Advisory Modules
+Each module turns shared plot data into one decision, and each issues advice as a recommendation with a confidence level and a stated reason. Agronomic rules and crop models set the safe boundaries of advice, while machine-learning components estimate the local conditions those rules need.
+6.1 Planting. The module combines probabilistic rainfall-onset and dry-spell forecasts, soil moisture and crop-variety duration to advise on a planting window. It follows the decision-theoretic principle that forecasts should be probabilistic because the right response varies with each farmer's circumstances: advice is expressed as risk bands (for example, plant now, wait, or plant a short-cycle variety) rather than a single date. Early planting before a false onset is the failure mode of greatest concern, as false onset can cause farmers to plant too early and lose the crop to a following dry spell.
+6.2 Irrigation and water management. A soil-water balance model, driven by rainfall, evapotranspiration estimates and satellite-derived crop stage, estimates stress and recommends irrigation timing and amount for farmers with water access, or mulching and moisture-conservation steps for rain-fed plots. Where soil data are coarse, the module widens its uncertainty and asks the farmer for a simple field check, such as digging a finger-depth hole.
+6.3 Pest and disease. Two pathways operate together. The first is early warning: weather-driven risk models and neighbour reports flag likely outbreaks at area level. The second is diagnosis: farmers or extension agents photograph symptomatic leaves, and an on-device model returns a ranked diagnosis with calibrated confidence. Offline operation is essential, as the Nuru model shows by working without an internet connection. Because field accuracy depends on protocol (for example, assessing more leaves per plant), the app will guide the user through a standard image-capture sequence. Low-confidence or high-consequence cases are escalated to a human agronomist, and no chemical recommendation is issued without a confirmed diagnosis and a label-compliant product list.
+6.4 Fertilizer. The module recommends type, quantity and timing based on crop, expected rainfall, soil baseline and available products, and it explicitly models economic trade-offs because input price and affordability constrain adoption. It prefers split applications timed to forecast rainfall and avoids recommending application ahead of predicted heavy rain or dry spells. Where soil tests are unavailable, recommendations default to conservative regional guidance and say so.
+6.5 Harvest planning. Using satellite-derived crop maturity, forecast rainfall and heat, the module advises harvest and drying windows to limit field and post-harvest losses, and it links to storage and market information where partners provide it. Harvest-time rain is a recognized source of loss, since unexpected rainfall at harvest can spoil a crop before it is picked.
+6.6 Advisory engine and safeguards. The engine ranks and sequences messages so that a farmer receives only the few that matter that week. Every message is traceable to its inputs, and agronomists in each country sign off on rule sets before release. Advice that could cause irreversible harm, such as pesticide use or large fertilizer spend, requires higher confidence and a human check.
+7. Localization and Delivery
+Advice only creates value if farmers understand it, trust it and can act on it, so localization is treated as a research variable rather than a translation step. Language misalignment is one of the barriers named in the Sub-Saharan Africa adoption review, and messages written by ministries are often difficult for farmers to understand and use.
+Language and content. Pilot languages follow each country's farming communities: Portuguese and major national languages in Angola; Hausa, Yoruba, Igbo, Nigerian Pidgin and English in Nigeria; and English, isiZulu, isiXhosa, Sesotho and Afrikaans in South Africa, with final selection set by the pilot-district profile. Crop, input and measurement terms are co-developed with farmers and extension agents instead of machine-translated, and a glossary is validated by speakers before release. NeuroGrowth Labs' work on African-language translation can supply base models, with human review for agronomic terms.
+Channels. The system is channel-agnostic and degrades gracefully, so that a farmer with a basic phone is not excluded:
+• Voice (IVR and voice notes): for low-literacy users and local languages with limited written use.
+• SMS and USSD: for feature phones and low-bandwidth settings, with short, structured messages.
+• WhatsApp and app: for smartphone users, with photo upload for diagnosis and a conversational interface. Conversational agents of this kind already operate at scale, for example FarmerChat, used by over 2.1 million farmers.
+• Extension agents and lead farmers: as human intermediaries who receive a dashboard, handle escalations and verify field conditions.
+Inclusion by design. Gender, age and literacy are tracked in every pilot analysis. Messages are timed for when women and men actually have phone access, shared-phone households are supported, and advice about inputs and credit is not framed only for the household head. Farmers can reply by voice to report what happened on their land, so that the same channel provides advice and feedback.
+Trust and comprehension. Each advisory states what to do, when, and why in one or two sentences, and shows uncertainty in plain terms such as chance of rain. Comprehension is tested with sample farmers before each rule set is released, and message wording is revised on the basis of the results.
+8. Evaluation Methodology
+Evaluation runs at three levels, model, advisory and impact, and no level substitutes for the next: an accurate model can still produce advice that farmers ignore, and adopted advice can still fail to change yield. Table 2 lists the measures. Numeric success thresholds will be pre-registered with partners before each pilot and are not stated here, because they depend on baseline data not yet collected.
+Level
+Metric
+Method
+Reference point
+Model
+Field-boundary overlap (F1, IoU); crop-type and stage accuracy
+Hold-out fields from different districts and seasons
+Sentinel-2 results degrade for small fields; report by field-size band
+Model
+Diagnosis accuracy, per-class recall, calibration error
+Field images from real use, not curated sets; compare to agents and farmers
+Nuru: 65% vs 40-58% (agents) and 18-31% (farmers)
+Model
+Forecast skill for onset, dry spell, harvest rain (probabilistic scores)
+Out-of-sample benchmarking against national forecasts and climatology
+Decision-oriented benchmarking framework
+Advisory
+Comprehension, trust, reach by gender and age
+Short surveys and message-level feedback
+Language and exclusion barriers identified in the SSA adoption review
+Advisory
+Adoption of recommended practices; timeliness of action
+Farmer reports verified by agents and imagery
+Adoption indices in the Odisha trial
+Impact
+Yield, crop-loss incidence, input cost, net income
+Cluster-randomized trial; crop-cut or satellite-predicted yield plus surveys
+Odisha design: survey plus remote sensing
+Cost
+Cost per active farmer; cost per additional adopter
+Programme accounts
+Digital advisory is large relative to delivery cost even when absolute effects are modest
+Trial design. The impact evaluation uses a cluster-randomized design at village or cooperative level to limit spillovers, with a control arm receiving standard extension. A second arm tests the added value of personalization (field-specific versus regional advice), which addresses the mixed evidence on personalization. Sample size will be set by a power calculation using baseline yield variance and the minimum effect that would justify cost. Primary outcomes, analysis plan and subgroup analyses (gender, age, farm size) are pre-registered.
+Validity safeguards. Satellite-based yield is used to cross-check self-reports, but remote-sensing outcome measurement still needs methodological improvement, so crop-cut sampling is included in each site. Models are evaluated across seasons to detect drift, and negative results are reported.
+9. Pilot Design
+Pilots in three countries test whether one architecture generalizes across different farming systems, languages and institutions. Each pilot is co-designed with a national research or extension partner, and district and crop selection is finalized after a scoping study. Table 3 gives the proposed starting configuration; all entries are planning assumptions to be confirmed with partners.
+Country
+Proposed starting crops
+Learning objective
+Main design challenge
+South Africa
+Maize and horticulture in selected provinces
+Satellite and forecast modules where open reference data exist, such as Western Cape field-boundary data
+Reaching emerging smallholders alongside commercial neighbours; many official languages
+Nigeria
+Maize, cassava and rice
+Disease diagnosis and fertilizer advice in staple systems with intercropping
+Intercropped, very small fields; multiple local languages and Pidgin
+Angola
+Maize, cassava and beans
+Low-connectivity delivery by voice, SMS and extension agents in Portuguese and local languages
+Sparse reference data and weather stations; limited digital access
+Phasing. Each pilot proceeds through scoping and baseline, a season of silent operation in which the system generates advice that is compared with outcomes but not sent, a delivery season with randomized rollout, and a follow-up season to measure persistence. The silent season builds labelled data and allows safe testing of forecasts and rules before farmers rely on them.
+Partnerships. Delivery is run through national agricultural research institutes, meteorological services, cooperatives and extension systems, because government-led delivery with specific, high-value decisions is the model behind India's 2025 forecast deployment to 38 million farmers. Data-sharing and responsibilities are fixed in written agreements before launch.
+Alignment with AU agenda. Pilot outputs are designed to report against indicators that national agricultural investment plans can use, since member states have committed to integrate Kampala targets into national and regional plans by 2028. Evidence on adoption, yield, loss reduction and cost per farmer is intended to be useful to those planning processes.
+10. Responsible AI, Data Governance and Ethics
+Farmers are the owners of the data that make the system better, and the programme is designed so that they keep control over it and share in the value it creates. Six commitments apply to every pilot.
+1.  Consent and ownership. Registration uses plain-language, local-language consent covering what is collected, why, who sees it and how to withdraw. Plot boundaries, photos and yields are treated as farmer data. Processing complies with applicable national data-protection law in each country, such as South Africa's POPIA, Nigeria's Data Protection Act and Angola's data-protection law, and legal review is completed before launch.
+2.  Purpose limitation. Data are used for advisory, model improvement and approved research only. Sharing with lenders, insurers or input suppliers requires separate, opt-in consent, since farm-level records can influence credit and prices.
+3.  Human oversight. Agronomists approve rule sets, and uncertain or high-stakes advice is escalated to people. The system states when it does not know.
+4.  Fairness and inclusion. Performance is reported by gender, age, farm size, language and region, and gaps trigger redesign. Models are tested on small, intercropped and low-reference-data areas where satellite accuracy is weakest.
+5.  Safety. Pesticide and fertilizer advice follows national registration and label rules. Weather and disease advice is probabilistic, and farmers are never presented with false certainty.
+6.  Transparency and accountability. Model documentation, evaluation results and known failure modes are published. A farmer-facing complaint channel exists, and a governance board with farmer, extension and independent technical members reviews incidents.
+Intermediaries and sovereignty. National partners keep control of locally hosted data where law requires it, and models are designed to run with minimal cloud dependence so that services can continue if connectivity fails. Open data and open models are used where possible, and derived datasets, such as field-boundary maps, are shared with public partners under clear terms to support national statistics and policy.
+11. Risks, Limitations and Threats to Validity
+The largest risks are technical error at plot scale, weak farmer uptake and evaluation bias, and each has a named mitigation.
+• Small-field and intercropping error. At 10 m resolution, mixed pixels and fields under one acre reduce accuracy. Mitigation: farmer-verified boundaries, radar gap-filling, confidence scores and routing of low-confidence plots to human confirmation.
+• Forecast skill outside validated regions. AI weather models have been benchmarked mainly for the Indian monsoon, with African benchmarking only now beginning. Mitigation: local benchmarking against national forecasts and climatology before any forecast-based advice is released, and fallback to climatology with wide uncertainty.
+• Diagnosis generalization. Models trained on curated images can fail in real fields, and symptoms change over the course of disease. Mitigation: field-collected training images, standard capture protocol, calibration and human escalation.
+• Modest effect sizes. Evidence suggests effects on yield may be modest in absolute terms, and personalization benefits are not settled. Mitigation: pre-registered, adequately powered trials and a cost-effectiveness lens, not yield alone.
+• Exclusion and unequal access. Phone ownership, literacy and language can leave women, older farmers and remote communities behind. Mitigation: multi-channel delivery, disaggregated reporting and intermediary support.
+• Context-limited external validity. Results from three countries may not transfer to other agro-ecologies. Mitigation: multi-site design and explicit reporting of conditions under which the system works.
+• Sustainability. Pilots can outlast their funding without a cost model. Mitigation: cost-per-farmer tracking from the first season and partnerships with public extension and private service providers.
+Limitations of this paper. It is a design paper. Reference-point figures come from published studies in other settings, mostly India and East Africa, and the proposed architecture is untested in the three pilot countries. Several sources cited are working papers or preprints that have not completed peer review.
+12. R&D Roadmap
+The programme runs in four phases separated by three gates, and a phase starts only when the gate before it is passed.
+Deliverables by phase.
+• Phase 1: signed partner agreements, ethics and legal clearance in each country, baseline farm and reference data, and a validated agronomic glossary in pilot languages.
+• Phase 2: a running data pipeline and advisory engine, local benchmarks for field boundaries, forecasts and diagnosis, and pre-registered thresholds for release.
+• Phase 3: the randomized rollout across the three countries, with delivery through voice, SMS, app and extension agents, plus the outcome dataset.
+• Phase 4: persistence follow-up, an open methods and results report that includes null findings, cost-per-farmer analysis, and a scale-up recommendation to national partners.
+Gate criteria are deliberately stated as pre-registered conditions, not calendar dates, so that a weak result stops or reshapes the programme instead of being carried forward.
+13. Conclusion
+Smallholder crop advisory is a high-leverage application of AI for the AU's 2026-2035 agrifood agenda, provided it is built around decisions, local validation and farmer ownership rather than around technology alone. The evidence base shows that digital advice is cheap to deliver and can change practices, that open satellite and AI weather data are now good enough to support field-level and forecast-based guidance, and that diagnosis models can work offline in real fields. What is missing is an integrated, governed system tested against objective outcomes in African conditions. NeuroGrowth Labs proposes to build and evaluate one, starting with pilots in South Africa, Nigeria and Angola, to publish methods and results openly, including null findings, and to work with national institutions so that what is learned feeds directly into national agricultural investment planning.
+Next steps are to confirm pilot partners and districts, complete legal and ethics review, begin the silent-season data collection, and pre-register the trial design.
+References
+Sources were retrieved via web search on 15 November 2026; several are working papers or preprints. Figures quoted in this paper come from these sources and should be checked against the originals before citation in a formal publication.
+Policy context
+1.  African leaders adopt new Kampala Declaration and 10-year strategy to transform agriculture, Down To Earth.
+2.  CAADP Kampala Declaration on Building Resilient and Sustainable Agrifood Systems in Africa, East African Community resource hub.
+3.  From Malabo to Kampala: A Change of Paradigm in African Agricultural Strategy, Welthungerhilfe.
+Digital advisory evidence
+4.  Realizing the potential of digital development: The case of agricultural advice, Fabregas, Kremer and Schilbach.
+5.  The impact of digital agricultural extension service: Experimental evidence from rice farmers in India, Cole, Goldberg, Harigaya and Zhu (2025), working paper.
+6.  Meta-analysis of the impacts of digital information interventions on agricultural development.
+7.  Systematic review of ICT interventions in agriculture, CIMMYT repository.
+8.  Systematic literature review on digital agriculture adoption in Sub-Saharan Africa, Sustainability 2026, 18, 6734.
+9.  Personalized picture-based advisories, cluster RCT in Haryana and Kenya, CGSpace working paper.
+Remote sensing
+10.  Detecting Agricultural Croplands from Sentinel-2 Satellite Imagery, Radiant Earth Insights (2022).
+11.  The Potential of Sentinel-2 for Crop Production Estimation in a Smallholder Agroforestry Landscape, Burkina Faso, Karlson et al. (2020), Frontiers in Environmental Science.
+12.  Mapping Crop Types and Cropping Systems in Nigeria with Sentinel-2 Imagery, Tropentag poster.
+13.  AI crop health monitoring with satellite imagery: case study, Omdena.
+14.  Deep learning super-resolution for smallholder field boundaries, AAG abstract.
+Weather forecasting
+15.  Designing probabilistic AI monsoon forecasts to inform agricultural decision-making, Aitken et al. (2026), arXiv preprint.
+16.  India's AI monsoon predictions 'inspire investment', SciDev.Net (30 October 2025).
+17.  AI forecasting for smallholder farmers, OpenAI Foundation.
+18.  A better way to build AgriTech solutions, ICTworks.
+Pest and disease detection
+19.  Accuracy of a smartphone-based object detection model, PlantVillage Nuru, in identifying the foliar symptoms of the viral diseases of cassava, Mrisho et al. (2020), Frontiers in Plant Science.
+20.  Mobile-based machine learning to identify plant diseases, Penn State Huck Institutes.

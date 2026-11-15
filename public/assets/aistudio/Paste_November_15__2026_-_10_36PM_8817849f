@@ -1,0 +1,244 @@
+AI-Assisted Primary-Care Diagnostics: A Validation-First Research and Development Framework for African Health Systems
+NeuroGrowth Labs, AI Research and Development Division Technical Paper, Version 1.0, November 2026
+Abstract
+Background. Primary-care facilities across sub-Saharan Africa carry the heaviest burden of maternal, infectious, metabolic, and nutritional disease, yet often lack the specialist expertise, laboratory capacity, and imaging infrastructure required for timely diagnosis. Advances in machine learning applied to low-cost imaging, audio, and point-of-care (POC) data offer a route to extend diagnostic capability to the frontline health worker.
+Objective. This paper sets out the research and development (R&D) framework of NeuroGrowth Labs for building, validating, and deploying AI-assisted diagnostic tools in six domains: maternal health, tuberculosis (TB), malaria, anaemia, diabetes, and child nutrition.
+Approach. We propose a unified, modality-driven architecture in which affordable sensors (handheld ultrasound, smartphone cameras, digital stethoscopes and microphones, POC analysers, and anthropometric capture) feed domain-specific models operating within a common governance, validation, and monitoring layer. Validation proceeds through a staged pathway: retrospective development on locally representative data, prospective multi-site diagnostic accuracy studies, implementation research, and post-deployment surveillance for drift and equity.
+Contribution. We specify target product profiles, data and annotation strategies, model design principles for resource-constrained settings, a reporting and evaluation protocol aligned with international guidance, and an ethical and regulatory roadmap. This document is a framework and protocol; it reports no clinical performance results, and all performance thresholds stated are prespecified targets rather than findings.
+Keywords: artificial intelligence; primary care; point-of-care diagnostics; Africa; maternal health; tuberculosis; malaria; anaemia; diabetes; child nutrition; clinical validation; health equity.
+1. Introduction
+1.1 The diagnostic gap at the frontline
+Most patients in low- and middle-income countries (LMICs) first encounter the health system at a primary-care clinic, community health post, or through a community health worker (CHW). These settings frequently operate without a physician, reliable electricity, or access to laboratory services. Diagnostic delay and misdiagnosis at this level contribute directly to avoidable mortality. The conditions addressed in this paper share a common feature: each has an effective intervention, and each loses its benefit when detection is late.
+The approximate scale of the problem, drawn from World Health Organization (WHO), UNICEF, and International Diabetes Federation (IDF) reporting, illustrates the need:
+• Maternal health. Sub-Saharan Africa accounts for roughly seven in ten of global maternal deaths, with haemorrhage, hypertensive disorders, and sepsis predominant. Many of these are detectable earlier through antenatal assessment.
+• Tuberculosis. TB remains among the leading infectious causes of death worldwide, with a large proportion of incident cases undiagnosed or unreported each year.
+• Malaria. Africa carries the large majority of global malaria cases and deaths, concentrated in children under five.
+• Anaemia. Anaemia affects close to one in three women of reproductive age globally, with the highest prevalence in Africa and South Asia, and is a major contributor to maternal and perinatal risk.
+• Diabetes. Africa has among the highest proportions of undiagnosed diabetes of any region, with more than half of cases undetected in IDF estimates, and diabetic complications such as retinopathy frequently identified only after vision loss.
+• Child nutrition. Stunting and wasting continue to affect tens of millions of African children, and early identification of acute malnutrition is a prerequisite for effective community management.
+1.2 Why AI, and why now
+Three developments make AI-assisted diagnosis newly practical in primary care. First, sensor costs have fallen: handheld ultrasound probes that connect to a smartphone, smartphone cameras with clinical-grade resolution, and low-cost digital stethoscopes are now available at a fraction of earlier prices. Second, on-device and edge inference has matured, allowing compact neural networks to run without continuous connectivity. Third, there is accumulating evidence, across several regions, that deep learning can match specialist performance on well-defined image and signal interpretation tasks, as shown in work on diabetic retinopathy grading (Gulshan et al., 2016) and on chest radiograph interpretation for TB.
+AI diagnostic deployments are already underway across Africa, including maternal-health monitoring programmes and AI-supported diagnostic imaging, notably computer-aided detection (CAD) of TB on chest radiographs, for which WHO has issued screening recommendations. These precedents show that deployment is feasible. They also underscore the need for rigorous, locally grounded validation, because performance reported in one population or device configuration frequently degrades in another.
+1.3 Scope and position of this paper
+NeuroGrowth Labs adopts a validation-first posture: no tool is positioned for clinical use until it has demonstrated prespecified accuracy, calibration, and equity properties in the intended-use population and workflow. This paper does not describe a finished product; it describes the research programme, methods, and decision criteria that will govern development.
+1.4 Research questions
+1.  Can affordable imaging, audio, and POC data, interpreted by AI, achieve diagnostic accuracy sufficient for triage and screening in primary care across the six target domains?
+2.  How does performance vary across devices, operators, sites, and population subgroups, and what design measures limit that variation?
+3.  Does integration of AI decision support into frontline workflows improve time to diagnosis, appropriate referral, and treatment initiation without introducing unacceptable harms or inequities?
+4.  What governance, data stewardship, and monitoring arrangements make such systems safe and sustainable in African health systems?
+2. Related Work and State of the Evidence
+2.1 Imaging
+Chest radiography and TB. CAD software for TB screening on chest radiographs has been evaluated in multiple high-burden countries, and WHO has recommended CAD as an alternative to human readers for screening and triage in individuals aged 15 years and above. Evidence of variable specificity across populations, particularly among people with prior TB or HIV, highlights the need for local threshold calibration.
+Obstetric ultrasound. Blind-sweep protocols, in which minimally trained operators perform a fixed series of probe sweeps across the abdomen, combined with AI interpretation, have been investigated for gestational age estimation, fetal presentation, and detection of high-risk features in LMIC settings, including pilots in sub-Saharan Africa. These approaches directly address the shortage of sonographers.
+Retinal imaging. Deep learning systems for diabetic retinopathy screening on fundus photographs have achieved high sensitivity and specificity in validation studies and have been trialled with smartphone-based and portable cameras.
+Microscopy. Convolutional networks have been applied to thin and thick blood smear images for malaria parasite detection and species identification, with the potential to reduce dependence on expert microscopists (for example, Poostchi et al., 2018).
+2.2 Smartphone photography
+Smartphone photographs of the conjunctiva, fingernail beds, and palms have been used to estimate haemoglobin and detect anaemia without venepuncture (Mannino et al., 2018). Results are promising but sensitive to ambient lighting, skin-tone representation, and camera hardware, which is the central reason for our emphasis on diverse local data.
+2.3 Audio
+Cough sound analysis and auscultation signals have been explored for TB and respiratory disease detection. Because cough is a nonspecific symptom, audio is best positioned as a low-cost pre-screening layer that prioritises patients for confirmatory testing, rather than as a stand-alone diagnostic.
+2.4 Point-of-care and anthropometric data
+POC haemoglobin, glucose, and rapid diagnostic test (RDT) devices generate structured data that AI can combine with symptoms and vital signs. Computer vision applied to mid-upper arm circumference (MUAC), length, height, and weight capture is being explored to reduce measurement error in child growth monitoring.
+2.5 Limitations of the existing literature
+The literature is characterised by single-site studies, retrospective designs, limited reporting of subgroup performance, scarce external validation in African populations, and infrequent evaluation of clinical impact. Poorly calibrated models and unrepresentative training data remain principal risks. This paper is designed to address these gaps.
+3. Programme Architecture
+3.1 Design principles
+• Fit-for-setting. Tools must function offline, on mid-range Android devices or low-power edge hardware, with tolerance for dust, heat, and variable lighting.
+• Assist, do not replace. Outputs are decision support for trained health workers, with a clear referral recommendation and uncertainty indication, never an autonomous diagnosis.
+• Modality-appropriate cost. The cheapest sensor that meets the target product profile is preferred.
+• Equity by design. Subgroup performance is a release criterion, not a post-hoc analysis.
+• Local ownership. Data governance, annotation, and evaluation involve African clinical and research partners from the outset.
+3.2 Common platform
+The programme uses a shared platform comprising: (i) a capture module guiding image, audio, or measurement acquisition with real-time quality checks; (ii) an inference module running compressed models on-device; (iii) a clinical decision layer translating model output into guideline-aligned actions; (iv) a secure, intermittent-sync data layer; and (v) a monitoring module tracking input distribution, performance proxies, and user feedback.
+3.3 Domain portfolio and target product profiles
+Domain
+Primary modality
+Intended primary-care use
+Reference standard
+Maternal health
+Handheld ultrasound (blind sweeps); blood pressure and symptom data
+Gestational age; high-risk triage (presentation, placenta location, hypertensive risk)
+Expert sonographer; clinical outcome; guideline BP criteria
+Tuberculosis
+Chest radiograph; cough audio (pre-screen)
+Screening and triage for confirmatory testing
+Molecular WHO-recommended test and culture
+Malaria
+Blood smear imaging; RDT image reading
+Parasite detection and RDT interpretation support
+Expert microscopy with PCR adjudication
+Anaemia
+Smartphone images (conjunctiva, nailbed); POC haemoglobin
+Non-invasive screening for anaemia and severity band
+Laboratory haemoglobin (haematology analyser)
+Diabetes
+Fundus photography; POC glucose and HbA1c with risk factors
+Retinopathy screening; undiagnosed diabetes risk stratification
+Dilated ophthalmic grading; laboratory glycaemia
+Child nutrition
+Smartphone-based anthropometry; MUAC capture
+Detection of acute malnutrition and stunting risk
+Trained anthropometrist with calibrated equipment
+4. Data Strategy
+4.1 Cohort design and representativeness
+Data will be collected prospectively across multiple countries, sites, and facility levels, deliberately including rural and peri-urban clinics, a range of devices, and diverse operators. Sampling targets will be defined by disease prevalence, age, sex, pregnancy status, skin tone (using an objective scale such as the Monk or Fitzpatrick scale as a documented descriptor), HIV status where relevant, and comorbidities. Because prevalence in primary-care attendees differs from that in referral populations, the spectrum of disease and non-disease must reflect the intended-use setting to avoid biased estimates of specificity and predictive value.
+4.2 Reference standards and annotation
+Each domain specifies a reference standard (Section 3.3) applied independently of the AI output. Imaging annotation uses at least two independent expert readers with adjudication of disagreements by a third; inter-rater agreement is reported. Where the reference standard is imperfect, as with microscopy for low-density malaria infection, adjudication with molecular testing is used, and the limitations are stated.
+4.3 Data quality and capture variability
+We treat acquisition variability as a first-class research problem. Image quality classifiers will reject or prompt recapture of unusable inputs, and the rate of rejected captures will be reported alongside accuracy, since a model that is accurate only on the subset it accepts may be of limited practical value.
+4.4 Privacy and data governance
+Data collection follows informed consent (or appropriate waiver with ethics approval), minimisation, de-identification, and storage under applicable national data protection law, such as South Africa's Protection of Personal Information Act, Kenya's Data Protection Act, and Nigeria's Data Protection Act, as relevant to each study site. Data sharing arrangements will give partner institutions defined rights, and benefit-sharing terms will be agreed in advance. Federated and privacy-preserving learning approaches will be evaluated where data cannot leave an institution.
+5. Model Development
+5.1 Architectures and training
+Model choice follows task and deployment constraints. Imaging tasks use convolutional or lightweight vision-transformer backbones pretrained on large public corpora and fine-tuned on local data; audio tasks use spectrogram-based networks or self-supervised audio encoders; tabular POC and clinical data use gradient-boosted trees or compact neural networks, with logistic regression retained as a baseline. For every task, a simple, interpretable baseline is trained so that added complexity must justify itself.
+5.2 Robustness to domain shift
+To mitigate performance loss across devices and settings, we will apply augmentation reflecting realistic capture variation (illumination, blur, compression, sensor noise), domain-adaptation and test-time adaptation techniques where appropriate, and device-stratified training and validation. Models will be evaluated on held-out sites and devices, not only on held-out patients, to estimate real-world generalisation.
+5.3 Calibration and uncertainty
+Clinical use requires well-calibrated probabilities. We will report calibration plots, calibration slope and intercept, and expected calibration error, and apply recalibration per deployment site where necessary. Uncertainty estimates (for example, ensembles or conformal prediction) will drive an explicit "indeterminate, refer" output so that low-confidence cases are escalated rather than forced into a binary label.
+5.4 Efficiency
+Models will be compressed through quantisation, pruning, and distillation to meet latency and memory budgets on low-cost hardware. Accuracy losses from compression are measured and reported against the full-precision model.
+5.5 Explainability
+Where clinically useful, outputs include visual saliency or region-of-interest overlays and plain-language rationale. We recognise that saliency maps can be misleading and will evaluate whether explanations improve clinician decision quality rather than assume that they do.
+6. Validation Framework
+6.1 Staged pathway
+Stage
+Purpose
+Design
+Gate to proceed
+1. Development
+Train and tune models
+Retrospective and prospective data, internal cross-validation
+Meets internal performance and robustness benchmarks
+2. External validation
+Estimate generalisation
+Held-out sites and devices, blinded to training
+Meets prespecified sensitivity, specificity, and calibration targets, including in key subgroups
+3. Prospective diagnostic accuracy
+Evaluate in real workflow
+Consecutive enrolment of intended-use patients, AI output blinded to reference standard assessors
+Non-inferiority or superiority to defined comparator, acceptable failure and rejection rates
+4. Implementation and impact
+Measure clinical and operational effect
+Pragmatic or stepped-wedge cluster trials with mixed methods
+Improved time to diagnosis, referral completion, or treatment initiation without net harm
+5. Post-deployment surveillance
+Detect drift and inequity
+Continuous monitoring, periodic re-audit
+Performance within tolerance, triggers for retraining or withdrawal
+6.2 Performance targets
+Target thresholds are anchored to WHO target product profiles where these exist and otherwise set with clinical partners according to the intended use. By way of illustration, WHO's target product profile for TB triage tests specifies minimum sensitivity and specificity thresholds that candidate triage tools are expected to meet. For each tool we will prespecify: minimum sensitivity (prioritised for screening tools where missed cases are costly), minimum specificity (to control confirmatory testing burden and cost), acceptable positive and negative predictive values at the expected prevalence, and maximum tolerable rates of indeterminate results and capture failures. Thresholds are registered before the confirmatory study begins.
+6.3 Metrics
+Primary metrics are sensitivity, specificity, and area under the receiver operating characteristic curve with 95% confidence intervals, supplemented by precision-recall analysis for low-prevalence conditions, decision-curve analysis to estimate net clinical benefit, and calibration metrics. For continuous outputs, such as haemoglobin concentration or gestational age, we report mean absolute error, Bland-Altman agreement with limits, and proportion within clinically meaningful tolerances (for example, within 7 days for gestational age estimation).
+6.4 Subgroup and equity analysis
+Performance will be reported by age, sex, pregnancy trimester, skin tone, HIV status, device, site, operator experience, and urban-rural setting. A tool will not be released if performance in a clinically important subgroup falls below the prespecified floor, even when aggregate metrics are acceptable. Where sample size limits subgroup inference, this will be stated rather than concealed.
+6.5 Reporting standards
+Studies will follow international guidance: TRIPOD+AI for prediction model development and validation, STARD for diagnostic accuracy, SPIRIT-AI and CONSORT-AI for trial protocols and reports, and DECIDE-AI for early-stage live evaluation. Protocols will be preregistered and analysis plans fixed before unblinding.
+6.6 Human factors and workflow evaluation
+Usability is evaluated with the actual end users (nurses, midwives, CHWs, clinical officers) using observation, task-completion analysis, and structured interviews. We will measure automation bias, including whether users override correct clinical judgement in favour of an incorrect AI suggestion, and design training and interface cues to reduce it.
+7. Domain-Specific Research Plans
+7.1 Maternal health
+The programme will develop (a) a blind-sweep ultrasound model estimating gestational age, fetal number, presentation, and placental location to support referral for complications, and (b) a risk-stratification model combining blood pressure, symptoms, haemoglobin, and urine protein for hypertensive disorders and anaemia of pregnancy. Key challenges are operator variability, late presentation, and the clinical consequence of false reassurance. The primary outcome of interest at the implementation stage is timely referral and facility delivery for high-risk pregnancies.
+7.2 Tuberculosis
+We will evaluate CAD on chest radiographs, including locally calibrated thresholds for populations with high HIV prevalence and prior TB, together with an investigational cough-audio pre-screen. The intended pathway is: AI-supported screening, then confirmatory molecular testing, with the AI result used to prioritise rather than replace testing. The study will quantify the reduction in molecular tests required per case detected and the effect on diagnostic delay.
+7.3 Malaria
+Two complementary tools are planned: automated parasite detection on smartphone-captured blood smear images, and RDT result interpretation to reduce reader error and enable remote quality assurance. Evaluation must address low-parasitaemia infections, species discrimination, and Plasmodium falciparum strains with hrp2/3 gene deletions that can cause false-negative RDTs, since a purely RDT-based approach will not detect these.
+7.4 Anaemia
+The programme will develop smartphone-based estimation of anaemia from conjunctival and nailbed images, with an emphasis on lighting normalisation and representation across skin tones, and on integration with POC haemoglobin where available. Outputs will be framed as a screening result with severity bands, with laboratory or POC confirmation for positive and borderline results.
+7.5 Diabetes
+We will build (a) retinopathy screening on fundus images from portable cameras, with referable-disease triage for ophthalmic services, and (b) a risk model for undiagnosed diabetes integrating anthropometry, blood pressure, history, and POC glucose. Referral pathway capacity is a critical determinant of benefit, and the study will assess whether screening translates into completed referrals and treatment.
+7.6 Child nutrition
+A computer-vision tool will estimate anthropometric indices from smartphone capture to identify acute malnutrition, supporting or standardising MUAC and weight-for-height classification. Evaluation will compare measurement error against trained anthropometrists and assess usability by CHWs. Integration with community management of acute malnutrition (CMAM) referral criteria is a design requirement.
+8. Deployment, Integration, and Sustainability
+8.1 Integration with health systems
+Tools will interoperate with national health information systems such as DHIS2 and with relevant electronic medical record platforms through open standards (for example, HL7 FHIR). Outputs map to national clinical guidelines, and referral recommendations are tied to the actual availability of downstream services; a recommendation to refer where no service exists creates harm without benefit.
+8.2 Training and supervision
+Each deployment includes competency-based training, supervised practice, and ongoing quality assurance, including periodic audit of a sample of AI-supported decisions against reference testing.
+8.3 Cost-effectiveness and financing
+Economic evaluation, using cost per case detected, cost per disability-adjusted life year (DALY) averted, and budget-impact analysis from the health-system perspective, will accompany implementation studies. We will model total cost of ownership, including devices, connectivity, training, maintenance, and referral costs, to support procurement decisions by ministries of health.
+8.4 Infrastructure resilience
+Devices are specified for power-limited operation (solar charging, battery endurance), intermittent connectivity (store-and-forward), and a realistic maintenance and replacement pathway through local service partners.
+9. Ethics, Safety, and Regulation
+9.1 Ethical principles
+Our work is guided by the WHO guidance on ethics and governance of AI for health (2021), which emphasises protecting autonomy, promoting well-being and safety, ensuring transparency, fostering accountability, ensuring inclusiveness and equity, and promoting responsive and sustainable AI. Ethics approval is obtained from institutional and national review boards at every site, with community engagement before and during studies.
+9.2 Risk management
+A documented hazard analysis will enumerate failure modes (false negatives, false positives, capture failure, user over-reliance, data breach, model drift), their severity, mitigations, and residual risk. A defined clinical safety lead has authority to suspend a tool.
+9.3 Regulatory pathway
+Software that informs diagnosis is likely to be regulated as a medical device, often as software as a medical device (SaMD). Regulatory requirements differ across jurisdictions and are evolving; they include national regulators such as the South African Health Products Regulatory Authority (SAHPRA), the Nigerian National Agency for Food and Drug Administration and Control (NAFDAC), and the Kenya Pharmacy and Poisons Board, alongside regional harmonisation efforts such as the African Medicines Agency. NeuroGrowth Labs will engage regulators early, align quality management with ISO 13485 and software lifecycle standards such as IEC 62304, and maintain documentation to support submissions. Intended-use statements will be kept narrow and claims will not exceed evidence.
+9.4 Transparency and accountability
+Each tool will be accompanied by a plain-language "model card" describing intended use, training data provenance, performance by subgroup, known limitations, and contraindications. Performance monitoring summaries will be shared with health authorities and partner institutions.
+9.5 Responsible research relationships
+Research partnerships will be structured around co-authorship, capacity building, and equitable data and intellectual-property terms, and will avoid extractive data practices.
+10. Risks, Limitations, and Mitigation
+Risk
+Description
+Mitigation
+Dataset shift
+Accuracy degrades on new devices, sites, or populations
+Multi-site training, site and device hold-out validation, recalibration, drift monitoring
+Spectrum bias
+Models trained on referral populations overstate performance in primary care
+Consecutive enrolment of intended-use patients
+Inequity
+Lower accuracy in underrepresented groups, such as darker skin tones or younger infants
+Targeted sampling, subgroup release criteria, ongoing audit
+Automation bias
+Users defer to incorrect output
+Uncertainty display, training, audit and feedback
+Referral failure
+Detection without access to treatment
+Pathway mapping and joint planning with health system
+Data governance failure
+Breach or inappropriate secondary use
+Minimisation, encryption, access control, legal review
+Over-claiming
+Marketing outpaces evidence
+Preregistration, narrow claims, independent evaluation
+Limitations of this paper. This document is a framework; it presents no empirical results, and the specified targets will require refinement through consultation with clinicians, regulators, and communities. Reference standards for several conditions are imperfect, and the generalisability of any single tool across Africa's diverse epidemiological and operational contexts cannot be assumed.
+11. Research Roadmap
+Phase
+Indicative duration
+Principal activities
+Milestone
+0. Foundations
+Months 0 to 6
+Partnerships, ethics approvals, target product profiles, data governance agreements, protocol registration
+Approved protocols and data agreements
+1. Data and development
+Months 6 to 18
+Prospective data collection, annotation, baseline and advanced model development
+Internally validated candidate models
+2. External and prospective validation
+Months 18 to 36
+Site-held-out validation, prospective diagnostic accuracy studies
+Evidence dossier per domain
+3. Implementation research
+Months 30 to 54
+Pragmatic trials, economic evaluation, regulatory submissions
+Impact and cost-effectiveness evidence
+4. Scale and surveillance
+From month 48
+Ministry-led scale-up, post-market monitoring, continuous improvement
+Sustained performance and equity audit
+Domains will proceed at different speeds. TB and diabetic retinopathy screening, where the evidence base and regulatory precedent are most developed, are expected to advance fastest; anaemia estimation from smartphone images and cough-audio screening, where evidence is earlier-stage, will be treated as higher-risk research tracks with explicit go or no-go review points.
+12. Conclusion
+AI-assisted diagnostics have the potential to extend specialist-level interpretation to the places where most African patients first seek care. That potential will be realised only if tools are validated in the populations and workflows where they will be used, evaluated for equity as rigorously as for accuracy, integrated with the referral and treatment services that give a diagnosis meaning, and governed transparently with African partners. NeuroGrowth Labs presents this framework as a commitment to that standard and invites collaboration from clinicians, researchers, regulators, ministries of health, and communities in refining and testing it.
+Acknowledgements
+NeuroGrowth Labs thanks the clinical, public-health, and community partners whose input shapes this programme. Statements of epidemiological burden are approximate and drawn from WHO, UNICEF, and IDF publications; readers should consult the latest editions of those sources for current figures.
+Conflicts of Interest
+No funding, commercial relationships, or competing interests are declared in this version. Any such interests will be disclosed in subsequent publications.
+References
+1.  Gulshan V, Peng L, Coram M, et al. Development and validation of a deep learning algorithm for detection of diabetic retinopathy in retinal fundus photographs. JAMA. 2016;316(22):2402-2410.
+2.  Mannino RG, Myers DR, Tyburski EA, et al. Smartphone app for non-invasive detection of anemia using only patient-sourced photos. Nature Communications. 2018;9:4924.
+3.  Poostchi M, Silamut K, Maude RJ, Jaeger S, Thoma G. Image analysis and machine learning for detecting malaria. Translational Research. 2018;194:36-55.
+4.  Collins GS, Moons KGM, Dhiman P, et al. TRIPOD+AI statement: updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378.
+5.  Bossuyt PM, Reitsma JB, Bruns DE, et al. STARD 2015: an updated list of essential items for reporting diagnostic accuracy studies. BMJ. 2015;351:h5527.
+6.  Rivera SC, Liu X, Chan AW, Denniston AK, Calvert MJ. Guidelines for clinical trial protocols for interventions involving artificial intelligence: the SPIRIT-AI extension. Nature Medicine. 2020;26:1351-1363.
+7.  Liu X, Cruz Rivera S, Moher D, Calvert MJ, Denniston AK. Reporting guidelines for clinical trial reports for interventions involving artificial intelligence: the CONSORT-AI extension. Nature Medicine. 2020;26:1364-1374.
+8.  Vasey B, Nagendran M, Campbell B, et al. Reporting guideline for the early-stage clinical evaluation of decision support systems driven by artificial intelligence: DECIDE-AI. Nature Medicine. 2022;28:924-933.
+9.  World Health Organization. Ethics and governance of artificial intelligence for health: WHO guidance. Geneva: WHO; 2021.
+10.  World Health Organization. WHO consolidated guidelines on tuberculosis: Module 2: Screening, systematic screening for tuberculosis disease. Geneva: WHO; 2021.
+11.  World Health Organization. High-priority target product profiles for new tuberculosis diagnostics: report of a consensus meeting. Geneva: WHO; 2014.
+12.  World Health Organization. Global Tuberculosis Report (most recent edition). Geneva: WHO.
+13.  World Health Organization. World Malaria Report (most recent edition). Geneva: WHO.
+14.  World Health Organization. Trends in maternal mortality (most recent edition). Geneva: WHO.
+15.  International Diabetes Federation. IDF Diabetes Atlas (most recent edition). Brussels: IDF.
+16.  UNICEF, WHO, World Bank. Levels and trends in child malnutrition: Joint Child Malnutrition Estimates (most recent edition).

@@ -1,0 +1,289 @@
+Low-Resource Natural Language Processing for African Languages: Corpora, Speech Datasets, Machine Translation, Speech Recognition, and Evaluation Benchmarks for Under-Served Languages
+NeuroGrowth Labs — AI Research & Development Cape Town, South Africa · Operations in Angola
+Document type: Technical research paper and R&D programme specification Status: Version 1.0 (November 2026) Correspondence: Office of the Founder & CEO, NeuroGrowth Labs
+Abstract
+Africa is home to roughly a third of the world's living languages, yet these languages account for a small fraction of the data, models, and benchmarks that define contemporary natural language processing (NLP). Over the past six years, community-driven initiatives and academic groups have produced substantial advances in named entity recognition, machine translation, sentiment analysis, and speech technology for African languages. Nevertheless, coverage remains sharply uneven: a handful of languages with large speaker populations or colonial-era written standards receive most attention, while hundreds of languages remain effectively absent from the technology stack. This paper presents the research framework of NeuroGrowth Labs for Low-Resource NLP for African Languages. We (i) characterise the coverage problem and its structural causes; (ii) propose a coverage-aware prioritisation method for selecting languages and tasks; (iii) specify protocols for community-governed text corpora and speech datasets, including consent, licensing, and quality assurance; (iv) outline modelling strategies for machine translation (MT) and automatic speech recognition (ASR) under extreme data scarcity, including multilingual transfer, adaptive pre-training, parameter-efficient adaptation, back-translation, and self-supervised speech representation learning; (v) define an evaluation architecture combining task benchmarks, human-validated metrics, robustness probes, and fairness audits; and (vi) describe responsible-AI, governance, and sustainability commitments. This is a methodology and programme paper: it reports no new empirical results, and all experimental designs are presented as pre-specified protocols to be executed and reported in subsequent publications. We invite collaboration from linguists, speaker communities, universities, and public institutions.
+Keywords: low-resource NLP; African languages; machine translation; automatic speech recognition; corpus construction; speech datasets; evaluation benchmarks; data governance; multilingual transfer learning; language equity.
+1. Introduction
+1.1 Motivation
+Language technology increasingly mediates access to education, healthcare information, financial services, public administration, and commerce. When a language is absent from this infrastructure, its speakers face a compounding digital disadvantage: search engines return poorer results, voice interfaces fail to recognise their speech, translation tools produce unreliable output, and automated moderation and information-access systems perform inconsistently. For the African continent, which hosts on the order of 2,000 languages (Eberhard et al., 2024), this disadvantage is both a technical gap and a development constraint.
+Quantitative analyses of linguistic diversity in NLP have repeatedly shown that research attention is highly concentrated. Joshi et al. (2020) classified the world's languages by labelled and unlabelled data availability and found that the vast majority of languages, including most African languages, fall into classes with little or no usable resources. Blasi et al. (2022) further demonstrated that performance disparities across languages in deployed language technology are systematic and correlate with demographic and economic factors, not merely with linguistic difficulty.
+1.2 The Current Landscape
+African NLP research has grown rapidly. The Masakhane community articulated a participatory research model for machine translation in Africa (Orife et al., 2020; Nekoto et al., 2020) and has since contributed benchmarks for named entity recognition (MasakhaNER; Adelani et al., 2021, 2022), part-of-speech tagging (MasakhaPOS; Dione et al., 2023), and machine translation (MAFAND-MT; Adelani et al., 2022). Other efforts have produced sentiment analysis resources (AfriSenti; Muhammad et al., 2023), cross-lingual retrieval resources (AfriCLIRMatrix; Ogundepo et al., 2022), and the broad instruction-following and reasoning evaluation suite IrokoBench (Adelani et al., 2024). Africa-centric pre-trained language models, including AfriBERTa (Ogueji et al., 2021), AfroXLM-R (Alabi et al., 2022), and AfroLM (Dossou et al., 2022), have shown that targeted adaptation and curated data can outperform much larger general-purpose multilingual models on African languages. Large-scale industrial efforts, notably No Language Left Behind (NLLB Team, 2022), Flores-101 and FLORES-200 (Goyal et al., 2022), and Meta's Massively Multilingual Speech project (Pratap et al., 2023), have expanded nominal coverage to hundreds of African language varieties.
+1.3 The Problem: Uneven Coverage
+Despite this progress, five problems persist.
+1.  Language concentration. Resources cluster around a small set of languages (for example Swahili, Hausa, Yorùbá, Amharic, isiZulu, Afrikaans, and Kinyarwanda), while many languages with millions of speakers have only a Bible translation or a small parallel corpus, if anything.
+2.  Task concentration. Text classification and NER are comparatively well served; discourse-level tasks, summarisation, question answering, dialogue, and speech tasks remain sparse.
+3.  Modality gap. Speech datasets are scarcer than text, and many African languages are primarily oral or have recently standardised orthographies, which makes speech technology both more valuable and harder to build.
+4.  Data quality. Audits of web-crawled multilingual corpora show that quality is frequently poor for low-resource languages, including mislabelled language, noisy segments, and machine-translated content (Kreutzer et al., 2022).
+5.  Evaluation fragility. Standard metrics are poorly validated for morphologically rich, tonal, and diacritic-dependent languages, and benchmark domains (often religious or news text) do not reflect everyday use.
+1.4 Contributions of This Paper
+This paper contributes: (a) a coverage-aware prioritisation framework for allocating R&D effort across languages and tasks; (b) data collection and governance protocols for text and speech; (c) a modelling roadmap for MT and ASR under data scarcity; (d) an evaluation architecture that couples automatic metrics with human validation and robustness analysis; and (e) a responsible-AI and sustainability charter. We explicitly distinguish between established findings from the literature, which we cite, and NeuroGrowth Labs' planned experiments, which we state as hypotheses.
+2. Background and Related Work
+2.1 Defining "Low-Resource" and "Under-Served"
+"Low-resource" is commonly used to denote a scarcity of digital text, annotated data, or speech recordings, but it conflates distinct conditions (Hedderich et al., 2021; Ranathunga et al., 2023). A language may be data-poor yet community-rich, with active speaker communities and oral traditions; or data-rich in one modality (for example, broadcast radio) but annotation-poor. We use under-served to refer to languages whose speakers lack access to reliable language technology relative to their population size and needs, independent of linguistic complexity. This framing places the emphasis on equity of access rather than on a language's intrinsic properties.
+2.2 Text Corpora and Pre-training
+Web-scale corpora such as CC-100 and mC4 include some African languages, but audit evidence indicates substantial noise and mislabelling for low-resource languages (Kreutzer et al., 2022). Curated corpora and community-contributed datasets have been shown to yield better downstream performance than larger noisy resources in some settings (Alabi et al., 2020). Multilingual adaptive fine-tuning (MAFT) extends a pre-trained multilingual encoder to African languages by continuing pre-training on a curated African-language corpus, and has been shown to improve performance on downstream tasks while retaining performance on high-resource languages when vocabulary is judiciously pruned (Alabi et al., 2022). Ogueji et al. (2021) demonstrated that a model pre-trained from scratch on under one gigabyte of text across eleven African languages can be competitive with larger multilingual models on several tasks.
+2.3 Machine Translation
+Early work on neural MT for African languages documented severe data scarcity and the dominance of religious corpora (Abbott and Martinus, 2019; Nekoto et al., 2020). Subsequent work showed that a small amount of high-quality, domain-relevant human translation can substantially improve outcomes when combined with pre-trained multilingual models: Adelani et al. (2022) found that a few thousand news-domain translations, used to fine-tune pre-trained multilingual MT models, yielded large gains across sixteen African languages. NLLB (NLLB Team, 2022) trained a single massively multilingual model with conditional compute, mined bitext, and extensive evaluation on FLORES-200, substantially expanding coverage. Bapna et al. (2022) reported a practical recipe for scaling MT toward a thousand languages using monolingual data and self-supervised objectives. Nevertheless, performance on many African languages, particularly in domains outside the benchmark, remains well below that of high-resource pairs, and large language models perform unevenly on African languages (Ojo et al., 2023).
+2.4 Speech Technology
+Self-supervised speech representation learning has changed the data requirements for ASR. Models such as wav2vec 2.0 (Baevski et al., 2020) and the multilingual XLS-R (Babu et al., 2022) can be fine-tuned with a few hours, or even minutes, of labelled speech. Whisper (Radford et al., 2022) showed the value of weakly supervised pre-training at scale but has uneven coverage and accuracy for African languages. The Massively Multilingual Speech project (Pratap et al., 2023) extended ASR and text-to-speech coverage to over a thousand languages, leveraging religious audio recordings, which raises questions of domain mismatch and speaker diversity. FLEURS (Conneau et al., 2023) provides an n-way parallel speech benchmark including several African languages. African-focused work includes the use of community radio archives for ASR (Doumbouya et al., 2021) and the Africa-centric voice data efforts reported by Ogayo et al. (2022). Mozilla Common Voice (Ardila et al., 2020) provides a crowd-sourced, openly licensed collection model that has reached several African languages, including Kinyarwanda and Swahili.
+2.5 Evaluation
+BLEU (Papineni et al., 2002), when used carelessly, produces non-comparable scores; Post (2018) recommended standardised reporting via SacreBLEU. Character-level metrics such as chrF and chrF++ (Popović, 2015, 2017) are better suited to morphologically rich languages. Learned metrics such as COMET (Rei et al., 2020) correlate better with human judgement for supported languages but are unreliable where the underlying encoder has not seen the language; AfriCOMET and the AfriMTE evaluation dataset were developed to address this for African languages (Wang et al., 2024). For ASR, word error rate (WER) can be misleading for agglutinative languages with long, morphologically complex words, motivating the joint reporting of character error rate (CER).
+2.6 Data Governance and Ethics
+Mager et al. (2023) discuss ethical considerations for MT of Indigenous languages, emphasising community consent, benefit sharing, and risks of misrepresentation. The CARE Principles for Indigenous Data Governance (Carroll et al., 2020) emphasise Collective benefit, Authority to control, Responsibility, and Ethics, complementing the FAIR principles. Documentation frameworks such as data statements (Bender and Friedman, 2018), datasheets for datasets (Gebru et al., 2021), and model cards (Mitchell et al., 2019) provide templates for transparency.
+2.7 Gap Analysis
+The literature supports four conclusions that motivate this programme: (1) data quality and domain match matter at least as much as data volume; (2) small, carefully constructed human-translated or human-transcribed datasets are disproportionately valuable; (3) cross-lingual transfer helps but is limited by typological distance and script/orthography handling; and (4) evaluation infrastructure has lagged behind model development. NeuroGrowth Labs' programme targets these four levers.
+3. Research Questions and Hypotheses
+RQ1 (Coverage). How can R&D effort be allocated across African languages and tasks to maximise equity-weighted coverage under budget constraints?
+RQ2 (Data). What is the minimum quantity and composition of curated text and speech data needed to reach usable quality for a new language, and how does this vary with typological relatedness to supported languages?
+RQ3 (Translation). Which combination of multilingual transfer, adaptive pre-training, parameter-efficient fine-tuning, and synthetic data best improves MT for languages with fewer than 100,000 parallel sentences?
+RQ4 (Speech). How far can self-supervised multilingual speech models be adapted to a new language with less than 20 hours of transcribed speech, and what are the effects of dialect, gender, age, and acoustic environment?
+RQ5 (Evaluation). To what extent do automatic metrics agree with human judgement for African languages, and how should benchmarks be designed to reflect real-world domains?
+RQ6 (Governance). What governance and benefit-sharing arrangements enable sustainable community participation in data creation?
+We state the following pre-registered hypotheses for subsequent testing: H1 — adding 3,000–10,000 professionally translated, domain-diverse sentence pairs yields larger MT gains than adding ten times as much noisy mined data; H2 — adaptive pre-training on a curated monolingual corpus improves both MT and downstream classification for related languages in the same family (for example, Bantu-to-Bantu transfer); H3 — for ASR, combining self-supervised pre-training with 10–20 hours of dialect-diverse transcribed speech outperforms training on larger single-dialect or single-domain (for example, read-religious) audio on out-of-domain test sets; H4 — chrF++ and a language-adapted learned metric agree better with human adequacy ratings than BLEU for morphologically rich languages. These hypotheses are falsifiable and will be reported irrespective of outcome.
+4. Coverage-Aware Language and Task Prioritisation
+4.1 Rationale
+Ad hoc selection of languages replicates existing inequalities: researchers tend to work on languages they speak, languages with existing data, or those favoured by funders. We propose a transparent scoring approach.
+4.2 Prioritisation Score
+For each candidate language l and task t, we compute a priority score:
+P(l, t) = w₁·Need(l) + w₂·Gap(l, t) + w₃·Feasibility(l) + w₄·Leverage(l) + w₅·Partnership(l)
+where:
+• Need(l) reflects speaker population, estimated digital-exclusion risk, and policy relevance (for example official-language status, health and financial inclusion needs);
+• Gap(l, t) is the inverse of existing resource availability for the task, derived from a living inventory of public datasets and models;
+• Feasibility(l) captures orthography stability, availability of linguistic expertise, and access to speakers;
+• Leverage(l) estimates transfer potential to genealogically or typologically related languages;
+• Partnership(l) reflects the presence of community, academic, or institutional partners willing to co-develop and govern data.
+Weights are set through a documented, stakeholder-reviewed process and published with each release. Sensitivity analysis over the weights is mandatory to avoid hidden bias in the ranking.
+4.3 Language Families and Regional Clusters
+To exploit transfer, we organise work in clusters aligned to major families and regional contact zones: Bantu (for example Southern Bantu languages in South Africa, and Central and Southern Bantu languages including Kikongo, Kimbundu, Umbundu, and Chokwe in Angola), Nilotic and Cushitic languages in East Africa, Chadic and Mande languages in West Africa, and Afro-Asiatic languages including Amharic and Arabic varieties. Portuguese-language bridges are a specific priority for Lusophone Africa, where Portuguese serves as an official and administrative language alongside widely spoken Bantu languages. This is directly relevant to NeuroGrowth Labs' operating footprint across South Africa and Angola.
+4.4 Living Coverage Atlas
+We will maintain a public Coverage Atlas: a versioned inventory mapping languages to available text corpora, parallel data, speech datasets, pre-trained models, and benchmarks, with licence and quality annotations. The Atlas serves both as a planning instrument and as a public good enabling other researchers to identify gaps.
+5. Corpora and Dataset Construction
+5.1 Principles
+Our data programme is guided by five principles: community authority (speaker communities co-own and co-govern datasets), quality over volume, domain diversity, documentation and reproducibility, and open-by-default licensing where communities consent, with tiered access where necessary.
+5.2 Monolingual Text
+Sources. We will combine (a) permissively licensed or consented web text, using language identification models validated per language and followed by manual audit of samples; (b) digitised books, newspapers, government and legislative documents, subject to rights clearance; (c) community-contributed writing, including from schools and local-language publishers; and (d) transcripts of consented oral content.
+Processing. Pipeline stages include Unicode normalisation (with careful handling of diacritics and tone marks, which carry lexical or grammatical meaning in many African languages); script and orthography detection; language identification with confidence thresholds; deduplication at document and near-duplicate levels; removal of boilerplate and machine-translated content; personal-data detection and redaction; and toxic-content analysis with culturally informed review. Following Kreutzer et al. (2022), we will manually audit random samples per language and publish audit statistics.
+Orthography. For languages with multiple orthographic conventions or ongoing standardisation, we preserve source orthography as metadata and provide normalised variants, rather than silently converting. For tonal languages where diacritics are frequently omitted in informal writing, we construct paired diacritised and undiacritised data to evaluate robustness, as the impact of diacritics on MT quality has been documented for Yorùbá (Adelani et al., 2021).
+5.3 Parallel and Multilingual Data
+The parallel-data programme combines three sources: (i) professional translation of carefully selected source sentences from diverse domains (health, finance, education, agriculture, civic information, everyday conversation) into target languages, with at least two independent translators and adjudication; (ii) community translation supported by tooling and quality controls; and (iii) mined bitext from comparable documents using multilingual sentence encoders, treated as noisier training data and never used for evaluation.
+To avoid the domain narrowness of Bible-dominated corpora, we specify a domain quota: no single domain may exceed a set proportion of the evaluation data. Source sentences are drawn from a deliberately multi-origin set (including texts originating in African languages, to reduce the "translationese" effect where test data are translations from English). Where feasible, we create multi-way parallel sets to enable any-to-any evaluation and pivot analysis, including Portuguese and French pivots alongside English.
+5.4 Speech Datasets
+Collection modalities. We will use three complementary modalities: (a) prompted reading with smartphone-based tools, offering control over transcription but limited naturalness; (b) spontaneous and conversational speech, elicited through interview protocols, picture description, and scenario role-play, which better reflects deployment conditions; and (c) consented archival audio, such as community radio, subject to rights clearance and speaker-consent review (cf. Doumbouya et al., 2021).
+Speaker and dialect sampling. We sample for balance across gender, age bands, regions, and dialects; record acoustic environment metadata; and record at least two device types. Where gender and age balance cannot be achieved, we report the imbalance rather than hide it.
+Transcription. Transcription follows a published guideline per language covering orthography, code-switching, numerals, disfluencies, and named entities. Code-switching, which is pervasive in African multilingual settings, is annotated rather than discarded. Each utterance receives dual transcription for a stratified sample with inter-annotator agreement reporting (character-level and word-level).
+Quality assurance. Automated checks include signal-to-noise estimation, clipping detection, duration constraints, and forced-alignment confidence. Human review audits a stratified sample for audio-text mismatch, speaker identity leakage, and inappropriate content.
+Contributor welfare. Speakers and annotators are fairly compensated according to published rates benchmarked against local living-wage standards, and receive clear information about use of their voice data.
+5.5 Annotation Schema and Task Datasets
+Beyond raw data, we plan annotated resources for NER, part-of-speech tagging, sentiment, question answering, and intent classification, following the community-validated approaches in MasakhaNER, MasakhaPOS, and AfriSenti. Annotation guidelines are developed with native-speaker linguists and piloted before scale-up.
+5.6 Documentation, Licensing, and Release
+Every dataset is accompanied by a datasheet (Gebru et al., 2021) and data statement (Bender and Friedman, 2018) documenting provenance, demographics, collection methods, intended uses, known limitations, and consent terms. Licences are selected per dataset; where community agreements call for restricted use, we apply tiered access with a research tier and a commercial tier with benefit-sharing. Test sets are released with canary strings and held-out portions to mitigate contamination in future model training.
+6. Machine Translation
+6.1 Problem Setting
+We target translation between African languages and the major global and regional pivot languages (English, French, Portuguese, Arabic), as well as direct African-to-African translation, which is under-served because most training and evaluation data is English-centric. Direct African–African translation matters for regional trade, public services, and cross-border communication.
+6.2 Modelling Strategies
+We will evaluate the following strategies in a structured ablation, using a shared set of base models, including NLLB-family models (NLLB Team, 2022) and open multilingual language models:
+1.  Transfer from multilingual MT. Fine-tuning pre-trained multilingual MT models on curated parallel data, which prior work shows to be strong in few-thousand-sentence regimes (Adelani et al., 2022).
+2.  Adaptive pre-training. Continued pre-training of encoders and decoders on curated monolingual African-language corpora (cf. Alabi et al., 2022), with vocabulary extension for under-covered scripts and diacritics.
+3.  Parameter-efficient fine-tuning. Adapters (Houlsby et al., 2019; Pfeiffer et al., 2020) and low-rank adaptation (Hu et al., 2022) to maintain per-language modules, reduce compute, and mitigate catastrophic forgetting in cluster-based deployment.
+4.  Back-translation and self-training. Generating synthetic parallel data from monolingual text, with filtering by quality estimation, and controlled tagging of synthetic data (Sennrich et al., 2016; Caswell et al., 2019).
+5.  Related-language transfer. Training language-family clusters (for example, Nguni, Sotho-Tswana, Bantu Central) to leverage lexical and morphological similarity.
+6.  Pivot and multi-way training. Leveraging French and Portuguese data for Francophone and Lusophone Africa, alongside English.
+7.  Large language model prompting and fine-tuning. Evaluating few-shot prompting, retrieval-augmented translation using bilingual dictionaries and glossaries, and instruction-tuned models, acknowledging evidence that general-purpose large language models are uneven across African languages (Ojo et al., 2023; Adelani et al., 2024).
+6.3 Tokenisation
+Subword tokenisation can impose a hidden cost on under-represented languages: text in many African languages is fragmented into more tokens, increasing inference cost and degrading quality (Ahia et al., 2023). We will measure fertility (tokens per word) and compression across candidate tokenisers, and evaluate extended vocabularies, morphology-aware segmentation, and byte-level models for languages with rich morphology and diacritics.
+6.4 Domain Shift, Named Entities, and Code-Switching
+We will evaluate domain robustness using out-of-domain test sets (health, finance, legal, agriculture, social media). We test explicit handling of named entities, numbers, dates, and units, which commonly produce high-impact errors in translation for civic and financial content. For code-switched input, we construct targeted evaluation sets and examine model behaviour rather than assuming monolingual input.
+6.5 Safety-Critical Use
+For high-stakes contexts (clinical instructions, legal notices, financial disclosures), we recommend human-in-the-loop workflows, confidence estimation, and explicit disclosure that output is machine-generated. We do not recommend unsupervised deployment of MT in such settings for under-served languages until domain-specific validation demonstrates adequate adequacy and low rates of critical errors.
+6.6 Applied Context
+NeuroGrowth Labs' AfriTranslate API, a multilingual translation service spanning 27 African languages and integrated with messaging channels, provides a deployment surface for the models developed under this programme. Production telemetry, collected only with user consent and appropriate privacy safeguards, can inform error analysis, but the research evaluations reported under this programme will rely on independently constructed test sets rather than production traffic alone.
+7. Automatic Speech Recognition and Speech Synthesis
+7.1 Problem Setting
+ASR for African languages must contend with limited labelled data, high dialectal variation, tonal and phonological phenomena, code-switching with colonial languages, and noisy acoustic environments typical of mobile and radio contexts. Speech technology is especially significant for populations with low literacy or limited access to keyboards in their language, and for voice-first services.
+7.2 Modelling Strategies
+1.  Self-supervised pre-training and fine-tuning. Fine-tuning wav2vec 2.0 and XLS-R style models (Baevski et al., 2020; Babu et al., 2022) with Connectionist Temporal Classification on 5–50 hours of transcribed speech, a regime in which previous work has shown strong results.
+2.  Continued self-supervised pre-training on in-domain untranscribed audio. Using consented unlabelled speech (for example, community radio) to adapt representations to target acoustics and dialects before supervised fine-tuning.
+3.  Multilingual and language-family models. Joint training across related languages, with language-adaptive modules, building on large multilingual speech models (Pratap et al., 2023) and weakly supervised models (Radford et al., 2022).
+4.  Language-model fusion. Integrating n-gram or neural language models trained on curated monolingual text to improve decoding, particularly for agglutinative morphology.
+5.  Pseudo-labelling and semi-supervised learning. Iterative self-training with confidence filtering, evaluated against human-transcribed held-out data.
+6.  Data augmentation. Speed perturbation, noise and reverberation augmentation, and SpecAugment (Park et al., 2019).
+7.  Text-to-speech. For TTS, we will pursue a small number of languages with high-quality, studio and field-recorded voices from consented professional speakers, prioritising intelligibility and naturalness, and addressing risks of voice cloning misuse through consent and licensing controls.
+7.3 Dialects, Tone, and Code-Switching
+We will report performance disaggregated by dialect, gender, age band, and recording environment. For tonal languages, we examine whether tone marking in orthography helps or hinders ASR output and downstream use. Code-switched speech will be evaluated as a distinct condition, with transcripts preserving language switches.
+7.4 Deployment Considerations
+Efficient on-device and low-bandwidth inference matters for settings with limited connectivity. We will evaluate distillation, quantisation, and streaming architectures, reporting real-time factor and memory footprint on representative mid-range mobile hardware alongside accuracy metrics.
+8. Evaluation Benchmarks and Methodology
+8.1 Design Principles
+Our evaluation architecture rests on six principles: coverage across languages, tasks, and domains; validity through human validation of automatic metrics; robustness to orthographic, dialectal, and noise variation; fairness through disaggregated reporting; contamination resistance; and reproducibility through released evaluation code and configuration.
+8.2 Benchmark Suite
+The proposed suite has four components:
+Component
+Task coverage
+Primary metrics
+Notes
+Text understanding
+NER, POS, sentiment, topic classification, NLI-style reasoning, question answering
+F1, accuracy, macro-averages
+Aligned with community benchmarks where possible, to preserve comparability
+Translation
+African↔English/French/Portuguese; African↔African
+chrF++, SacreBLEU (with signature), learned metrics where validated, human adequacy and fluency
+Multi-domain, multi-origin test sets; critical-error annotation
+Speech recognition
+Read, spontaneous, and code-switched speech
+WER, CER, with dialect and demographic disaggregation
+Out-of-domain and noisy-condition subsets
+Generative and LLM tasks
+Summarisation, instruction following, culturally grounded QA, safety behaviour
+Rubric-based human evaluation, calibrated model-based evaluation with human audit
+Builds on IrokoBench-style design (Adelani et al., 2024)
+8.3 Metric Validation
+For each language and task, we will quantify metric validity by correlating automatic scores with human judgements at segment and system level, using Kendall-style and Pearson correlation as appropriate. Learned metrics are used as headline metrics only for languages where correlation with human judgement has been demonstrated, following the approach of Wang et al. (2024). Otherwise, chrF++ and human evaluation are primary. We report confidence intervals via bootstrap resampling and apply paired significance tests for system comparisons (Koehn, 2004).
+8.4 Human Evaluation Protocol
+Translation quality is assessed with direct assessment on adequacy and fluency scales and with multidimensional error annotation, in the spirit of MQM, extended with categories relevant to African languages (diacritic errors, noun-class agreement errors, tone-related ambiguity, named-entity corruption). Raters are native speakers with documented training; at least three raters per item are used on a stratified sample; inter-rater agreement is reported using appropriate coefficients.
+8.5 Robustness and Stress Tests
+Stress tests include diacritic removal, orthographic variants, spelling noise typical of social media, dialect substitution, code-switching, long-input behaviour, numerals and units, and adversarial named entities. For speech: background noise, telephone-band audio, overlapping speech, and speaker-age extremes.
+8.6 Fairness and Disaggregation
+Reported results must be disaggregated by language, dialect, gender (where applicable), domain, and script. We additionally report worst-language and equity-weighted aggregates rather than only macro-averages, to avoid concealing failures on the hardest languages beneath high-resource averages.
+8.7 Contamination Control
+Because web-scale pre-training can include public test sets, we release test sets with canary strings, retain private held-out partitions for leaderboard use, and periodically refresh evaluation items. We document the temporal provenance of all test sources.
+8.8 Reporting Standards
+All experiments follow a pre-registered protocol: hypotheses, data splits, model configurations, and primary metrics are specified in advance. Reports include compute and energy estimates, random-seed variation, and negative results.
+9. Experimental Programme (Pre-Specified)
+This section defines the experiments that will be run under the programme. No results are claimed in this paper.
+Study
+Objective
+Design
+Primary outcome
+S1: Data-scaling curves for MT
+Test H1 and estimate data needs per language (RQ2, RQ3)
+Fine-tune shared base models with 1k, 3k, 10k, 30k professional pairs; compare with mined and synthetic data of matched size
+chrF++ and human adequacy on out-of-domain test sets
+S2: Cluster transfer
+Test H2 (RQ3)
+Train within and across language families; vary related-language data
+Zero-shot and few-shot transfer gains by typological distance
+S3: Tokeniser audit
+Quantify tokenisation cost (RQ3)
+Compare fertility, compression, and downstream quality for baseline and extended vocabularies
+Tokens per word; quality at fixed compute
+S4: ASR low-data frontier
+Test H3 (RQ4)
+Fine-tune self-supervised models with 2, 5, 10, 20, 50 hours; vary dialect and domain mix
+WER and CER, disaggregated by dialect and gender
+S5: Metric validity
+Test H4 (RQ5)
+Collect human judgements for sampled outputs across languages; correlate with automatic metrics
+Segment- and system-level correlation
+S6: Code-switching and robustness
+Characterise failure modes
+Targeted test sets and stress transformations
+Relative degradation versus clean-condition performance
+S7: Community governance pilots
+Examine RQ6
+Pilot data-trust and benefit-sharing arrangements with partner communities
+Participation, retention, contributor-reported fairness and satisfaction
+Studies S1, S2, and S5 begin with a pilot cohort of languages selected by the prioritisation score in Section 4, with the explicit requirement that the cohort include languages of different families, at least one Lusophone-Africa language cluster, and at least some languages with no existing public benchmark.
+10. Responsible AI, Governance, and Ethics
+10.1 Community Governance and Benefit Sharing
+Following the CARE principles (Carroll et al., 2020) and the participatory approach of Nekoto et al. (2020), we establish language advisory boards composed of speakers, linguists, educators, and community representatives for each language cluster. These boards approve data collection plans, review released datasets, and advise on appropriate use. Benefit-sharing mechanisms, including attribution, revenue sharing for commercial licences, capacity building, and local compute and skills investment, are agreed in writing before collection begins.
+10.2 Consent and Privacy
+Speech is biometric-adjacent personal data. We obtain informed, revocable consent in the speaker's language, explaining uses, retention, and sharing. Compliance is designed to align with applicable data protection law in the jurisdictions of operation, including South Africa's Protection of Personal Information Act (POPIA) and Angola's data protection framework, and with continental guidance such as the African Union Convention on Cyber Security and Personal Data Protection. Legal review is required in each jurisdiction before release. Speaker identifiers are pseudonymised, and release of raw audio follows risk assessment.
+10.3 Harms Analysis
+We identify specific risks: mistranslation in high-stakes settings; amplification of stereotypes or biased content in generated text; misuse of synthetic voices for impersonation or fraud; erasure of dialects through standardisation; extractive data practices; and over-reliance on machine output replacing human translators and interpreters. Mitigations include human-in-the-loop requirements, watermarking or disclosure for synthetic media where feasible, usage restrictions in licences, and engagement with professional translator communities.
+10.4 Transparency and Documentation
+All models are released with model cards (Mitchell et al., 2019) reporting disaggregated performance, intended and out-of-scope uses, and known limitations. We publish datasheets, data statements, and evaluation configurations alongside results.
+10.5 Environmental and Resource Considerations
+We prioritise parameter-efficient methods, shared base models, and reuse of existing checkpoints, and we report training compute and estimated emissions. Where feasible, we support compute access for African institutions rather than concentrating all experimentation within NeuroGrowth Labs.
+11. Organisation, Partnerships, and Sustainability
+11.1 Operating Model
+The programme is delivered by the NeuroGrowth Labs AI R&D function in collaboration with external partners. Core workstreams are: (1) data and linguistics, (2) text and MT modelling, (3) speech modelling, (4) evaluation and benchmarking, (5) responsible AI and governance, and (6) engineering and deployment. Each workstream includes at least one named linguistic or community liaison.
+11.2 Partnership Strategy
+We will seek partnerships with African universities, language councils and academies, national statistical and public-broadcasting bodies, community-based organisations, and existing research collectives such as Masakhane and Lelapa AI, as well as continental policy bodies. We will align where appropriate with the African Union's language policy and digital transformation strategies, and with youth-development networks within NeuroGrowth Labs' wider ecosystem, creating training and fellowship pathways for early-career African researchers and linguists.
+11.3 Funding and Sustainability
+A sustainable model combines grant funding for public-good datasets and benchmarks, commercial licensing and enterprise services (for example, translation and transcription for regulated industries, financial inclusion, and public-sector services) that cross-subsidise open research, and in-kind contributions from partners. We commit to an open core: evaluation sets, documentation, and a baseline model per language cluster are released openly, subject to community consent.
+11.4 Milestones
+Phase
+Indicative timeline
+Deliverables
+Phase 0: Foundations
+Months 0–6
+Coverage Atlas v1; prioritisation scores; governance charter; legal and ethics review; pilot language selection; annotation and transcription guidelines
+Phase 1: Pilot data and baselines
+Months 6–18
+Pilot corpora, parallel sets, and speech datasets for the pilot cohort; baseline MT and ASR; benchmark v1; metric-validity study
+Phase 2: Scale and release
+Months 18–36
+Expansion to additional languages and clusters; public benchmark and leaderboard with contamination controls; open baseline models; first peer-reviewed results
+Phase 3: Consolidation
+Months 36–60
+Community-governed data trusts; sustained evaluation service; capacity-building programmes; integration into products and public-interest services
+Timelines are indicative and conditional on funding, partnerships, and community agreement.
+12. Success Metrics and Key Performance Indicators
+Coverage: number of languages with (a) a monolingual corpus above a defined threshold, (b) professionally translated evaluation sets, (c) transcribed speech above a defined number of hours, and (d) a public benchmark; share of languages without any previous public benchmark.
+Quality: gains over strong public baselines on out-of-domain tests (chrF++, human adequacy, WER/CER); reduction in critical-error rate in safety-relevant domains; worst-language performance.
+Equity and community: proportion of data contributors compensated at or above the published rate; proportion of datasets with signed community agreements; share of programme staff, annotators, and advisers who are speakers of the target languages.
+Scientific impact: peer-reviewed publications, open releases, independent reuse and citation of datasets and benchmarks.
+Sustainability: compute and emissions per released model; external funding diversification; number of African institutions receiving compute or capacity support.
+13. Limitations and Threats to Validity
+This paper is a programme and methodology specification. It presents no new empirical findings, and the hypotheses in Section 3 may be falsified. Several threats to validity should be noted. First, language counts and coverage statistics change quickly, and the inventory in the Coverage Atlas will need continual updating. Second, the standardisation of orthographies for several target languages is incomplete, and the notion of a single canonical written form may not suit communities with strong oral traditions or dialect continua. Third, human evaluation depends on rater availability and may reflect urban, educated register more than rural speech. Fourth, results obtained on pilot languages may not generalise to typologically distant languages. Fifth, benchmark contamination can never be fully eliminated for publicly released data. Sixth, the commercial interests of an operating company may conflict with open-science and community-governance goals; we mitigate this through advisory-board oversight, published licensing terms, and independent evaluation where possible.
+14. Conclusion
+Progress in African NLP demonstrates that community-led, carefully curated, and methodologically rigorous work can narrow the gap for under-served languages. Yet coverage remains uneven across languages, tasks, and modalities, and evaluation has not kept pace with modelling. NeuroGrowth Labs proposes an integrated programme that links transparent prioritisation, community-governed data creation, data-efficient modelling for translation and speech recognition, and validated, robust, equity-aware evaluation. By committing to pre-registration, open documentation, and shared benefit, we aim to contribute durable public goods and to demonstrate that commercially sustainable language technology and linguistic equity can reinforce each other. We invite researchers, institutions, and communities across Africa and beyond to collaborate in building language technology that serves all of Africa's languages.
+Acknowledgements
+NeuroGrowth Labs acknowledges the pioneering contributions of the Masakhane community, African linguists, language practitioners, and the many speakers whose knowledge underpins this field.
+References
+Editorial note: references were compiled from the literature as known at the time of writing. Bibliographic details (venues, years, page numbers) should be verified against primary sources before external submission.
+Abbott, J. Z. and Martinus, L. (2019). Benchmarking neural machine translation for Southern African languages. Proceedings of the 2019 Workshop on Widening NLP.
+Adelani, D. I., et al. (2021). The effect of domain and diacritics in Yorùbá–English neural machine translation. Proceedings of the 18th Machine Translation Summit.
+Adelani, D. I., et al. (2021). MasakhaNER: Named entity recognition for African languages. Transactions of the Association for Computational Linguistics, 9.
+Adelani, D. I., et al. (2022). MasakhaNER 2.0: Africa-centric transfer learning for named entity recognition. Proceedings of EMNLP 2022.
+Adelani, D. I., et al. (2022). A few thousand translations go a long way! Leveraging pre-trained models for African news translation. Proceedings of NAACL 2022.
+Adelani, D. I., et al. (2024). IrokoBench: A new benchmark for African languages in the age of large language models. arXiv preprint.
+Ahia, O., et al. (2023). Do all languages cost the same? Tokenization in the era of commercial language models. Proceedings of EMNLP 2023.
+Alabi, J. O., et al. (2020). Massive vs. curated embeddings for low-resourced languages: The case of Yorùbá and Twi. Proceedings of LREC 2020.
+Alabi, J. O., et al. (2022). Adapting pre-trained language models to African languages via multilingual adaptive fine-tuning. Proceedings of COLING 2022.
+Ardila, R., et al. (2020). Common Voice: A massively-multilingual speech corpus. Proceedings of LREC 2020.
+Babu, A., et al. (2022). XLS-R: Self-supervised cross-lingual speech representation learning at scale. Proceedings of Interspeech 2022.
+Baevski, A., Zhou, H., Mohamed, A., and Auli, M. (2020). wav2vec 2.0: A framework for self-supervised learning of speech representations. Advances in Neural Information Processing Systems 33.
+Bapna, A., et al. (2022). Building machine translation systems for the next thousand languages. arXiv preprint.
+Bender, E. M. and Friedman, B. (2018). Data statements for natural language processing: Toward mitigating system bias and enabling better science. Transactions of the Association for Computational Linguistics, 6.
+Blasi, D., Anastasopoulos, A., and Neubig, G. (2022). Systematic inequalities in language technology performance across the world's languages. Proceedings of ACL 2022.
+Carroll, S. R., et al. (2020). The CARE Principles for Indigenous Data Governance. Data Science Journal, 19.
+Caswell, I., Chelba, C., and Grangier, D. (2019). Tagged back-translation. Proceedings of the Fourth Conference on Machine Translation.
+Conneau, A., et al. (2023). FLEURS: Few-shot learning evaluation of universal representations of speech. Proceedings of IEEE SLT 2022.
+Dione, C. M. B., et al. (2023). MasakhaPOS: Part-of-speech tagging for typologically diverse African languages. Proceedings of ACL 2023.
+Dossou, B. F. P., et al. (2022). AfroLM: A self-active learning-based multilingual pretrained language model for 23 African languages. Proceedings of SustaiNLP 2022.
+Doumbouya, M., Einstein, L., and Piech, C. (2021). Using radio archives for low-resource speech recognition: Towards an intelligent virtual assistant for illiterate users. Proceedings of AAAI 2021.
+Eberhard, D. M., Simons, G. F., and Fennig, C. D. (eds.) (2024). Ethnologue: Languages of the World. SIL International.
+Gebru, T., et al. (2021). Datasheets for datasets. Communications of the ACM, 64(12).
+Goyal, N., et al. (2022). The Flores-101 evaluation benchmark for low-resource and multilingual machine translation. Transactions of the Association for Computational Linguistics, 10.
+Hedderich, M. A., Lange, L., Adel, H., Strötgen, J., and Klakow, D. (2021). A survey on recent approaches for natural language processing in low-resource scenarios. Proceedings of NAACL 2021.
+Houlsby, N., et al. (2019). Parameter-efficient transfer learning for NLP. Proceedings of ICML 2019.
+Hu, E. J., et al. (2022). LoRA: Low-rank adaptation of large language models. Proceedings of ICLR 2022.
+Joshi, P., Santy, S., Budhiraja, A., Bali, K., and Choudhury, M. (2020). The state and fate of linguistic diversity and inclusion in the NLP world. Proceedings of ACL 2020.
+Koehn, P. (2004). Statistical significance tests for machine translation evaluation. Proceedings of EMNLP 2004.
+Kreutzer, J., et al. (2022). Quality at a glance: An audit of web-crawled multilingual datasets. Transactions of the Association for Computational Linguistics, 10.
+Mager, M., et al. (2023). Ethical considerations for machine translation of indigenous languages: Giving a voice to the speakers. Proceedings of ACL 2023.
+Mitchell, M., et al. (2019). Model cards for model reporting. Proceedings of FAccT 2019.
+Muhammad, S. H., et al. (2023). AfriSenti: A Twitter sentiment analysis benchmark for African languages. Proceedings of EMNLP 2023.
+Nekoto, W., et al. (2020). Participatory research for low-resourced machine translation: A case study in African languages. Findings of EMNLP 2020.
+NLLB Team (2022). No language left behind: Scaling human-centered machine translation. arXiv preprint.
+Ogayo, P., Neubig, G., and Black, A. W. (2022). Building African Voices. Proceedings of Interspeech 2022.
+Ogueji, K., Zhu, Y., and Lin, J. (2021). Small data? No problem! Exploring the viability of pretrained multilingual language models for low-resourced languages. Proceedings of the 1st Workshop on Multilingual Representation Learning.
+Ogundepo, O., et al. (2022). AfriCLIRMatrix: Enabling cross-lingual information retrieval for African languages. Proceedings of EMNLP 2022.
+Ojo, J., et al. (2023). How good are large language models on African languages? arXiv preprint.
+Orife, I., et al. (2020). Masakhane: Machine translation for Africa. arXiv preprint.
+Papineni, K., Roukos, S., Ward, T., and Zhu, W.-J. (2002). BLEU: A method for automatic evaluation of machine translation. Proceedings of ACL 2002.
+Park, D. S., et al. (2019). SpecAugment: A simple data augmentation method for automatic speech recognition. Proceedings of Interspeech 2019.
+Pfeiffer, J., et al. (2020). MAD-X: An adapter-based framework for multi-task cross-lingual transfer. Proceedings of EMNLP 2020.
+Popović, M. (2015). chrF: Character n-gram F-score for automatic MT evaluation. Proceedings of WMT 2015.
+Popović, M. (2017). chrF++: Words helping character n-grams. Proceedings of WMT 2017.
+Post, M. (2018). A call for clarity in reporting BLEU scores. Proceedings of WMT 2018.
+Pratap, V., et al. (2023). Scaling speech technology to 1,000+ languages. arXiv preprint.
+Radford, A., et al. (2022). Robust speech recognition via large-scale weak supervision. arXiv preprint.
+Ranathunga, S., Lee, E.-S. A., Skenduli, M. P., Shekhar, R., Alam, M., and Kaur, R. (2023). Neural machine translation for low-resource languages: A survey. ACM Computing Surveys, 55(11).
+Rei, R., Stewart, C., Farinha, A. C., and Lavie, A. (2020). COMET: A neural framework for MT evaluation. Proceedings of EMNLP 2020.
+Sennrich, R., Haddow, B., and Birch, A. (2016). Improving neural machine translation models with monolingual data. Proceedings of ACL 2016.
+Wang, J., et al. (2024). AfriMTE and AfriCOMET: Enhancing COMET to embrace under-resourced African languages. Proceedings of NAACL 2024.

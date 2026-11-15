@@ -1,0 +1,330 @@
+Shared African Compute Infrastructure: Renewable-Powered Regional Hubs, GPU Sharing and Interoperable Cloud Services
+Nov 15, 2026 · @Pro
+NeuroGrowth Labs · AI Research and Development Paper
+Abstract
+Africa holds about 0.6% of global data-centre capacity and about 1% of global AI compute, against roughly 18% of the world's population, and projected growth to about 1.2 GW by 2030 only keeps pace with the rest of the world. This paper proposes a shared compute infrastructure built on three coupled layers: renewable-powered regional hubs sited by firm clean power and sized in modular stages; GPU-sharing mechanisms that raise accelerator utilisation through pooled scheduling, hardware partitioning and tiered allocation; and a federation layer of open interfaces that lets identity, workloads, data and billing move across hubs and providers. We integrate the layers in a reference architecture, a financing structure, a governance model with three data-residency classes and a four-phase roadmap whose gates require published pilot evidence before hub capital is committed. The study is a desk-based design and evaluation framework drawing on current public sources; it does not test any deployment, and its quantitative claims rest on those sources. We set out a research agenda and a set of public indicators so that the central hypothesis, that pooled and interoperable hubs deliver higher utilisation and lower cost per task, can be tested in African pilots.
+Keywords: African AI, compute infrastructure, GPU sharing, renewable energy, data centres, federated cloud, data sovereignty
+1. Introduction
+Africa's binding constraint on artificial intelligence is physical, not algorithmic: the continent has a very small share of the world's compute, and the share it has is concentrated in a few markets. African Union leaders have put the continent's share of global AI compute at about 1%, and called for renewable-powered data centres, regional compute hubs and cross-border digital infrastructure in response (AllAfrica, 2025). Measured as data-centre capacity, the figure is lower still, at about 0.6% against roughly 18% of the world's population (Baker McKenzie, 2026).
+This paper argues that the gap will not close through isolated national facilities or through hardware purchases alone. Four problems compound one another. Power is scarce and unreliable. Accelerators are expensive and are idle much of the time in small, single-tenant deployments. Services built on one provider's stack cannot move between providers or countries. And demand, in the form of skills, data and funded users, must exist before capacity earns its keep.
+We therefore treat shared infrastructure as a systems problem with three coupled layers, and structure the paper around them:
+1.  Energy and siting. Regional compute hubs placed where firm renewable power, fibre and cooling are available (Section 4).
+2.  Resource allocation. GPU-sharing mechanisms that raise utilisation and lower the unit cost of access (Section 5).
+3.  Service interoperability. Open interfaces that let workloads, identities and data move across hubs and providers (Section 6).
+Sections 7 to 11 integrate the layers into a reference architecture, a financing model, a governance framework, a phased roadmap and a risk register. Section 12 sets out a research agenda and measurable indicators. The contribution is a design and evaluation framework for policymakers, infrastructure operators and research institutions, not an empirical test of any single deployment.
+2. Current State of African Compute
+Africa holds roughly 0.6% of global data-centre capacity and about 1% of global AI compute by the African Union's own estimate, and its installed base is small, concentrated and mostly not yet GPU-dense. The figures below are the best current estimates; they differ because sources measure different things.
+Indicator
+Estimate
+Source
+Share of global data-centre capacity
+~0.6%
+Baker McKenzie, Jun 2026 (citing ADCA and WEF)
+Share of global AI compute
+~1%
+AU Deputy Chairperson, as reported by AllAfrica, May 2025
+Share of world population
+~18%
+Baker McKenzie, Jun 2026
+Share of global AI training data
+~2%
+World Bank Africa Economic Update, Oct 2026, as reported by FourWeekMBA
+Facilities
+220 to 230 in 38 countries
+Baker McKenzie, Jun 2026
+Operating / under construction / planned
+360 MW / 238 MW / 656 MW
+ADCA 2026, as reported by Serrari Group
+Projected IT load by 2030
+~1.2 GW (about 3x)
+Baker McKenzie, Jun 2026
+Concentration
+South Africa hosts over two-thirds of capacity
+Africa Global Forum, 2026
+Why estimates differ. One consultancy analysis puts colocation power at about 700 MW, roughly 1.5% of the global figure, against ADCA's 0.6% for all data-centre capacity (Discovery Alert, Oct 2026). "AI compute" is a third construct again, since it should count accelerators and not floor space. This paper uses 0.6% for facility capacity and about 1% for AI compute, and treats both as order-of-magnitude indicators. The continent-wide projection of roughly 1.2 GW only tracks global expansion and does not close the gap (Baker McKenzie).
+GPU capacity is arriving, but from private operators. Cassava Technologies announced in 2025 that about 12,000 Nvidia GPUs would be deployed across five sites in South Africa, Nigeria, Kenya, Egypt and Morocco, sold as GPU-as-a-Service (MEA Tech Watch). Its Cape Town facility was reported close to going live in May 2026, with a 20 MW Johannesburg site planned (ITWeb via Pulse), and a sovereign AI factory with Vodafone was announced for Egypt in September 2026 (Mining Weekly).
+Public capital is thin and projects are fragile. Most commitments come from the private sector and development finance institutions. The IFC committed $100 million to Raxio Group in April 2026. The $1 billion Microsoft and G42 geothermal data-centre proposal in Kenya has been put on hold, because the original design needed more power than Kenya could dedicate to one site (TechCabal, Jun 2026).
+Supply alone does not create use. The World Bank cautions that compute investment yields limited returns without reliable, cost-effective power, sustained demand and data governance (FourWeekMBA). A UNDP six-country study reached a similar conclusion (Discovery Alert). The design in this paper therefore couples capacity with demand aggregation, skills and governance, and does not treat hardware as the end goal.
+3. Design Principles and Conceptual Framework
+A shared African compute system should be judged by cost per useful unit of compute delivered to an African researcher or firm, not by installed megawatts. We propose six design principles that follow from the constraints in Section 2.
+1.  Power first. Site and size capacity around firm, contracted clean power. Power availability is the longest-lead item in data-centre delivery, ahead of capital and chips (Baker McKenzie).
+2.  Pool, do not duplicate. Aggregate demand across countries and institutions so that scarce accelerators run at high utilisation instead of sitting idle in many small clusters.
+3.  Federate, do not centralise. Keep hubs independently owned and operated, joined by open interfaces and common policy, so no single provider or jurisdiction becomes a point of control or failure.
+4.  Open by default. Prefer open standards, containers, open-source orchestration and portable data formats, so workloads and identities can move between hubs and providers.
+5.  Sovereignty with portability. Let each member state keep jurisdiction over sensitive data while still permitting lawful cross-border processing under shared rules.
+6.  Demand and skills built in. Pair capacity with allocation programmes, training and funded access for researchers, start-ups and public bodies, because idle capacity does not deliver lasting use (Discovery Alert).
+The framework has three coupled layers. The energy and siting layer determines where compute can exist and at what cost. The allocation layer determines how scarce accelerators are shared, scheduled and priced. The interoperability layer determines whether users can move work, data and identity across hubs. A weakness in any one layer caps the value of the other two: abundant power without sharing yields underused hubs, and sharing without interoperability yields isolated pools.
+The framework is consistent with the African Union's Continental AI Strategy, which lists building capacity in infrastructure, datasets and computing as a focus area (AllAfrica, 2024), and with the Africa Forward Declaration, in which leaders committed to mobilise investment in regional data centres, cloud and compute capacity, and clean energy (TechCabal).
+4. Renewable-Powered Regional Compute Hubs
+Hubs should be sited where firm clean power can be contracted today, and sized in stages so that no single site needs more power than the local grid can dedicate to it. Africa is not one power market, and a design that works beside a Kenyan geothermal field cannot be copied directly into a diesel-dependent location (Remio).
+Three power-supply archetypes. Current practice points to three models: solar wheeling, as in Teraco's 120 MW solar farm in South Africa; direct geothermal supply, as proposed for the Microsoft and G42 project in Kenya; and on-site solar with battery storage where the grid is unreliable (Algeria Tech News). Developers in South Africa also use utility-scale solar through Eskom's virtual wheeling framework, long-term renewable purchase agreements and on-site storage (Baker McKenzie).
+Hub archetype
+Power basis
+Example evidence
+Main risk
+Geothermal / hydro anchor
+Continuous, non-intermittent supply
+Kenya's grid is close to 90% renewable, with geothermal the largest share (Africa Sustainability Matters); Ethiopia's mix is dominated by hydropower (African Business)
+Grid-connection capacity; the Kenya project stalled on power allocation (TechCabal)
+Solar-plus-storage with wheeling
+Utility solar, batteries, contracted wheeling
+South African campuses use virtual wheeling and storage (Baker McKenzie)
+Transmission and curtailment risk; municipal fragmentation
+Wind corridor
+Wind PPAs in high-resource corridors
+Senegal's Taiba N'Diaye wind farm supports seven data centres (Bizcommunity)
+Variability; needs storage or firming
+Island-mode solar and battery
+On-site generation, grid as backup
+Used where grid reliability is poor (Algeria Tech News)
+Higher unit cost at scale
+Siting criteria. We propose a weighted screen for every candidate site: firm clean-power availability and PPA tenor; grid-interconnection capacity; fibre and subsea-cable access; water or dry-cooling feasibility; permitting predictability; offtake and anchor demand; and political and currency risk. Power and interconnection should be hard gates, not weighted scores, since a site that fails them cannot deliver.
+Sizing and density. AI facilities draw 100 MW or more each, against 10 to 25 MW for a conventional data centre, and AI racks often exceed 30 kW, four to six times traditional density (Baker McKenzie). Most African grids cannot support that scale at one node today. We therefore recommend modular halls of a few megawatts each, liquid-cooling ready, scaled in step with contracted power rather than ahead of it. This matches the staged approach of operators already announcing capacity in phases, such as a 20 MW Johannesburg site (ITWeb via Pulse).
+Flexible load as a grid asset. AI compute is volatile, and on-site batteries are becoming a core design element, which can turn a well-configured campus into an asset to the grid and not only a burden on it (Baker McKenzie). Hubs should offer the host utility demand response, and should schedule deferrable work such as training and batch inference to follow renewable output.
+Anchor-customer role. A creditworthy compute buyer can give a geothermal, hydro or solar-plus-storage project the offtake it needs, with surplus power serving industry or the public grid (Remio). Governments can accelerate this by pre-approving sites and clarifying wheeling rules (Energy News Network).
+Hub tiers. We propose a two-tier network: a small number of regional training hubs with the firmest power and densest accelerators, and a wider set of national or institutional inference and edge nodes closer to users. Candidate regions are East Africa (geothermal and hydro), North Africa (solar and European connectivity), Southern Africa (the deepest existing market) and West Africa (demand and wind). These are planning hypotheses to be tested against the siting screen, not site selections.
+5. GPU-Sharing Mechanisms
+Sharing raises the share of paid-for accelerator hours that do useful work, and that utilisation is the largest lever on the unit cost of access. The cost of one productive GPU-hour can be written as:
+C_{\text{eff}} = \frac{K_{\text{amort}} + E + O}{H \cdot u}
+Here K_amort is hourly hardware amortisation, E is energy cost, O is operations and staffing, H is hours in the period and u is average utilisation. Energy cost E is the term most exposed to local power prices, which is why Section 4 precedes this one, and u is the term that pooling and scheduling can raise. If costs are treated as fixed, raising average utilisation from 50% to 75% lowers C_eff by a third on the same hardware, so allocation design is a cost policy.
+Technical mechanisms. A hub should combine several layers, chosen by workload and by the isolation each tenant needs.
+Mechanism
+What it does
+Best for
+Limit
+Whole-GPU or multi-node allocation
+Exclusive access to full devices, with gang scheduling of multi-GPU jobs
+Training and fine-tuning of large models
+Lowest flexibility; idle time if the queue is thin
+Hardware partitioning (for example NVIDIA Multi-Instance GPU)
+Splits one GPU into isolated slices with dedicated memory
+Many small inference and teaching workloads needing isolation
+Fixed slice sizes; supported on specific GPU generations
+Time-slicing and process sharing
+Several jobs interleave on one device
+Notebooks, development, low-duty inference
+No memory isolation by default; unpredictable latency
+Virtual GPU (vGPU)
+Hypervisor-level virtual devices for virtual machines
+Multi-tenant clouds with VM-based tenants
+Licensing cost; hypervisor overhead
+Preemptible and backfill queues
+Run low-priority work on otherwise idle capacity, evict when needed
+Batch inference, hyperparameter sweeps, checkpointed training
+Jobs must tolerate interruption
+Schedulers such as Slurm for HPC-style batch work and Kubernetes with GPU-aware extensions and batch-queueing controllers for containerised work are mature, open-source options. A hub should expose both through one tenant-facing portal.
+Allocation policy. Technical sharing needs a policy layer that decides who gets what, and we propose three access tiers.
+1.  Public-interest allocation. Competitively awarded, merit-reviewed grants of compute for universities, national research bodies, health, agriculture and language-technology projects, in the manner of national research-computing programmes. Funded by member states and development partners.
+2.  Commercial reserved and on-demand. Priced access for firms and start-ups, with reserved capacity at a discount for committed use and on-demand access at a premium. This tier finances the hubs.
+3.  Preemptible surplus. Low-cost or credit-based access to idle capacity, scheduled around higher tiers, which turns residual capacity into a development subsidy at little marginal cost.
+Fair-share and metering. Each tenant receives a quota expressed in normalised GPU-hours, weighted by accelerator class so that different generations are comparable. A common metering service records usage per tenant, hub and workload, supports invoicing in local currencies, and feeds public reporting on utilisation and access by country. Quotas decay if unused, which discourages hoarding.
+Security and isolation. Multi-tenancy raises confidentiality risks, particularly for health and financial data. Sensitive workloads should use hardware-isolated partitions or dedicated nodes, and hubs should adopt confidential-computing features where the hardware supports them, along with encrypted storage, signed container images and per-tenant network isolation. Tenancy rules should be audited by an independent body.
+Pricing principles. Prices should recover energy, hardware and operations over the asset's life, and should be set in transparent tariffs by tier. Because subsidised inference prices are expected to normalise as capital discipline returns to the AI industry (Baker McKenzie), hubs should plan on a stable, cost-reflective tariff and on usage-based billing, with the realised cost per completed task as the headline metric and not the price per GPU-hour alone.
+Evidence gap. No African multi-hub GPU pool has yet published utilisation, queue-time or cost data. Section 12 proposes that the first pilots publish these as open benchmarks so the model can be tested rather than assumed.
+6. Interoperable Cloud Services
+Interoperability should be achieved by requiring every hub to implement a small, published profile of open interfaces, not by building one shared cloud. A profile lets a researcher in one country submit work to a hub in another, with the same identity, tooling and billing, and lets any operator join or leave without breaking users.
+Layer
+Proposed open basis
+What it guarantees
+Workload packaging
+OCI container images and container-native job specs
+A job built once runs on any conforming hub
+Orchestration
+Kubernetes API for services; Slurm-compatible submission for batch HPC
+Common scheduling interface across heterogeneous hubs
+Storage and data access
+S3-compatible object API; open columnar and tensor formats
+Datasets and model weights move without conversion
+Model and artifact registry
+OCI-compatible registries with signed artifacts and model cards
+Provenance and reproducibility of models
+Identity and access
+OpenID Connect and SAML federation, with institutional identity providers
+One login across hubs; per-country policy enforced at each hub
+Metering and billing
+A common usage record in normalised GPU-hours
+Comparable invoicing and cross-hub quota accounting
+Policy and residency
+Machine-readable data-residency tags and policy-as-code checks
+Data leaves a jurisdiction only where its rules allow
+Observability
+Open telemetry formats
+Shared reporting on utilisation, reliability and carbon
+These are recommendations drawn from widely used open standards, not an adopted African specification; creating and maintaining the profile is itself a core deliverable of the programme.
+Federation patterns. We propose three, in order of ambition. A catalogue and broker layer lets users discover capacity across hubs and submit to the best-fitting one. Multi-cluster scheduling lets a job queue span hubs, within data-residency limits. Federated identity and billing make cross-border access routine for universities and firms. The first can run within months at low cost; the third needs the most legal and institutional work.
+Research and education networks as a base. Africa already has regional research and education networks, such as UbuntuNet Alliance in the east and south and WACREN in the west and centre, which run federated identity and connectivity for universities. Reusing these trust relationships is faster and cheaper than building identity from nothing.
+Preventing lock-in. Lock-in is the main commercial risk to interoperability. The profile should require documented export paths, non-punitive data-egress terms between member hubs, and conformance tests that any operator, including commercial and foreign-owned ones, must pass to be listed. Commercial operators such as Cassava already sell GPU-as-a-Service and AI-as-a-Service and run a multi-model exchange for developers (Connecting Africa via Pulse); a conformance profile lets such operators join a shared federation on equal terms with public hubs.
+Data governance alignment. The federation must sit within continental data rules. The Continental AI Strategy is designed to sit on top of the AU Data Policy Framework (Algeria Tech News), and the Malabo Convention on cybersecurity and personal data protection forms part of the normative architecture for AI sovereignty (ISS Africa). Residency tags and policy-as-code let each hub enforce national law, including rules that keep certain government data inside a country, while still permitting lawful cross-border processing elsewhere.
+Conformance and certification. An independent test suite, published openly, should certify hubs against the profile. Certification gives users a trusted signal, gives regulators an audit basis and lets new entrants qualify without bilateral negotiation.
+7. Reference Architecture
+The integrated design places four independently operated regional hubs under a single federation layer, with lighter inference nodes closer to users.
+Users reach every hub through the federation layer, which supplies identity, discovery, metering and residency checks. Hubs differ in their power basis, as set out in Section 4, and the four regions shown are planning hypotheses, not selected sites. Inference nodes at national or institutional level serve latency-sensitive work and keep sensitive data local, while training jobs are routed to the hub with the firmest power and free capacity. All layers rest on clean power, connectivity and skills programmes, without which the upper layers cannot function.
+8. Financing and Economics
+Public money should de-risk the hubs and fund access for public-interest users, while private operators and commercial customers carry most of the build and operating cost. Today the balance is the reverse of what a shared system needs: African governments' own investment in AI infrastructure is low, and most commitments come from the private sector and development finance institutions (TechCabal).
+Proposed capital stack.
+Layer
+Instrument
+Role
+Current evidence
+Development finance
+Concessional debt, guarantees, first-loss tranches
+Lower the cost of capital; absorb early demand risk
+IFC committed $100 million to Raxio Group in April 2026 (TechCabal)
+Private operators
+Equity and project debt
+Build and run hubs; carry commercial risk
+Cassava's announced $700 million AI-infrastructure programme (TechCabal)
+Anchor offtake
+Long-term compute purchase agreements
+Give lenders contracted revenue
+Creditworthy offtake has supported longer-tenor PPAs (Baker McKenzie)
+Member-state and donor funds
+Grants and compute vouchers
+Pay for public-interest allocation (Tier 1)
+AU and Nairobi-declaration commitments to mobilise investment (TechCabal)
+Hardware partners
+Vendor financing, cloud-partner programmes
+Supply accelerators and software stack
+Cassava operates as an Nvidia cloud partner (MEA Tech Watch)
+Revenue model. Commercial reserved and on-demand sales (Tier 2) should cover energy, hardware amortisation and operations. Public-interest allocations (Tier 1) are paid for by state and donor vouchers at the same cost-reflective tariff, so that they add to revenue and do not dilute it. Preemptible surplus (Tier 3) earns small marginal revenue and a large development return.
+Cost drivers to model. The pilots should build a hub-level model with these variables and publish it:
+• Accelerator price and refresh cycle, since hardware can become obsolete before a loan is repaid.
+• Contracted power price, tenor and curtailment terms.
+• Utilisation by tier, from Section 5.
+• Cooling method and water cost.
+• Connectivity and egress cost.
+• Staffing and skills cost.
+• Currency mismatch, since accelerators are priced in hard currency while many users pay in local currency.
+Capital-cost risk. Lenders price the continent's risk above its actual default record, according to the World Economic Forum and ADCA framing reported by Baker McKenzie. Guarantees and first-loss tranches from development banks address this directly, and a shared offtake pool is more bankable than many small, separate buyers.
+Scale caveat. Co-investment will be needed. Commentators have noted that the Nairobi declaration's call for African and French co-investment suggests the continent is unlikely to build sovereign AI infrastructure on its own (TechCabal). The financing design should therefore keep foreign capital welcome while keeping governance, data control and conformance rules in African hands.
+This paper does not offer a point estimate of total programme cost. Any such figure would depend on unobserved inputs, such as negotiated power prices and accelerator pricing, and would imply more precision than current evidence supports.
+9. Governance, Data Sovereignty and Policy Alignment
+The federation needs a light, accountable governance structure that sets rules and verifies conformance without owning or operating the hubs. Hubs stay with their operators; the shared body owns the interface profile, the allocation rules and the public record.
+Proposed structure.
+Function
+Responsible body
+Core powers
+Strategic direction
+Steering board of member states, regional economic communities, operators and research users
+Approves the interface profile, tariff principles and public-interest allocation policy
+Conformance and audit
+Independent certification body
+Tests hubs against the profile; audits tenancy, security and carbon reporting
+Allocation review
+Merit-review panel with international and African reviewers
+Awards Tier 1 compute; publishes decisions and outcomes
+Transparency
+Public reporting function
+Publishes utilisation, access by country and gender, pricing and incidents
+Alignment with continental policy. The African Union's Continental AI Strategy was endorsed in July 2024 (African Union via PublicNow). It commits to an African AI Readiness Index, a monitoring dashboard and a mid-term review in 2027 (AfricArXiv), and it assigns a coordinating role to regional economic communities. The federation's indicators in Section 12 are designed to feed that review. The strategy does not itself set a continental budget, so resource mobilisation is country-by-country (Algeria Tech News), which is why Section 8 builds a separate financing structure.
+Data classes and residency. We propose three classes, each with a default rule that national law may tighten.
+1.  Restricted data, such as government data bearing on national security: stored and processed only within the owning country. South Africa's National Data and Cloud Policy, for example, requires such data to be stored within the country (Baker McKenzie).
+2.  Personal and sensitive data: processed across borders only where equivalent protection travels with it, in line with national data-protection law and the Malabo Convention framework (ISS Africa).
+3.  Open and research data: free to move across the federation, with provenance and licence recorded.
+Policy-as-code at each hub enforces these classes automatically, so that compliance does not depend on every user's diligence.
+Public-interest mandate. A fixed minimum share of capacity should be reserved for public-interest allocation and for African-language and local-context data and model work. Only about 2% of global AI training data come from Africa, according to the World Bank report cited in Section 2, so reserved capacity should prioritise datasets and models that address that gap.
+Environmental governance. Clean power must be additional and verifiable. Procurement should specify the generation source and certificates for all purchased power, with the source named and not an unbundled certificate from another geography (Algeria Tech News). Hubs should report water use, cooling design and local grid effects, since data-centre growth in Kenya has already drawn scrutiny on environmental and grid-availability grounds (Africa Sustainability Matters).
+Openness to foreign partners. Global competition over AI infrastructure is giving African states more room to manoeuvre in negotiations with large technology firms, as one analyst told Al Jazeera (Al Jazeera). Conformance rules let the federation use that leverage consistently: any operator, domestic or foreign, may join if it meets the same profile, security and reporting requirements.
+10. Phased Implementation Roadmap
+The programme should advance in four phases, each opened by a gate that tests evidence before more capital is committed.
+The phases are equal bands and the dates are indicative, not to scale. Gate 2 is the one that matters most: it requires the pilot to publish utilisation, queue-time and unit-cost data, so that hub capital in Phase 2 is committed against observed performance and not against assumption. Gate 3 is applied site by site, which means a site that cannot secure power or offtake does not proceed, and the programme does not stall because of it. The 2027 date for the first report follows the African Union's mid-term review of its AI strategy (AfricArXiv).
+11. Risks and Mitigations
+The largest risks are power that is not delivered, capacity that is not used and governance that does not hold; each has a design response in the preceding sections.
+Risk
+How it arises
+Mitigation
+Power not delivered
+Hubs outrun grid capacity; transmission and curtailment limits; a large single-site proposal needs more power than the host country can dedicate, as happened in Kenya (TechCabal)
+Hard power and interconnection gates; modular halls scaled to contracted power; on-site storage; Gate 3 per site
+Capacity underused
+Supply without demand, data, skills or operating funds (Discovery Alert)
+Public-interest allocation tier, anchor-user programmes, skills and data programmes tied to capacity
+Accelerator supply and obsolescence
+Constrained or restricted access to advanced chips; hardware ageing faster than loan terms
+Multi-vendor strategy; vendor and cloud-partner agreements; depreciation-aware financing; open stack to reduce lock-in
+Currency and cost-of-capital
+Hardware costed in hard currency, revenue partly in local currency; capital priced above actual default record (Baker McKenzie)
+Guarantees and first-loss tranches; hard-currency anchor contracts; local-currency vouchers for public users
+Governance failure or capture
+Member states or large operators dominate; slow decisions; uneven national rules
+Independent certification; published decisions; open conformance rules for any operator; balanced board
+Security and data exposure
+Multi-tenant GPU sharing; cross-border processing of sensitive data
+Data classes and policy-as-code; hardware isolation and confidential computing; independent audits
+Vendor and platform dependence
+Reliance on a few foreign stacks and clouds
+Open interface profile; portability and egress terms; support for open-weight models and local datasets
+Environmental harm
+Water stress, diesel back-up, unverified clean-power claims
+Sourced power certificates; dry or liquid cooling where water is scarce; public environmental reporting
+Uneven national benefit
+Capacity concentrates where infrastructure already exists, notably South Africa, with over two-thirds of continental capacity (Africa Global Forum)
+Allocation weighted to under-served countries; remote-access training and support; hubs in more than one region
+Residual uncertainty. Several risks cannot be fully removed by design. Chip availability and prices depend on global markets and policy outside African control. Power projects depend on utilities and regulators in each country. The roadmap's gates are intended to expose these problems early and cheaply, before large capital is spent.
+12. Research Agenda, Indicators and Conclusion
+The design in this paper rests on hypotheses that African pilots can test within two years, and its success should be judged on a small set of public indicators. Numerical targets should be set at Gate 1 from pilot baselines, because no comparable African multi-hub data exist today.
+Research questions.
+1.  How much does pooled scheduling raise utilisation and lower cost per productive GPU-hour in African conditions, compared with standalone clusters?
+2.  Which combinations of power source, storage and flexible-load scheduling give the lowest delivered cost per unit of compute at the candidate sites?
+3.  What minimum interface profile gives practical portability across hubs, and what does conformance cost operators?
+4.  Which allocation rules best convert free or subsidised compute into lasting use, as measured by publications, products and retained skills?
+5.  How do residency classes and policy-as-code perform against national data-protection rules in practice?
+6.  What financing structures lower the cost of capital for modular hubs without creating fiscal liabilities for host governments?
+Indicators.
+Layer
+Indicator
+Definition
+Scale
+Share of global capacity
+African share of global data-centre capacity and of AI compute, reported against the 0.6% and ~1% baselines in Section 2
+Power
+Clean-power share and firmness
+Share of hub energy from verified clean sources; hours of curtailment or outage
+Efficiency
+Utilisation and queue time
+Average accelerator utilisation by tier; median and tail queue times
+Cost
+Realised cost per task
+Delivered cost per completed training or inference task, in local and hard currency
+Access
+Reach and equity
+Number of institutions served by country; share of Tier 1 awards to under-served countries; gender balance of principal investigators
+Interoperability
+Conformance and portability
+Share of hubs certified; share of jobs run cross-hub; median time to port a workload
+Outcomes
+Local capability
+Models, datasets and publications produced on federation compute; African-language resources released
+Governance
+Transparency
+Timeliness and completeness of public reporting; audit findings closed
+These indicators are designed to feed the monitoring dashboard and mid-term review that the African Union's strategy requires (AfricArXiv).
+Conclusion. Africa's compute gap is a systems problem of power, utilisation and interoperability, and the evidence points to a shared, federated answer. The continent holds about 0.6% of global data-centre capacity and about 1% of AI compute, and projected growth only keeps pace with the world (Baker McKenzie). A network of renewable-powered regional hubs, run on common GPU-sharing and open-interface rules and held accountable through public indicators, can raise utilisation, lower unit costs and widen access without requiring every country to build alone. The programme is staged so that evidence arrives before large capital is committed. Its central claim is testable: if pooled, interoperable hubs do not deliver measurably higher utilisation and lower cost per task in the pilot, the gates are designed to stop the build-out before capital is committed. NeuroGrowth Labs invites partners among governments, utilities, operators, universities and financiers to join that test.
+References
+Figures were taken from the sources below, current as of 15 November 2026. Sources marked "read in full" were opened and read; the others were read from search excerpts, and several are secondary reports of the original data, so the primary figures should be confirmed before citation in a formal publication.
+Read in full
+• Baker McKenzie (11 June 2026). South Africa: The Megawatt and the Token, Africa's Compute Equation.
+• TechCabal (11 June 2026). AI is now a geopolitical asset. African presidents are racing to catch up.
+Read from search excerpts
+• AllAfrica (May 2025). Africa declares AI a strategic priority as high-level dialogue calls for investment, inclusion and innovation.
+• AllAfrica (August 2024). African Union committed to developing AI capabilities in Africa.
+• African Union (July 2024). Continental Artificial Intelligence Strategy.
+• African Union via PublicNow (August 2024). African Union committed to developing AI capabilities in Africa.
+• AfricArXiv (UbuntuNet). The African Union AI Strategy: implementation commentary.
+• Algeria Tech News. AU Continental AI Strategy analysis; Africa data-centre renewable power models.
+• Africa Global Forum (2026). Africa and AI: the full landscape.
+• Serrari Group (2026). AI capex and African data centres.
+• FourWeekMBA (October 2026). World Bank: Africa holds 0.6% of global data-centre capacity (secondary report of the World Bank Africa Economic Update).
+• Discovery Alert (6 October 2026). Why more compute won't guarantee the AI infrastructure Africa needs (secondary report of ADCA, a consultancy analysis and a UNDP study).
+• Al Jazeera (26 June 2026). Who will control Africa's AI infrastructure, and at what cost?
+• MEA Tech Watch. Cassava Technologies unveils AI factory plans with 12,000 Nvidia GPUs across Africa.
+• ITWeb via Pulse (4 May 2026). Cassava plans AI factory in Joburg, as Cape Town goes live.
+• Connecting Africa via Pulse (18 March 2026). Cassava deploys AI Factory in SA, more countries in the pipeline.
+• Mining Weekly (25 September 2026). Vodafone, Cassava to develop Egypt's first sovereign AI factory.
+• ISS Africa (2026). Infrastructure: a must to boost Africa's AI sovereignty.
+• African Business (December 2025). Inside the race to fire up Africa's power-hungry data centres.
+• Energy News Network (June 2025). Africa data centres power up.
+• Africa Sustainability Matters. Kenya's data-centre boom has an ESG blind spot.
+• Bizcommunity. How data centres are reshaping Africa's power grid.
+• Remio. Africa AI data centers face their first big test.
+Not sourced from the web. The technical descriptions of GPU partitioning, scheduling, open standards and the cost formula in Sections 5 and 6, and all proposals, design principles, tiers, gates and phase dates, are the authors' own synthesis and are labelled as proposals where they appear.
