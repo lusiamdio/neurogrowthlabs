@@ -7,7 +7,6 @@ import Products from '../components/sections/Products';
 import AILab from '../components/sections/AILab';
 import Services from '../components/sections/Services';
 import FAQ from '../components/sections/FAQ';
-import CTA from '../components/sections/CTA';
 import Footer from '../components/sections/Footer';
 
 export default function Landing() {
@@ -22,7 +21,6 @@ export default function Landing() {
         <AILab />
         <Services />
         <FAQ />
-        <CTA />
       </main>
       <Footer />
     </div>

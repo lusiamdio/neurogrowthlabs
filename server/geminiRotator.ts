@@ -2,7 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { GoogleGenAI, ThinkingLevel, Type } from '@google/genai';
 import type { ResearchPaper } from '../src/data/academyData.ts';
-import { buildPaperContextDigest } from './paperProcessing.ts';
+import {
+  buildPaperContextDigest,
+  getAllPapers,
+  getChaptersForPaper,
+} from './paperProcessing.ts';
 
 export type TableLens = 'comprehensive' | 'technical' | 'governance' | 'implementation';
 
@@ -27,6 +31,11 @@ export interface CachedTablesPayload {
 export const SUPPORTED_VOICES = ['Kore', 'Charon', 'Zephyr', 'Puck', 'Fenrir'] as const;
 export type VoiceName = (typeof SUPPORTED_VOICES)[number];
 
+export const TTS_MODELS_TO_ROTATE = [
+  'gemini-3.8-flash-lite-tts',
+  'gemini-3.8-flash-tts',
+] as const;
+
 const CACHE_ROOT = path.resolve(process.cwd(), '.cache');
 const TABLES_CACHE_DIR = path.join(CACHE_ROOT, 'research-tables');
 const AUDIO_CACHE_DIR = path.join(CACHE_ROOT, 'research-audio');
@@ -34,8 +43,9 @@ const AUDIO_CACHE_DIR = path.join(CACHE_ROOT, 'research-audio');
 fs.mkdirSync(TABLES_CACHE_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_CACHE_DIR, { recursive: true });
 
-// Round-robin key rotation state & per-key transient cooldown tracking
+// Round-robin key rotation state & per-key cooldown tracking
 let keyCursor = 0;
+let totalRotatedCalls = 0;
 const keyCooldownUntil = new Map<string, number>();
 
 export function getApiKeyPool(): string[] {
@@ -62,6 +72,19 @@ export function getApiKeyPool(): string[] {
   return unique;
 }
 
+export function getRotationPoolStatus() {
+  const keys = getApiKeyPool();
+  const now = Date.now();
+  const availableCount = keys.filter((k) => (keyCooldownUntil.get(k) ?? 0) <= now).length;
+  return {
+    keyPoolConfigured: keys.length > 0,
+    keyCount: keys.length,
+    availableKeyCount: availableCount,
+    rotationEnabled: keys.length > 1,
+    rotatedCalls: totalRotatedCalls,
+  };
+}
+
 function createClient(apiKey: string): GoogleGenAI {
   return new GoogleGenAI({
     apiKey,
@@ -74,9 +97,11 @@ function createClient(apiKey: string): GoogleGenAI {
   });
 }
 
-function isRateLimitOrTransientError(err: unknown): {
+function classifyGeminiError(err: unknown): {
   retryable: boolean;
+  shouldRotateKey: boolean;
   isQuota: boolean;
+  isPermissionDenied: boolean;
   status?: number;
   message: string;
 } {
@@ -87,6 +112,14 @@ function isRateLimitOrTransientError(err: unknown): {
       : undefined;
 
   const lower = message.toLowerCase();
+  const isPermissionDenied =
+    status === 401 ||
+    status === 403 ||
+    lower.includes('permission_denied') ||
+    lower.includes('access_denied') ||
+    lower.includes('api_key_invalid') ||
+    lower.includes('api key not valid');
+
   const isQuota =
     status === 429 ||
     lower.includes('429') ||
@@ -104,7 +137,14 @@ function isRateLimitOrTransientError(err: unknown): {
     lower.includes('timeout') ||
     lower.includes('overloaded');
 
-  return { retryable: isTransient, isQuota, status, message };
+  return {
+    retryable: isTransient,
+    shouldRotateKey: isTransient || isPermissionDenied,
+    isQuota,
+    isPermissionDenied,
+    status,
+    message,
+  };
 }
 
 function sleep(ms: number): Promise<void> {
@@ -112,9 +152,9 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function executeWithKeyRotation<T>(
-  operation: (ai: GoogleGenAI) => Promise<T>,
+  operation: (ai: GoogleGenAI, keySlot: number) => Promise<T>,
   maxRounds = 2
-): Promise<T> {
+): Promise<{ result: T; keySlotUsed: number }> {
   const keys = getApiKeyPool();
   if (keys.length === 0) {
     const err = new Error(
@@ -125,46 +165,83 @@ async function executeWithKeyRotation<T>(
   }
 
   let lastError: unknown;
-  const totalAttempts = Math.max(2, keys.length * maxRounds);
+  const triedKeys = new Set<string>();
+  const totalAttempts = Math.max(keys.length, keys.length * maxRounds);
 
   for (let attempt = 0; attempt < totalAttempts; attempt++) {
     const now = Date.now();
     let selectedKey: string | null = null;
+    let selectedIdx = 0;
 
-    // Select next non-cooled key via round-robin
+    // Prefer a key not yet tried in this call and not in cooldown
     for (let offset = 0; offset < keys.length; offset++) {
       const idx = (keyCursor + offset) % keys.length;
       const candidate = keys[idx];
       const cooldown = keyCooldownUntil.get(candidate) ?? 0;
-      if (cooldown <= now) {
+      if (!triedKeys.has(candidate) && cooldown <= now) {
         selectedKey = candidate;
+        selectedIdx = idx;
         keyCursor = (idx + 1) % keys.length;
         break;
       }
     }
 
-    // If all keys are in cooldown, wait for earliest cooldown expiry (up to 4s)
+    // Next, try any untried key even if previously cooled down
     if (!selectedKey) {
+      for (let offset = 0; offset < keys.length; offset++) {
+        const idx = (keyCursor + offset) % keys.length;
+        const candidate = keys[idx];
+        if (!triedKeys.has(candidate)) {
+          selectedKey = candidate;
+          selectedIdx = idx;
+          keyCursor = (idx + 1) % keys.length;
+          break;
+        }
+      }
+    }
+
+    // All distinct keys tried once; if none are healthy due to rate limits, wait briefly for round 2
+    if (!selectedKey) {
+      const lastInfo = lastError ? classifyGeminiError(lastError) : null;
+      if (lastInfo?.isPermissionDenied && !lastInfo.isQuota) {
+        break;
+      }
       const idx = keyCursor % keys.length;
       selectedKey = keys[idx];
+      selectedIdx = idx;
       keyCursor = (idx + 1) % keys.length;
-      const waitMs = Math.min(4000, Math.max(400, (keyCooldownUntil.get(selectedKey) ?? now) - now));
+      const waitMs = Math.min(3500, Math.max(400, (keyCooldownUntil.get(selectedKey) ?? now) - now));
       await sleep(waitMs);
     }
 
+    triedKeys.add(selectedKey);
+    totalRotatedCalls += 1;
+
     try {
       const ai = createClient(selectedKey);
-      return await operation(ai);
+      const result = await operation(ai, selectedIdx + 1);
+      return { result, keySlotUsed: selectedIdx + 1 };
     } catch (err) {
       lastError = err;
-      const info = isRateLimitOrTransientError(err);
+      const info = classifyGeminiError(err);
+
+      if (info.isPermissionDenied) {
+        keyCooldownUntil.set(selectedKey, Date.now() + 300_000);
+        // Move immediately to the next distinct untried key if available
+        if (triedKeys.size < keys.length) {
+          continue;
+        }
+        throw err;
+      }
+
       if (!info.retryable) {
         throw err;
       }
-      const backoffMs = info.isQuota ? 15000 : 2500 * Math.pow(1.5, Math.min(attempt, 4));
+
+      const backoffMs = info.isQuota ? 15_000 : 2500 * Math.pow(1.5, Math.min(attempt, 4));
       keyCooldownUntil.set(selectedKey, Date.now() + backoffMs);
       if (attempt < totalAttempts - 1) {
-        await sleep(Math.min(2000, 350 * (attempt + 1)));
+        await sleep(Math.min(1800, 300 * (attempt + 1)));
       }
     }
   }
@@ -271,7 +348,7 @@ export async function generateStructuredTablesForPaper(
 
   for (const modelName of modelsToRotate) {
     try {
-      const response = await executeWithKeyRotation(async (ai) => {
+      const { result: response } = await executeWithKeyRotation(async (ai) => {
         const config: Record<string, unknown> = {
           systemInstruction:
             'You are a senior research editor at an African AI policy & engineering journal. Synthesize clear, structured comparative tables grounded strictly in the provided research paper. Never invent numbers, acronyms, or benchmarks not present in the source paper. Keep every cell crisp, scannable, and accurately aligned to columns.',
@@ -450,86 +527,256 @@ export async function generateOrGetChapterAudio(options: {
   chapterId: string;
   spokenText: string;
   voiceName: VoiceName;
-}): Promise<{ filePath: string; fromCache: boolean; byteLength: number }> {
+}): Promise<{
+  filePath: string;
+  fromCache: boolean;
+  byteLength: number;
+  modelUsed: string;
+  keySlotUsed?: number;
+}> {
   const { paperId, chapterId, spokenText, voiceName } = options;
   const cachePath = getAudioCachePath(paperId, chapterId, voiceName);
 
   if (fs.existsSync(cachePath)) {
     const stat = fs.statSync(cachePath);
     if (stat.size > 44) {
-      return { filePath: cachePath, fromCache: true, byteLength: stat.size };
+      return {
+        filePath: cachePath,
+        fromCache: true,
+        byteLength: stat.size,
+        modelUsed: 'cache',
+      };
     }
   }
 
   const chunks = splitSpeechScriptIntoChunks(spokenText, 1550);
   const clipBuffers: Buffer[] = [];
+  let lastModelUsed: string = TTS_MODELS_TO_ROTATE[0];
+  let lastKeySlotUsed: number | undefined;
 
   for (const chunkText of chunks) {
-    const response = await executeWithKeyRotation(async (ai) => {
+    let chunkBase64: string | undefined;
+    let lastTtsErr: unknown;
+
+    for (const ttsModel of TTS_MODELS_TO_ROTATE) {
       try {
-        return await ai.models.generateContent({
-          model: 'gemini-3.8-flash-lite-tts',
-          contents: [
-            {
-              role: 'user',
-              parts: [
+        const { result: response, keySlotUsed } = await executeWithKeyRotation(async (ai) => {
+          try {
+            return await ai.models.generateContent({
+              model: ttsModel,
+              contents: [
                 {
-                  text: chunkText,
-                  speechMetadata: {
-                    style:
-                      'Clear, measured, authoritative academic research narrator delivering a technical policy briefing.',
-                  },
+                  role: 'user',
+                  parts: [
+                    {
+                      text: chunkText,
+                      speechMetadata: {
+                        style:
+                          'Clear, measured, authoritative academic research narrator delivering a technical policy briefing.',
+                      },
+                    },
+                  ],
                 },
               ],
-            },
-          ],
-          config: {
-            responseModalities: ['AUDIO'],
-            speechConfig: {
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName },
-              },
-            },
-          },
-        });
-      } catch (innerErr) {
-        const msg = innerErr instanceof Error ? innerErr.message : String(innerErr);
-        if (msg.includes('speechMetadata')) {
-          return ai.models.generateContent({
-            model: 'gemini-3.8-flash-lite-tts',
-            contents: [
-              {
-                role: 'user',
-                parts: [
-                  {
-                    text: `Read aloud in a clear, measured, authoritative academic voice: ${chunkText}`,
+              config: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                  voiceConfig: {
+                    prebuiltVoiceConfig: { voiceName },
                   },
-                ],
-              },
-            ],
-            config: {
-              responseModalities: ['AUDIO'],
-              speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName },
                 },
               },
-            },
-          });
-        }
-        throw innerErr;
-      }
-    });
+            });
+          } catch (innerErr) {
+            const msg = innerErr instanceof Error ? innerErr.message : String(innerErr);
+            if (msg.includes('speechMetadata')) {
+              return ai.models.generateContent({
+                model: ttsModel,
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [
+                      {
+                        text: `Read aloud in a clear, measured, authoritative academic voice: ${chunkText}`,
+                      },
+                    ],
+                  },
+                ],
+                config: {
+                  responseModalities: ['AUDIO'],
+                  speechConfig: {
+                    voiceConfig: {
+                      prebuiltVoiceConfig: { voiceName },
+                    },
+                  },
+                },
+              });
+            }
+            throw innerErr;
+          }
+        });
 
-    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    if (!base64Audio) {
-      throw new Error('TTS model returned an empty audio payload.');
+        const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        if (!base64Audio) {
+          throw new Error('TTS model returned an empty audio payload.');
+        }
+
+        chunkBase64 = base64Audio;
+        lastModelUsed = ttsModel;
+        lastKeySlotUsed = keySlotUsed;
+        break;
+      } catch (err) {
+        lastTtsErr = err;
+        const info = classifyGeminiError(err);
+        // If every configured key lacks API permission (403/401), do not spam another model
+        if (info.isPermissionDenied) {
+          throw err;
+        }
+      }
     }
-    clipBuffers.push(Buffer.from(base64Audio, 'base64'));
+
+    if (!chunkBase64) {
+      throw lastTtsErr instanceof Error
+        ? lastTtsErr
+        : new Error('Unable to synthesize audio across configured TTS models.');
+    }
+
+    clipBuffers.push(Buffer.from(chunkBase64, 'base64'));
   }
 
   const finalWav = concatenateWavBuffers(clipBuffers);
   fs.writeFileSync(cachePath, finalWav);
 
-  return { filePath: cachePath, fromCache: false, byteLength: finalWav.length };
+  return {
+    filePath: cachePath,
+    fromCache: false,
+    byteLength: finalWav.length,
+    modelUsed: lastModelUsed,
+    keySlotUsed: lastKeySlotUsed,
+  };
+}
+
+export interface PaperAudioStatusItem {
+  paperId: string;
+  title: string;
+  category: string;
+  publishDate: string;
+  briefCached: boolean;
+  allChaptersCached: boolean;
+  cachedChapters: number;
+  totalChapters: number;
+  briefEstimatedSeconds: number;
+  totalEstimatedSeconds: number;
+  briefAudioUrl: string;
+}
+
+export function getAudioLibraryInventory(voiceName: VoiceName) {
+  const papers = getAllPapers();
+  let totalChapters = 0;
+  let cachedChapters = 0;
+  let convertedBriefCount = 0;
+  let fullyConvertedCount = 0;
+
+  const items: PaperAudioStatusItem[] = papers.map((paper) => {
+    const chapters = getChaptersForPaper(paper);
+    const cachedList = chapters.filter((ch) => hasCachedAudio(paper.id, ch.id, voiceName));
+    const briefCached = hasCachedAudio(paper.id, 'brief', voiceName);
+    const allChaptersCached = chapters.length > 0 && cachedList.length === chapters.length;
+
+    totalChapters += chapters.length;
+    cachedChapters += cachedList.length;
+    if (briefCached) convertedBriefCount += 1;
+    if (allChaptersCached) fullyConvertedCount += 1;
+
+    const briefChapter = chapters.find((ch) => ch.id === 'brief') || chapters[0];
+    const totalEstimatedSeconds = chapters.reduce((sum, ch) => sum + ch.estimatedSeconds, 0);
+
+    return {
+      paperId: paper.id,
+      title: paper.title,
+      category: paper.category,
+      publishDate: paper.publishDate,
+      briefCached,
+      allChaptersCached,
+      cachedChapters: cachedList.length,
+      totalChapters: chapters.length,
+      briefEstimatedSeconds: briefChapter?.estimatedSeconds || 90,
+      totalEstimatedSeconds,
+      briefAudioUrl: `/api/research/${encodeURIComponent(paper.id)}/audio/brief?voice=${encodeURIComponent(voiceName)}`,
+    };
+  });
+
+  const pool = getRotationPoolStatus();
+
+  return {
+    voice: voiceName,
+    models: TTS_MODELS_TO_ROTATE,
+    ...pool,
+    totalPapers: papers.length,
+    convertedBriefCount,
+    fullyConvertedCount,
+    totalChapters,
+    cachedChapters,
+    items,
+  };
+}
+
+export async function convertPaperAudioScope(options: {
+  paper: ResearchPaper;
+  voiceName: VoiceName;
+  scope: 'brief' | 'all';
+}): Promise<{
+  paperId: string;
+  voice: VoiceName;
+  scope: 'brief' | 'all';
+  chaptersSynthesized: number;
+  chaptersFromCache: number;
+  totalChapters: number;
+  totalBytes: number;
+  modelUsed: string;
+  keySlotUsed?: number;
+  briefAudioUrl: string;
+}> {
+  const { paper, voiceName, scope } = options;
+  const allChapters = getChaptersForPaper(paper);
+  const targetChapters =
+    scope === 'all'
+      ? allChapters
+      : [allChapters.find((ch) => ch.id === 'brief') || allChapters[0]].filter(Boolean);
+
+  let chaptersSynthesized = 0;
+  let chaptersFromCache = 0;
+  let totalBytes = 0;
+  let modelUsed = 'cache';
+  let keySlotUsed: number | undefined;
+
+  for (const chapter of targetChapters) {
+    const result = await generateOrGetChapterAudio({
+      paperId: paper.id,
+      chapterId: chapter.id,
+      spokenText: chapter.spokenText,
+      voiceName,
+    });
+    if (result.fromCache) {
+      chaptersFromCache += 1;
+    } else {
+      chaptersSynthesized += 1;
+      modelUsed = result.modelUsed;
+      if (result.keySlotUsed) keySlotUsed = result.keySlotUsed;
+    }
+    totalBytes += result.byteLength;
+  }
+
+  return {
+    paperId: paper.id,
+    voice: voiceName,
+    scope,
+    chaptersSynthesized,
+    chaptersFromCache,
+    totalChapters: targetChapters.length,
+    totalBytes,
+    modelUsed,
+    keySlotUsed,
+    briefAudioUrl: `/api/research/${encodeURIComponent(paper.id)}/audio/brief?voice=${encodeURIComponent(voiceName)}`,
+  };
 }

@@ -1,0 +1,1265 @@
+African AI Governance & Sovereign AI
+Student Lesson Pack — Modules 1–4
+Total learning time: 6.5 hours
+Level: Advanced / Professional
+Format: Instructor-led lesson + case studies + practical exercises + assessment
+Core theme: Building AI systems that are legally compliant, technically sovereign, ethically defensible, and institutionally accountable.
+COURSE LEARNING OUTCOMES
+By the end of these four modules, you should be able to:
+1. Explain the major continental and national frameworks governing data and AI in Africa.
+2. Map an AI system against applicable African privacy and data-governance requirements.
+3. Conduct a basic Algorithmic Impact Assessment (AIA).
+4. Identify and measure algorithmic bias and disparate impact.
+5. Design data-sovereign cloud architectures.
+6. Distinguish between data residency, data sovereignty, data localization, and data control.
+7. Design governance structures for institutional AI deployment.
+8. Establish an AI Ethics Charter.
+9. Design an AI red-teaming and incident-escalation process.
+10. Produce transparent AI governance documentation suitable for executives, regulators, users, and affected communities.
+MODULE 1 — CONTINENTAL LEGAL FRAMEWORKS & PAN-AFRICAN REGULATORY HARMONIZATION
+Duration: 1.5 hours
+1.1 Module Overview
+Artificial intelligence does not operate in a legal vacuum.
+
+An AI system may simultaneously process:
+- personal information;
+- biometric information;
+- financial data;
+- health information;
+- educational records;
+- employment information;
+- government information;
+- commercially sensitive data;
+- cross-border data.
+Consequently, an African AI deployment may be subject to several layers of regulation.
+
+Think of the regulatory environment as a hierarchy:
+
+Continental frameworks → Regional frameworks → National legislation → Sector regulation → Institutional policies → Technical controls
+
+The objective is not simply to ask:
+"Is AI legal?"
+
+Instead, ask:
+"What data is being processed, where is it processed, for what purpose, by whom, under whose jurisdiction, and with what safeguards?"
+
+1.2 The African Regulatory Landscape
+Africa does not have one single AI or data-protection law.
+
+Instead, governance operates through multiple overlapping frameworks.
+
+Important continental instruments include:
+African Union Convention on Cyber Security and Personal Data Protection
+Commonly called the Malabo Convention, it was adopted in 2014 and entered into force on 8 June 2023. African Union
+
+The Convention addresses areas including:
+- personal data protection;
+- cybersecurity;
+- electronic transactions;
+- cybercrime;
+- institutional cooperation.
+It is important because it establishes a continental reference point for cybersecurity and personal-data governance.
+
+However:
+The Malabo Convention does not replace national data-protection laws.
+
+Students must therefore avoid treating it as an "African GDPR."
+1.3 AU Data Policy Framework
+The African Union adopted its Data Policy Framework in 2022.
+
+The framework aims to strengthen and harmonize African data-governance frameworks and promote a trusted African data environment, including support for intra-African digital trade and AfCFTA-related integration. African Union
+
+The framework emphasizes:
+- data governance;
+- data rights;
+- trusted data ecosystems;
+- cross-border data flows;
+- digital transformation;
+- economic development;
+- inclusion;
+- African data infrastructure.
+Key principle
+Data should not merely be viewed as a technical asset.
+
+It is simultaneously:
+
+an economic resource + a governance resource + a rights-bearing resource + a strategic resource.
+1.4 National Regulatory Layer
+A company deploying an AI platform across Africa must still examine the law of each relevant jurisdiction.
+
+Examples include:
+South Africa
+South Africa's Protection of Personal Information Act (POPIA) establishes requirements governing the processing of personal information.
+Kenya
+Kenya's Data Protection Act, 2019 regulates personal-data processing and establishes the Office of the Data Protection Commissioner. Kenya also has regulations addressing registration, complaints, enforcement and other areas. odpc.go.ke
+
+Kenya's framework contains specific requirements for transferring personal data outside Kenya. odpc.go.ke
+Nigeria
+Nigeria's Nigeria Data Protection Act 2023 establishes a legal framework for protecting personal information and establishes the Nigeria Data Protection Commission. The Act can apply to processing connected to Nigeria even where an organization is not physically domiciled there. ndpc.gov.ng
+1.5 The Regulatory Harmonization Problem
+Imagine an AI company operates in:
+- South Africa
+- Nigeria
+- Kenya
+- Ghana
+- Rwanda
+- Angola.
+The company cannot simply create one privacy policy and assume it satisfies every jurisdiction.
+
+Instead, it should create a:
+Regulatory Control Matrix
+Requirement	South Africa	Nigeria	Kenya	Ghana	Rwanda	Angola
+Privacy law	Identify	Identify	Identify	Identify	Identify	Identify
+Regulator	Identify	Identify	Identify	Identify	Identify	Identify
+Data controller rules	Map	Map	Map	Map	Map	Map
+Cross-border transfer	Assess	Assess	Assess	Assess	Assess	Assess
+Sensitive data	Assess	Assess	Assess	Assess	Assess	Assess
+Data retention	Assess	Assess	Assess	Assess	Assess	Assess
+Breach notification	Assess	Assess	Assess	Assess	Assess	Assess
+Localization requirement	Assess	Assess	Assess	Assess	Assess	Assess
+AI-specific requirements	Assess	Assess	Assess	Assess	Assess	Assess
+
+
+Important: This table is a methodology, not a statement that every jurisdiction has identical requirements.
+1.6 Data Flow Mapping
+Before determining compliance, map the data.
+
+Example:
+
+University student
+
+↓  
+
+Mobile application
+
+↓
+
+University database
+
+↓
+
+AI analytics platform
+
+↓
+
+Cloud provider
+
+↓
+
+Foundation model API
+
+↓
+
+AI-generated recommendation
+
+↓
+
+University administrator
+
+↓
+
+Student
+
+Now ask:
+1. Where was the data collected?
+2. Where is it stored?
+3. Where is it processed?
+4. Does it leave the country?
+5. Is it transferred to a third party?
+6. Is it used to train a model?
+7. Is the information personally identifiable?
+8. Is it sensitive?
+9. Who controls the data?
+10. How can the individual exercise their rights?
+1.7 The African Regulatory Stack
+Use this model:
+Layer 1 — Continental
+AU frameworks and conventions.
+Layer 2 — Regional
+Regional economic communities and regional frameworks.
+
+Examples include:
+- SADC;
+- ECOWAS;
+- EAC;
+- other applicable regional mechanisms.
+Layer 3 — National
+National privacy, cybersecurity, digital, consumer-protection and AI-related legislation.
+Layer 4 — Sectoral
+Examples:
+- banking;
+- healthcare;
+- education;
+- telecommunications;
+- insurance;
+- government;
+- employment.
+Layer 5 — Institutional
+The organization's:
+- AI policy;
+- privacy policy;
+- cybersecurity policy;
+- data classification policy;
+- procurement policy.
+Layer 6 — Technical
+Actual controls:
+- encryption;
+- access control;
+- logging;
+- residency controls;
+- deletion;
+- anonymization;
+- monitoring.
+1.8 Student Activity — Regulatory Mapping Exercise
+Scenario
+You are advising an African fintech company.
+
+The company:
+- has headquarters in South Africa;
+- serves customers in Kenya and Nigeria;
+- stores customer information in a cloud environment;
+- uses an external generative-AI API;
+- analyzes transaction data;
+- generates fraud-risk scores.
+Task
+Create a regulatory map answering:
+1. What data is being processed?
+2. Which countries are involved?
+3. Which regulators could have jurisdiction?
+4. Is data crossing borders?
+5. Is sensitive information involved?
+6. Who are the controllers and processors?
+7. What contracts are required?
+8. What technical safeguards are necessary?
+9. What happens if the AI makes a harmful decision?
+10. What records should the organization maintain?
+1.9 Key Lesson
+The goal of Pan-African regulatory harmonization is not necessarily identical laws.
+
+The practical objective is:
+interoperable governance.
+
+Organizations should build systems capable of adapting to jurisdictional differences without rebuilding the entire technology stack.
+MODULE 1 — KNOWLEDGE CHECK
+Question 1
+What is the Malabo Convention?
+
+A. An African AI model
+B. An AU cybersecurity and personal-data protection convention
+C. A cloud-computing standard
+D. A regional bank regulation
+
+Answer: B
+Question 2
+Why is regulatory mapping necessary?
+
+Answer: Because an AI deployment can involve multiple jurisdictions, sectors, data categories and legal obligations.
+Question 3
+What should come before choosing a cloud architecture?
+
+Answer: Understanding the organization's data, regulatory obligations, processing activities and residency requirements.
+MODULE 2 — ALGORITHMIC IMPACT ASSESSMENTS & BIAS AUDITING
+Duration: 2 hours
+2.1 Module Overview
+AI systems can produce unequal outcomes even when developers do not intentionally discriminate.
+
+Bias can enter through:
+- historical data;
+- sampling;
+- labels;
+- missing data;
+- proxy variables;
+- model architecture;
+- thresholds;
+- deployment environment;
+- human decision-making;
+- feedback loops.
+Therefore:
+AI accuracy is not the same thing as AI fairness.
+
+2.2 What Is an Algorithmic Impact Assessment?
+An Algorithmic Impact Assessment (AIA) is a structured process for identifying, assessing and managing the risks created by an algorithmic system.
+
+AIA should answer five questions:
+1. What is the system?
+What does it do?
+2. Who is affected?
+Which individuals or communities experience its consequences?
+3. What could go wrong?
+What are the risks?
+4. How serious are those risks?
+What is the severity and probability?
+5. What controls exist?
+How will the organization prevent, detect and correct harm?
+2.3 The AIA Lifecycle
+Use the following lifecycle:
+
+1. System identification
+
+↓
+
+2. Purpose definition
+
+↓
+
+3. Stakeholder identification
+
+↓
+
+4. Data assessment
+
+↓
+
+5. Risk assessment
+
+↓
+
+6. Fairness assessment
+
+↓
+
+7. Security assessment
+
+↓
+
+8. Human-rights assessment
+
+↓
+
+9. Mitigation
+
+↓
+
+10. Deployment decision
+
+↓
+
+11. Continuous monitoring
+2.4 African Context Matters
+A model trained primarily on data from one population may perform differently when deployed in another.
+
+For example:
+
+A facial-recognition model trained predominantly on one demographic population could have different error rates when deployed in another African population.
+
+Similarly:
+
+A credit model trained using formal banking data may disadvantage informal workers because their economic activity is poorly represented.
+
+A language model trained mostly on English and high-resource languages may perform poorly in:
+- African languages;
+- code-switching;
+- local idioms;
+- informal language;
+- dialects.
+Therefore:
+Representation is an AI governance issue.
+
+2.5 Types of Algorithmic Bias
+Sampling Bias
+The training data does not adequately represent the deployment population.
+Historical Bias
+The data reflects historical inequalities.
+Measurement Bias
+The variable used does not accurately represent the underlying phenomenon.
+Label Bias
+Human-generated labels contain systematic errors.
+Proxy Bias
+A seemingly neutral variable acts as a proxy for a sensitive characteristic.
+Selection Bias
+Certain populations are disproportionately included or excluded.
+Automation Bias
+Humans place excessive trust in AI outputs.
+Feedback-Loop Bias
+The model's predictions influence future data, reinforcing the original pattern.
+2.6 Fairness Metrics
+Students should understand several common measures.
+Demographic Parity
+Compares positive prediction rates between groups.
+
+Conceptually:
+
+P(prediction = positive | group A)
+
+versus
+
+P(prediction = positive | group B)
+Equal Opportunity
+Compares true-positive rates between groups.
+
+Example:
+
+If an AI identifies scholarship candidates, ask:
+Of genuinely eligible students, does the system identify students from different groups at comparable rates?
+
+Equalized Odds
+Considers both:
+- true-positive rates;
+- false-positive rates.
+False Positive Rate
+A false positive occurs when the system predicts:
+"Positive"
+
+when the true condition is:
+"Negative."
+
+False Negative Rate
+A false negative occurs when the system predicts:
+"Negative"
+
+when the true condition is:
+"Positive."
+
+2.7 Example — AI Loan Approval
+Suppose an AI evaluates 10,000 loan applications.
+Group	Approved	Rejected	Approval Rate
+Group A	2,000	3,000	40%
+Group B	1,000	4,000	20%
+
+
+The difference is substantial.
+
+But this alone does not prove discrimination.
+
+Students must investigate:
+- income;
+- employment;
+- credit history;
+- geography;
+- missing data;
+- previous defaults;
+- application quality;
+- sample size;
+- legitimate underwriting factors.
+The correct conclusion is:
+There is a disparity that requires investigation.
+
+Not:
+The algorithm is definitely discriminatory.
+
+2.8 The Four-Dimensional Bias Audit
+A robust audit should examine:
+Data
+Is the data representative?
+Model
+Does performance differ across groups?
+Outcome
+Do different groups receive different outcomes?
+Deployment
+Does the system operate differently in the real world than in testing?
+2.9 Demographic Representation
+For African AI systems, representation should be evaluated carefully.
+
+Potential dimensions include:
+- country;
+- language;
+- region;
+- urban/rural context;
+- age;
+- gender;
+- disability;
+- socioeconomic status;
+- education;
+- connectivity;
+- device type.
+Not every characteristic should automatically be collected.
+
+The governing principle is:
+Collect only what is necessary, lawful, proportionate and ethically justified.
+
+2.10 AI Impact Assessment Template
+Students can use the following template.
+A. System
+System name:
+Owner:
+Purpose:
+Deployment country:
+Sector:  
+B. Affected populations
+Who is affected?
+C. Data
+What data is used?
+D. Decision
+What decision does the model influence?
+E. Risk
+What could go wrong?
+F. Fairness
+Which groups could experience unequal outcomes?
+G. Explainability
+Can affected individuals understand the decision?
+H. Human oversight
+Can a human override the decision?
+I. Security
+Could the model or data be manipulated?
+J. Redress
+How can someone challenge the outcome?
+K. Monitoring
+What metrics will be monitored after deployment?
+2.11 Student Practical Exercise
+Case: AI University Admissions
+A university introduces an AI system to rank applicants.
+
+The model uses:
+- academic results;
+- location;
+- school type;
+- language;
+- historical admission data;
+- extracurricular activities.
+The model produces a score from 0–100.
+Your task
+Identify:
+1. Five potential sources of bias.
+2. Three groups that may be disproportionately affected.
+3. Five fairness metrics or tests.
+4. Three human-oversight mechanisms.
+5. Five governance controls.
+2.12 Red Flag Indicators
+An organization should investigate if it observes:
+- significantly different error rates;
+- unexplained approval-rate differences;
+- poor performance for certain languages;
+- high rejection rates for specific communities;
+- missing demographic representation;
+- unexplained model drift;
+- human operators blindly accepting AI recommendations;
+- inability to explain decisions;
+- lack of an appeal mechanism.
+2.13 Key Lesson
+A responsible AI organization should not ask:
+"Does our model have bias?"
+
+Only.
+
+It should ask:
+"What forms of unequal impact could this system create, how do we know, who could be harmed, and what will we do about it?"
+
+MODULE 2 — KNOWLEDGE CHECK
+Question 1
+Does a difference in outcomes automatically prove algorithmic discrimination?
+
+Answer: No. It indicates a disparity that requires investigation.
+Question 2
+Why is accuracy insufficient?
+
+Answer: A model can have high overall accuracy while performing significantly worse for particular populations.
+Question 3
+What should happen after an AIA?
+
+Answer: Mitigation, deployment decision, documentation and continuous monitoring.
+MODULE 3 — DATA SOVEREIGNTY, SOVEREIGN CLOUD & LOCAL RESIDENCY ARCHITECTURES
+Duration: 1.5 hours
+3.1 Module Overview
+Modern AI creates a major architectural problem.
+
+Organizations want access to:
+- frontier AI models;
+- global cloud infrastructure;
+- advanced GPUs;
+- global developer platforms;
+- international APIs.
+At the same time, governments and institutions may require:
+- local data residency;
+- national control;
+- restricted cross-border transfers;
+- sovereign infrastructure;
+- stronger security;
+- institutional ownership.
+The answer is not necessarily:
+"Never use international cloud."
+
+Instead, organizations can design controlled hybrid architectures.
+3.2 Four Concepts Students Must Distinguish
+Data Residency
+Where the data is physically stored or processed.
+
+Example:
+"Customer data must remain in South Africa."
+
+Data Sovereignty
+The legal and governmental authority applicable to data.
+
+Example:
+
+Data may be physically located in one country but subject to another jurisdiction's legal control depending on the architecture and contractual structure.
+Data Localization
+A legal or policy requirement that particular categories of data remain within a specified jurisdiction.
+Data Control
+Who has practical authority over:
+- access;
+- encryption;
+- processing;
+- deletion;
+- movement;
+- permissions.
+3.3 The Sovereign AI Principle
+A useful design principle is:
+Sensitive data should remain under institutional control even when frontier intelligence is accessed externally.
+
+This creates an architectural separation between:
+Data Plane
+Where sensitive information resides.
+
+and
+Intelligence Plane
+Where AI reasoning/model capabilities are accessed.
+3.4 Reference Architecture
+A sovereign AI architecture can look like:
+                 USERS
+                   |
+                   v
+          +----------------+
+          | Identity / IAM |
+          +----------------+
+                   |
+                   v
+        +----------------------+
+        | Sovereign AI Gateway |
+        +----------------------+
+             /            \
+            /              \
+           v                v
++----------------+   +----------------------+
+| Local Data     |   | Local AI Models      |
+| Environment    |   | / RAG / Inference    |
++----------------+   +----------------------+
+| Databases      |   | Smaller LLMs         |
+| Documents      |   | Embeddings           |
+| PII            |   | Classifiers          |
+| Sensitive Data |   | Guardrails           |
++----------------+   +----------------------+
+           |
+           v
+   +-------------------+
+   | Policy / DLP Layer |
+   +-------------------+
+           |
+           v
++--------------------------------+
+| Approved External AI Services  |
+| Frontier Models / APIs         |
++--------------------------------+
+
+3.5 The AI Gateway
+The gateway becomes the policy enforcement point.
+
+Before information leaves the sovereign environment, it should determine:
+1. Is this data classified?
+2. Is external processing allowed?
+3. Does the destination meet organizational requirements?
+4. Should personal identifiers be removed?
+5. Should the prompt be transformed?
+6. Should the request be blocked?
+3.6 Data Classification
+A practical classification system:
+Level 1 — Public
+Can be shared publicly.
+
+Examples:
+- public reports;
+- press releases.
+Level 2 — Internal
+Routine organizational information.
+Level 3 — Confidential
+Sensitive organizational information.
+Level 4 — Restricted
+Highly sensitive information.
+
+Examples:
+- national identifiers;
+- health information;
+- financial records;
+- confidential government data;
+- high-risk personal data.
+The stricter the classification, the stronger the sovereignty requirements.
+3.7 Tokenization and Pseudonymization
+Suppose a government database contains:
+
+Name: Maria Silva
+National ID: 123456789
+Salary: R50,000
+
+Instead of sending the raw record to an external model:
+Maria Silva
+123456789
+R50,000
+
+the system could transform it into:
+PERSON_4831
+ID_TOKEN_91X
+SALARY_BAND_4
+
+The AI can perform certain analytical tasks without receiving the original identity.
+
+This is not automatically sufficient for compliance; re-identification risk and the applicable law must still be assessed.
+3.8 Retrieval-Augmented Generation
+A sovereign RAG architecture allows an organization to keep its authoritative data in its controlled environment.
+
+Flow:
+
+User
+
+↓
+
+Authentication
+
+↓
+
+Question
+
+↓
+
+Local retrieval
+
+↓
+
+Relevant documents
+
+↓
+
+Security/policy filter
+
+↓
+
+Approved model
+
+↓
+
+Answer
+
+The model does not need unrestricted access to the organization's entire database.
+3.9 Sovereign Cloud Architecture Principles
+Students should remember:
+Principle 1 — Minimize
+Do not send unnecessary data.
+Principle 2 — Classify
+Know what information is being processed.
+Principle 3 — Localize where required
+Keep restricted data in the appropriate jurisdiction.
+Principle 4 — Encrypt
+Protect data in transit and at rest.
+Principle 5 — Control keys
+Consider who controls encryption keys and access.
+Principle 6 — Monitor
+Log data movement and AI activity.
+Principle 7 — Segment
+Separate environments by sensitivity and jurisdiction.
+Principle 8 — Fail safely
+If sovereignty conditions cannot be satisfied, block or downgrade the request.
+3.10 Student Architecture Exercise
+Scenario
+You are designing an AI platform for a national university system.
+
+Data includes:
+- student records;
+- examination results;
+- lecturer records;
+- research documents;
+- financial information.
+The university wants to use a frontier AI model hosted outside the country.
+Design a solution.
+Your architecture must include:
+1. Identity management.
+2. Data classification.
+3. Local database.
+4. AI gateway.
+5. DLP controls.
+6. RAG.
+7. External model.
+8. Audit logging.
+9. Encryption.
+10. Human oversight.
+3.11 Architecture Decision Matrix
+Data Type	Local Processing	External AI
+Public information	Optional	Usually possible subject to policy
+Internal information	Preferred	Controlled
+Confidential information	Preferred	Risk assessment required
+Sensitive personal data	Strong preference	Highly restricted
+National-security data	Required where applicable	Generally prohibited unless specifically authorized
+
+
+This is a design framework, not a universal legal rule.
+3.12 Key Lesson
+Data sovereignty does not necessarily mean:
+"Build everything yourself."
+
+It means:
+Know where data goes, who controls it, which laws apply, what external parties can access, and whether the organization can enforce its policies.
+
+MODULE 3 — KNOWLEDGE CHECK
+Question 1
+What is data residency?
+
+Answer: The location where data is stored or processed.
+Question 2
+What is the purpose of an AI gateway?
+
+Answer: To enforce policies governing what data can be sent to which AI services under what conditions.
+Question 3
+Can an organization use frontier AI while retaining data sovereignty?
+
+Answer: Potentially yes, through appropriate architecture, controls, contracts and legal assessment.
+MODULE 4 — BUILDING INSTITUTIONAL AI ETHICS CHARTERS & RED-TEAMING BOARDS
+Duration: 1.5 hours
+4.1 Module Overview
+Technology alone cannot create trustworthy AI.
+
+An institution needs:
+
+People + Policy + Process + Technology + Accountability
+
+This module teaches students how to create institutional AI governance.
+4.2 What Is an AI Ethics Charter?
+An AI Ethics Charter is an institutional statement defining how AI should be developed, purchased, deployed and monitored.
+
+It should answer:
+What will this organization permit, prohibit, require and monitor when using AI?
+
+4.3 Recommended AI Ethics Principles
+A strong institutional charter can include:
+1. Human Accountability
+A human remains accountable for consequential decisions.
+2. Lawfulness
+AI must operate within applicable legal and regulatory requirements.
+3. Fairness
+AI should not create unjustified discriminatory outcomes.
+4. Transparency
+Stakeholders should understand when and how AI is being used.
+5. Privacy
+Personal information should be protected.
+6. Security
+AI systems must be protected against misuse and attack.
+7. Explainability
+Appropriate explanations should be available for consequential decisions.
+8. Human Oversight
+High-impact systems require meaningful human review.
+9. Contestability
+Affected people should have mechanisms to challenge decisions.
+10. Sustainability
+AI deployment should consider environmental and infrastructure impacts.
+11. African Context
+Systems should account for African languages, cultures, institutions and socioeconomic realities.
+4.4 AI Governance Council
+An institution should establish an AI governance structure.
+
+Example:
+                 BOARD
+                   |
+                   v
+          AI GOVERNANCE COUNCIL
+                   |
+       +-----------+-----------+
+       |           |           |
+       v           v           v
+    Legal       Security      Ethics
+       |           |           |
+       +-----------+-----------+
+                   |
+                   v
+             AI Product Team
+                   |
+        +----------+----------+
+        |          |          |
+       Data      Model      Operations
+
+4.5 Who Should Be on the Council?
+Potential members:
+- executive sponsor;
+- legal/compliance;
+- CIO/CTO;
+- CISO;
+- data protection/privacy officer;
+- risk officer;
+- data science/AI lead;
+- HR;
+- procurement;
+- affected business units;
+- ethics/human-rights representative;
+- community or user representative where appropriate.
+The composition should reflect the organization's size, sector and risk.
+4.6 Risk-Based AI Classification
+Not every AI application requires the same governance.
+Low Risk
+Examples:
+- meeting transcription;
+- internal search;
+- document summarization.
+Moderate Risk
+Examples:
+- recruitment assistance;
+- customer segmentation;
+- academic analytics.
+High Risk
+Examples:
+- credit decisions;
+- healthcare decisions;
+- employment decisions;
+- government eligibility decisions;
+- law enforcement;
+- high-impact education decisions.
+Critical Risk
+Systems that could create severe consequences for fundamental rights, safety or national interests should receive the highest level of governance and potentially be prohibited depending on applicable law and institutional policy.
+4.7 AI Red Team
+An AI red team is a group responsible for deliberately attempting to make an AI system fail, behave improperly or produce harmful outcomes.
+
+The philosophy is:
+Attack the system before reality does.
+
+4.8 What Should a Red Team Test?
+Security
+Can attackers manipulate the model?
+Prompt Injection
+Can malicious instructions override intended behavior?
+Data Leakage
+Can sensitive information be extracted?
+Bias
+Does the model produce discriminatory outputs?
+Hallucination
+Does the system confidently produce false information?
+Robustness
+Does the system fail under unusual inputs?
+Privacy
+Can individual information be inferred or exposed?
+Abuse
+Can the system be used for harmful purposes?
+Operational Failure
+What happens when the underlying services fail?
+4.9 Red-Team Workflow
+Step 1 — Define scope
+What system is being tested?
+Step 2 — Identify threats
+What could go wrong?
+Step 3 — Develop attack scenarios
+Create realistic test cases.
+Step 4 — Execute tests
+Run controlled experiments.
+Step 5 — Record evidence
+Document:
+- input;
+- output;
+- conditions;
+- severity;
+- reproducibility.
+Step 6 — Assign risk
+Example:
+Severity	Meaning
+Critical	Severe harm or systemic compromise
+High	Significant harm
+Medium	Material but manageable issue
+Low	Limited impact
+
+
+Step 7 — Remediate
+Fix the issue.
+Step 8 — Retest
+Confirm that the mitigation works.
+4.10 Incident Escalation Workflow
+A mature institution should define:
+AI INCIDENT
+     |
+     v
+Detection
+     |
+     v
+Triage
+     |
+     +---- Low ------> Product Team
+     |
+     +---- Medium ---> AI Governance Council
+     |
+     +---- High -----> Executive + Legal + Security
+     |
+     +---- Critical -> Executive Crisis Response
+                              |
+                              v
+                       Regulator / Authorities
+                       where legally required
+
+4.11 AI Incident Report
+Every significant incident should capture:
+
+Incident ID:
+Date:
+System:
+Owner:
+Description:
+Affected users:
+Data involved:
+Root cause:
+Severity:
+Immediate containment:
+Legal assessment:
+Customer communication:
+Regulatory notification:
+Corrective action:
+Preventive action:
+Retest date:
+Final approval:
+4.12 Transparent AI Reporting
+Organizations should consider publishing an:
+AI Transparency Report
+Possible sections:
+AI systems deployed
+Number and type of systems.
+Purpose
+Why each system is used.
+Data
+Categories of data processed.
+Risk
+Risk classification.
+Human oversight
+How humans supervise the systems.
+Bias testing
+What testing has occurred.
+Incidents
+Number and severity of incidents.
+Complaints
+Number and categories of complaints.
+Corrective actions
+What changed as a result.
+Third-party AI
+External models and providers used.
+4.13 Institutional AI Ethics Charter — Student Template
+Students should be able to draft the following:
+Institutional AI Ethics Charter
+Article 1 — Purpose
+The organization commits to responsible, secure, lawful and human-centered AI.
+Article 2 — Scope
+The charter applies to:
+- employees;
+- contractors;
+- suppliers;
+- AI systems;
+- automated decision systems;
+- third-party AI services.
+Article 3 — Governance
+All high-impact AI systems must undergo institutional review before deployment.
+Article 4 — Data
+AI systems must comply with applicable data-protection requirements and organizational data policies.
+Article 5 — Fairness
+High-impact systems must undergo appropriate bias and impact assessment.
+Article 6 — Human Oversight
+Consequential decisions must have appropriate human oversight.
+Article 7 — Security
+AI systems must undergo security testing and monitoring.
+Article 8 — Transparency
+Users must receive appropriate information regarding AI use.
+Article 9 — Contestability
+Affected individuals should have an appropriate mechanism to challenge consequential AI outcomes.
+Article 10 — Incident Management
+AI incidents must be reported, investigated, contained and remediated.
+Article 11 — Third-Party AI
+External AI providers must undergo appropriate due diligence.
+Article 12 — Continuous Improvement
+AI governance policies shall be reviewed periodically.
+4.14 Student Group Exercise
+Case Study: National Healthcare AI
+A government wants to introduce an AI platform that helps doctors identify patients at risk of serious disease.
+
+The system:
+- processes medical records;
+- uses a third-party AI model;
+- operates across several hospitals;
+- generates risk scores;
+- may influence treatment decisions.
+Your group must design:
+1. AI Governance Council
+
+Who sits on it?
+
+2. AI Ethics Charter
+
+What principles apply?
+
+3. AIA
+
+What risks must be evaluated?
+
+4. Red Team
+
+What attacks and failure modes should be tested?
+
+5. Incident Workflow
+
+Who gets notified?
+
+6. Transparency Report
+
+What information should the public receive?
+FINAL CAPSTONE — AFRICAN SOVEREIGN AI GOVERNANCE PLAN
+At the end of the four modules, students complete one integrated assignment.
+Scenario
+You are the Chief AI Governance Advisor to an African multinational organization.
+
+The organization operates in:
+- South Africa;
+- Nigeria;
+- Kenya;
+- Ghana;
+- Rwanda;
+- Angola.
+It wants to deploy an AI platform that processes customer, employee and operational data.
+
+The platform uses:
+- local databases;
+- cloud infrastructure;
+- generative AI;
+- machine learning;
+- predictive analytics;
+- automated decision support.
+CAPSTONE DELIVERABLE
+Prepare a 10–15 page African AI Governance Plan containing:
+Part 1 — Regulatory Map
+Identify:
+- continental frameworks;
+- national legislation;
+- sector requirements;
+- cross-border considerations;
+- regulatory gaps.
+Part 2 — Data Map
+Document:
+DATA SOURCE
+     ↓
+COLLECTION
+     ↓
+STORAGE
+     ↓
+PROCESSING
+     ↓
+AI MODEL
+     ↓
+DECISION
+     ↓
+USER
+
+Part 3 — Algorithmic Impact Assessment
+Evaluate:
+- affected groups;
+- data quality;
+- fairness;
+- explainability;
+- privacy;
+- security;
+- human oversight;
+- potential harm.
+Part 4 — Bias Audit
+Define:
+- protected/affected groups where legally and ethically appropriate;
+- fairness metrics;
+- representation tests;
+- performance metrics;
+- monitoring frequency;
+- mitigation strategy.
+Part 5 — Sovereign AI Architecture
+Design:
+- data residency model;
+- cloud model;
+- AI gateway;
+- identity management;
+- encryption;
+- data-loss prevention;
+- local RAG;
+- external AI access;
+- logging;
+- monitoring.
+Part 6 — AI Governance Council
+Define:
+- members;
+- authority;
+- responsibilities;
+- approval thresholds;
+- reporting structure.
+Part 7 — AI Ethics Charter
+Create the organization's:
+
+10–12 core AI principles.
+Part 8 — Red-Team Framework
+Define:
+- threat model;
+- attack scenarios;
+- bias tests;
+- privacy tests;
+- security tests;
+- hallucination tests;
+- escalation process.
+Part 9 — Incident Management
+Create:
+
+Detection → Triage → Classification → Containment → Investigation → Notification → Remediation → Retesting
+Part 10 — AI Transparency Report
+Design a public-facing reporting structure covering:
+- systems;
+- purposes;
+- data;
+- risks;
+- testing;
+- incidents;
+- complaints;
+- corrective actions.
+FINAL ASSESSMENT RUBRIC
+Assessment Area	Weight
+Continental/legal analysis	15%
+Data governance	10%
+Algorithmic impact assessment	15%
+Bias auditing	15%
+Sovereign architecture	15%
+AI Ethics Charter	10%
+Red-team framework	10%
+Incident management	5%
+Transparency/reporting	5%
+Total	100%
+
+
+STUDENT COMPETENCY FRAMEWORK
+A student who successfully completes the course should be able to move from:
+
+AI User
+
+→ AI Practitioner
+
+→ AI Risk Analyst
+
+→ AI Governance Specialist
+
+→ Institutional AI Governance Lead
+
+The central competency is not simply knowing AI technology.
+
+It is being able to connect:
+Law + Data + AI + Ethics + Cybersecurity + Architecture + Governance + Human Rights + Institutional Accountability
+
+FINAL LESSON — THE AFRICAN AI GOVERNANCE MINDSET
+The most important principle across all four modules is:
+Do not build AI first and ask governance questions later. Build governance into the AI system from the beginning.
+
+A mature African AI system should therefore be designed across eight dimensions:
+
+1. Legal
+Is the system lawful?
+
+2. Data
+Is the data appropriately collected, processed and protected?
+
+3. Technical
+Is the architecture secure and resilient?
+
+4. Sovereignty
+Does the institution retain appropriate control over its data and AI infrastructure?
+
+5. Fairness
+Could the system produce unjustified unequal outcomes?
+
+6. Human oversight
+Can humans understand, challenge and override consequential decisions?
+
+7. Accountability
+Who is responsible when the system fails?
+
+8. Transparency
+Can stakeholders understand how AI is being used?
+
+The AU Data Policy Framework explicitly seeks stronger and more harmonized African data governance and a trusted shared data environment, while the Malabo Convention provides a continental legal foundation around cybersecurity and personal-data protection. African Union
+
+At the national level, however, students must always return to the applicable jurisdiction. For example, Kenya's framework contains specific cross-border transfer safeguards, while Nigeria's 2023 legislation establishes its own data-protection framework and regulator. odpc.go.ke
+
+The ultimate objective is therefore not simply "ethical AI." It is sovereign, lawful, secure, fair, accountable and context-aware AI that can operate across Africa while respecting the rights of the people and institutions it serves.

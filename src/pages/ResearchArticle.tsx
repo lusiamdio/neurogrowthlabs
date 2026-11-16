@@ -7,7 +7,6 @@ import { useAuth } from '../components/AuthContext';
 import { RESEARCH_PAPERS } from '../data/academyData';
 import { downloadAcademicPaper } from '../utils/paperDownloadHelper';
 import { tryParseTableBlock } from '../utils/tableParser';
-import ResearchAudioPlayer from '../components/ResearchAudioPlayer';
 import ResearchTableView from '../components/ResearchTableView';
 import ResearchTablesPanel from '../components/ResearchTablesPanel';
 import {
@@ -42,8 +41,6 @@ export default function ResearchArticle() {
     if (initialTabParam === 'pdf' && paper.pdfUrl) return 'pdf';
     return 'text';
   });
-
-  const autoPlayAudio = searchParams.get('autoplay') === '1';
 
   const [copiedBibtex, setCopiedBibtex] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -379,9 +376,6 @@ export default function ResearchArticle() {
             </div>
           </div>
         </header>
-
-        {/* Studio Audio Edition Player */}
-        <ResearchAudioPlayer paper={paper} autoPlayOnMount={autoPlayAudio} />
 
         {/* VIEW 1: ASYMMETRIC MONOGRAPH READER (70% Narrative + 30% Sticky Margin Rail) */}
         {viewTab === 'text' && (

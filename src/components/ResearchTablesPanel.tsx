@@ -6,7 +6,11 @@ import {
   Table2,
 } from 'lucide-react';
 import type { ResearchPaper } from '../data/academyData';
-import type { ParsedInlineTable } from '../utils/tableParser';
+import {
+  extractInlineTablesForPaper,
+  type ParsedInlineTable,
+} from '../utils/tableParser';
+import { safeFetchJson } from '../utils/safeFetchJson';
 import ResearchTableView from './ResearchTableView';
 
 type TableLens = 'comprehensive' | 'technical' | 'governance' | 'implementation';
@@ -52,7 +56,9 @@ export default function ResearchTablesPanel({
   onTablesCountChange,
 }: ResearchTablesPanelProps) {
   const [lens, setLens] = useState<TableLens>('comprehensive');
-  const [inlineTables, setInlineTables] = useState<ParsedInlineTable[]>([]);
+  const [inlineTables, setInlineTables] = useState<ParsedInlineTable[]>(() =>
+    extractInlineTablesForPaper(paper)
+  );
   const [generatedTables, setGeneratedTables] = useState<GeneratedResearchTable[]>([]);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -63,51 +69,76 @@ export default function ResearchTablesPanel({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/research/${encodeURIComponent(paper.id)}/tables`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lens: targetLens, force }),
-        });
-        const data = (await res.json()) as TablesApiResponse;
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to synthesize structured research tables.');
+        const res = await safeFetchJson<TablesApiResponse>(
+          `/api/research/${encodeURIComponent(paper.id)}/tables`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lens: targetLens, force }),
+          }
+        );
+
+        if (res.ok === false) {
+          if (res.isHtmlFallback) {
+            throw new Error(
+              'Live analytical matrix synthesis requires the Express API runtime. Verbatim manuscript tables below remain interactive.'
+            );
+          }
+          throw new Error(res.error);
         }
-        setInlineTables(data.inlineTables || []);
+
+        const data = res.data;
+        const resolvedInline =
+          data.inlineTables && data.inlineTables.length > 0
+            ? data.inlineTables
+            : extractInlineTablesForPaper(paper);
+        setInlineTables(resolvedInline);
         const genList = data.generated?.tables || [];
         setGeneratedTables(genList);
         setGeneratedAt(data.generated?.generatedAt || null);
-        onTablesCountChange?.((data.inlineTables?.length || 0) + genList.length);
+        onTablesCountChange?.(resolvedInline.length + genList.length);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unable to generate tables.');
       } finally {
         setLoading(false);
       }
     },
-    [onTablesCountChange, paper.id]
+    [onTablesCountChange, paper]
   );
 
-  // Check cache first; automatically generate comprehensive tables if none are cached yet
+  // Load verbatim tables immediately; fetch cached generated matrices cleanly without crashing on HTML responses
   useEffect(() => {
     let cancelled = false;
     setError(null);
+    const localInline = extractInlineTablesForPaper(paper);
+    setInlineTables(localInline);
 
     const loadOrGenerate = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
+        const res = await safeFetchJson<TablesApiResponse>(
           `/api/research/${encodeURIComponent(paper.id)}/tables?lens=${encodeURIComponent(lens)}`
         );
-        if (!res.ok) {
-          throw new Error('Failed to fetch table inventory.');
-        }
-        const data = (await res.json()) as TablesApiResponse;
         if (cancelled) return;
 
-        setInlineTables(data.inlineTables || []);
+        if (res.ok === false) {
+          onTablesCountChange?.(localInline.length);
+          if (res.isHtmlFallback) {
+            setLoading(false);
+            return;
+          }
+          throw new Error(res.error);
+        }
+
+        const data = res.data;
+        const resolvedInline =
+          data.inlineTables && data.inlineTables.length > 0 ? data.inlineTables : localInline;
+        setInlineTables(resolvedInline);
+
         if (data.generated && data.generated.tables.length > 0) {
           setGeneratedTables(data.generated.tables);
           setGeneratedAt(data.generated.generatedAt);
-          onTablesCountChange?.((data.inlineTables?.length || 0) + data.generated.tables.length);
+          onTablesCountChange?.(resolvedInline.length + data.generated.tables.length);
           setLoading(false);
         } else {
           await synthesizeTables(lens, false);
@@ -125,7 +156,7 @@ export default function ResearchTablesPanel({
     return () => {
       cancelled = true;
     };
-  }, [lens, paper.id, synthesizeTables, onTablesCountChange]);
+  }, [lens, paper, synthesizeTables, onTablesCountChange]);
 
   return (
     <div className="space-y-8">
@@ -215,15 +246,15 @@ export default function ResearchTablesPanel({
 
       {/* Error State */}
       {error && (
-        <div className="rounded-xl bg-rose-500/10 p-5 flex flex-wrap items-center justify-between gap-4 text-sm text-rose-200 light:text-rose-900">
+        <div className="rounded-xl bg-amber-500/10 light:bg-amber-50 p-5 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm text-amber-200 light:text-amber-900">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-400 light:text-amber-700" />
             <span>{error}</span>
           </div>
           <button
             type="button"
             onClick={() => void synthesizeTables(lens, true)}
-            className="px-4 py-2 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-xs font-semibold transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
           >
             Retry Synthesis
           </button>
@@ -246,7 +277,7 @@ export default function ResearchTablesPanel({
 
       {/* Verbatim Source Tables Extracted from Manuscript */}
       {inlineTables.length > 0 && (
-        <div className="space-y-4 pt-4">
+        <div className="space-y-4 pt-2">
           <div className="space-y-1">
             <h3 className="font-serif text-lg sm:text-xl font-medium text-white light:text-stone-900">
               Original Manuscript Tables

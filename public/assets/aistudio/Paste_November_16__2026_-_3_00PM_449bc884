@@ -1,0 +1,1482 @@
+Student Lesson: Zero Trust, Hardware Trust & Sovereign Digital Identity
+Course theme: Cybersecurity, AI Infrastructure & Digital Sovereignty
+Total duration: 7.5 hours
+Modules: 4
+Level: Intermediate → Advanced
+Delivery mode: Instructor-led lesson + demonstrations + hands-on labs + assessment
+Course purpose
+This lesson teaches students how to move from traditional perimeter-based cybersecurity toward a modern architecture in which identity, device integrity, cryptographic proof, and resource-level authorization determine access.
+
+The course progresses through four layers:
+
+Zero Trust → Hardware Root of Trust → Sovereign Identity → Zero Trust Network Access
+
+Students finish by designing and implementing a small Zero Trust environment in which users and devices must prove who they are and meet security conditions before accessing protected resources.
+Important distinction: Zero Trust does not mean "trust nobody" in the literal sense. It means that trust is not implicitly granted based on network location, ownership, or previous access. NIST SP 800-207 defines Zero Trust Architecture around protecting resources and continually evaluating access rather than relying on a trusted internal perimeter. NIST Computer Security Resource Center
+
+COURSE LEARNING OUTCOMES
+By the end of the lesson, students should be able to:
+1. Explain the limitations of traditional perimeter security.
+2. Describe the core principles of NIST Zero Trust Architecture.
+3. Apply continuous verification and least-privilege access.
+4. Explain the concept of an assumed-breach security model.
+5. Distinguish authentication, authorization, attestation and identity.
+6. Explain TPM 2.0, secure boot, measured boot and hardware roots of trust.
+7. Explain how cryptographic attestation establishes device trust.
+8. Describe the role of HSMs and secure enclaves.
+9. Explain DIDs, DID Documents and Verifiable Credentials.
+10. Design a sovereign credential-verification flow.
+11. Apply decentralized identity concepts to African cross-border commerce.
+12. Explain Zero Trust Network Access and software-defined perimeters.
+13. Apply microsegmentation to reduce lateral movement.
+14. Design policies based on identity + device posture + resource + context.
+15. Build a small Zero Trust lab environment.
+16. Evaluate whether a proposed architecture actually follows Zero Trust principles.
+COURSE ARCHITECTURE
+Module	Topic	Duration	Main outcome
+1	The Zero Trust Security Paradigm	1.5 hrs	Design a Zero Trust security model
+2	Cryptographic Attestation & Hardware Root of Trust	2 hrs	Establish device trust using hardware-backed identity
+3	DIDs & Sovereign Credential Verification	2 hrs	Design verifiable cross-border identity
+4	ZTNA & Microsegmentation Lab	2 hrs	Implement resource-level network access
+Total		7.5 hrs	
+
+
+MODULE 1 — THE ZERO TRUST SECURITY PARADIGM
+Duration: 1.5 hours
+Reference framework: NIST SP 800-207
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1.1 Module introduction
+Traditional cybersecurity was largely designed around a simple assumption:
+Outside the network = dangerous. Inside the network = trusted.
+
+This produced architectures built around:
+- firewalls;
+- VPNs;
+- perimeter gateways;
+- internal networks;
+- DMZs;
+- centralized authentication;
+- network segmentation.
+The problem is that modern organizations no longer have a single, clearly defined network.
+
+Users may connect from:
+- homes;
+- mobile networks;
+- public Wi-Fi;
+- corporate offices;
+- cloud environments;
+- partner organizations;
+- universities;
+- government networks;
+- personal devices.
+Applications may simultaneously exist across:
+- on-premises infrastructure;
+- AWS/Azure/GCP;
+- SaaS platforms;
+- edge devices;
+- containers;
+- mobile applications;
+- APIs.
+NIST therefore frames Zero Trust around users, assets and resources rather than simply network boundaries. NIST Computer Security Resource Center
+1.2 Traditional perimeter security
+Consider this architecture:
+                    INTERNET
+                       |
+                  [ FIREWALL ]
+                       |
+                ----------------
+                |              |
+             USER A          USER B
+                |
+        -------------------
+        INTERNAL NETWORK
+        |       |        |
+      ERP      DB       FILES
+
+The firewall protects the perimeter.
+
+But suppose an attacker compromises User A.
+
+The attacker may now appear to be:
+"inside the trusted network."
+
+The security model can therefore become:
+External attacker
+       ↓
+Compromised laptop
+       ↓
+Internal network
+       ↓
+ERP
+       ↓
+Database
+       ↓
+File server
+
+This is lateral movement.
+1.3 The Zero Trust mental model
+Zero Trust changes the question.
+
+Traditional question:
+"Are you inside the network?"
+
+Zero Trust question:
+"Should this specific identity, using this specific device, under these specific conditions, access this specific resource right now?"
+
+The authorization decision can be represented as:
+User identity
+      +
+Device identity
+      +
+Device security posture
+      +
+Resource requested
+      +
+Context
+      +
+Policy
+      ↓
+ACCESS DECISION
+
+1.4 Core Zero Trust principles
+NIST SP 800-207 describes Zero Trust through several foundational tenets, including treating data sources and computing services as resources and avoiding implicit trust based on network location. NIST Publications
+
+Students should remember these principles:
+Principle 1 — No implicit trust
+Being connected to an internal network does not automatically grant trust.
+Internal network ≠ trusted
+External network ≠ untrusted
+
+Both require evaluation.
+Principle 2 — Verify explicitly
+Access decisions should consider relevant signals such as:
+- user identity;
+- authentication strength;
+- device identity;
+- device posture;
+- requested resource;
+- location;
+- time;
+- risk;
+- previous activity;
+- policy.
+Principle 3 — Least privilege
+Give users only the permissions required for their task.
+
+Example:
+
+A financial analyst may require:
+READ:
+Finance reports
+
+WRITE:
+Budget forecasts
+
+DENY:
+Payroll database
+System administration
+Production infrastructure
+
+Least privilege should apply to:
+- humans;
+- applications;
+- services;
+- APIs;
+- machines;
+- administrators.
+Principle 4 — Assume breach
+Design the architecture as if compromise has already happened.
+
+Instead of asking:
+"How do we prevent every compromise?"
+
+ask:
+"What happens if an attacker compromises this account?"
+
+This produces stronger architectures.
+Principle 5 — Protect resources, not just networks
+A database is a resource.
+
+An API is a resource.
+
+A container is a resource.
+
+An AI model is a resource.
+
+A government registry is a resource.
+
+An ERP module is a resource.
+
+Therefore:
+Security policy
+       ↓
+Specific resource
+       ↓
+Specific request
+
+rather than:
+Network access
+       ↓
+Everything inside network
+
+1.5 Continuous verification
+Verification should not be interpreted as simply logging in once.
+
+A Zero Trust session can continuously evaluate:
+Identity
+Device
+Risk
+Session
+Resource
+Behavior
+Policy
+
+For example:
+08:00
+User authenticated
+        ↓
+Device compliant
+        ↓
+Access granted
+
+10:30
+Device security posture changes
+        ↓
+Risk increases
+        ↓
+Session re-evaluated
+        ↓
+Access restricted
+
+The goal is to make authorization a dynamic security decision, not a one-time event.
+1.6 Policy Engine and Policy Enforcement Point
+A useful conceptual model is:
+                 ┌─────────────────┐
+Request ────────►│ Policy Decision  │
+                 │ Point (PDP)      │
+                 └────────┬────────┘
+                          │
+                       Decision
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Policy          │
+                 │ Enforcement     │
+                 │ Point (PEP)     │
+                 └────────┬────────┘
+                          │
+                          ▼
+                      RESOURCE
+
+The Policy Decision Point determines whether access should be allowed.
+
+The Policy Enforcement Point enforces the decision.
+1.7 African use case
+Imagine a logistics company operating:
+- Angola;
+- Namibia;
+- South Africa;
+- Zambia;
+- Kenya;
+- Nigeria.
+Employees travel between countries.
+
+A traditional system might trust:
+Corporate VPN
+      ↓
+Internal network
+      ↓
+Applications
+
+A Zero Trust architecture instead evaluates:
+Employee identity
+       +
+Corporate device
+       +
+Device health
+       +
+Country/location
+       +
+Application
+       +
+Risk
+       +
+Business role
+       ↓
+Authorization
+
+This is particularly valuable for organizations operating across multiple countries, cloud providers and regulatory environments.
+1.8 Student exercise
+Scenario
+A university has:
+- 10,000 students;
+- 700 employees;
+- 100 servers;
+- cloud applications;
+- student-owned laptops;
+- research databases.
+A student account is compromised.
+Question
+Design a Zero Trust response.
+
+Students should identify:
+1. identity verification;
+2. device verification;
+3. least privilege;
+4. application-level authorization;
+5. monitoring;
+6. session revocation;
+7. segmentation;
+8. incident response.
+MODULE 1 KNOWLEDGE CHECK
+Question 1
+
+Which statement best represents Zero Trust?
+
+A. Trust internal users
+B. Trust devices connected to the VPN
+C. Continuously evaluate access to resources
+D. Remove all firewalls
+
+Answer: C
+Question 2
+
+What does least privilege mean?
+
+Answer: Giving a user, application or device only the minimum permissions necessary to perform its authorized function.
+Question 3
+
+Why is "assume breach" important?
+
+Answer: Because security architecture should limit damage and lateral movement even when an identity, device or service has already been compromised.
+MODULE 2 — CRYPTOGRAPHIC ATTESTATION & HARDWARE ROOT OF TRUST
+Duration: 2 hours
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2.1 Why hardware trust matters
+Zero Trust asks:
+"Can I trust this device enough to allow it to access the resource?"
+
+A username and password may tell us who the user claims to be.
+
+They do not necessarily prove that the device is trustworthy.
+
+For example:
+Alice
+   ↓
+Correct password
+   ↓
+Compromised laptop
+   ↓
+Malware
+   ↓
+Corporate database
+
+Therefore modern security architectures increasingly combine:
+
+identity + device trust.
+
+NIST's hardware-enabled security guidance describes hardware roots of trust, TPMs, trusted execution environments and HSMs as foundational mechanisms for protecting platforms and workloads. NIST Computer Security Resource Center
+2.2 What is a root of trust?
+A root of trust is a component that is trusted to perform critical security operations.
+
+The principle is:
+Hardware
+   ↓
+Firmware
+   ↓
+Bootloader
+   ↓
+Operating System
+   ↓
+Applications
+
+If the initial trust anchor can be verified, trust can be extended upward.
+
+This is often described as a chain of trust.
+2.3 TPM 2.0
+A Trusted Platform Module (TPM) is a hardware security component designed to perform functions such as:
+- secure key storage;
+- cryptographic operations;
+- platform measurements;
+- device identity;
+- attestation.
+The important concept is that sensitive cryptographic material can be protected by hardware rather than simply stored as ordinary files.
+2.4 Secure boot vs measured boot
+Secure boot
+Secure Boot helps ensure that only appropriately signed software is allowed to execute during the boot process.
+
+Conceptually:
+Firmware
+   ↓ verifies
+Bootloader
+   ↓ verifies
+Operating System
+   ↓
+System starts
+
+Measured boot
+Measured boot records cryptographic measurements of components during startup.
+
+For example:
+Firmware → hash
+Bootloader → hash
+Kernel → hash
+Configuration → hash
+
+These measurements can then contribute to an attestation decision.
+
+NIST describes a trusted-computing model in which firmware, software and configuration can be measured, measurements stored in hardware such as a TPM, and the resulting state validated. NIST Publications
+2.5 Cryptographic attestation
+Attestation answers:
+"Can this machine provide cryptographic evidence about its current security state?"
+
+Conceptual flow:
+DEVICE
+  |
+  | 1. Measurements
+  ↓
+TPM
+  |
+  | 2. Cryptographic evidence
+  ↓
+ATTESTATION SERVICE
+  |
+  | 3. Validate
+  ↓
+TRUST DECISION
+  |
+  ├── Trusted
+  |
+  └── Untrusted
+
+2.6 Attestation vs authentication
+Students must understand this distinction.
+Authentication
+Answers:
+"Who are you?"
+
+Attestation
+Answers:
+"Can you provide cryptographic evidence about the state or properties of this device/platform?"
+
+Authorization
+Answers:
+"Are you allowed to access this resource?"
+
+Therefore:
+Authentication
+      ↓
+Attestation
+      ↓
+Authorization
+      ↓
+Access
+
+2.7 Secure enclaves / Trusted Execution Environments
+A secure enclave or Trusted Execution Environment provides an isolated environment for sensitive computation.
+
+Conceptually:
+┌───────────────────────────────┐
+│           OS                  │
+│                               │
+│   ┌───────────────────────┐   │
+│   │ Secure Environment    │   │
+│   │                       │   │
+│   │ Sensitive computation │   │
+│   │ Cryptographic keys    │   │
+│   └───────────────────────┘   │
+│                               │
+└───────────────────────────────┘
+
+The exact implementation differs by platform.
+
+The principle is:
+Sensitive computation and secrets receive stronger isolation from the normal execution environment.
+
+2.8 Hardware Security Modules
+An HSM is specialized hardware designed to protect cryptographic keys and perform cryptographic operations.
+
+Typical use cases include:
+- certificate authorities;
+- payment systems;
+- digital signatures;
+- encryption keys;
+- enterprise identity infrastructure;
+- high-value signing keys.
+A cloud HSM provides similar capabilities through a cloud service while maintaining hardware-backed protection.
+2.9 Machine identity
+A machine can possess a cryptographic identity.
+
+Conceptually:
+Device
+  ↓
+Private key
+  ↓
+Public key
+  ↓
+Certificate / identity
+  ↓
+Machine identity
+
+The private key should be protected so that unauthorized parties cannot simply copy it.
+
+This creates an important Zero Trust concept:
+A device can be treated as a cryptographically identifiable security principal.
+
+2.10 Hardware-backed Zero Trust
+Now combine Modules 1 and 2:
+USER
+ |
+ | identity
+ ↓
+IDENTITY PROVIDER
+ |
+ +---------------------+
+ |                     |
+DEVICE IDENTITY     DEVICE POSTURE
+ |                     |
+ +----------+----------+
+            ↓
+      POLICY ENGINE
+            ↓
+       AUTHORIZATION
+            ↓
+        RESOURCE
+
+The architecture becomes significantly stronger than password-only authentication.
+2.11 Student lab: conceptual device attestation
+Objective
+Design a device-attestation workflow.
+Scenario
+An African financial platform has employees accessing a payment administration system.
+
+The company requires:
+- approved device;
+- encrypted disk;
+- secure boot;
+- current security patches;
+- hardware-backed key;
+- MFA.
+Students must design:
+Device enrollment
+        ↓
+Key generation
+        ↓
+Device registration
+        ↓
+Platform measurement
+        ↓
+Attestation
+        ↓
+Policy evaluation
+        ↓
+Access decision
+
+Deliverable
+Create a one-page architecture diagram showing:
+1. device;
+2. TPM;
+3. identity provider;
+4. attestation service;
+5. policy engine;
+6. protected application.
+MODULE 2 KNOWLEDGE CHECK
+What is the difference between secure boot and measured boot?
+
+Answer: Secure boot helps prevent unauthorized boot components from executing, while measured boot records measurements of boot components so that their state can subsequently be evaluated or attested.
+Why use an HSM?
+
+Answer: To provide strong hardware-backed protection for cryptographic keys and cryptographic operations.
+MODULE 3 — DECENTRALIZED IDENTIFIERS & SOVEREIGN CREDENTIAL VERIFICATION
+Duration: 2 hours
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3.1 The identity problem
+Consider an African merchant operating across:
+- Angola;
+- Namibia;
+- South Africa;
+- Zambia;
+- Kenya;
+- Nigeria.
+The merchant may need to prove:
+- business identity;
+- registration;
+- tax status;
+- licenses;
+- ownership;
+- bank information;
+- trade eligibility.
+Traditional identity systems frequently require organizations to repeatedly exchange documents.
+
+This creates:
+- duplication;
+- fraud risk;
+- data exposure;
+- manual verification;
+- interoperability challenges.
+3.2 Decentralized Identifiers
+A Decentralized Identifier (DID) is a type of identifier designed to support verifiable decentralized digital identity.
+
+W3C's DID specification defines the DID syntax, data model, core properties and mechanisms for resolving DIDs to the resources representing them. W3C
+
+A DID may conceptually look like:
+did:example:123456789
+
+The exact method depends on the DID method being used.
+3.3 DID Document
+A DID can resolve to a DID Document containing information such as:
+- public keys;
+- verification methods;
+- authentication relationships;
+- service endpoints.
+Conceptually:
+DID
+ |
+ ↓
+DID Document
+ |
+ +── Public Key
+ |
+ +── Authentication Method
+ |
+ +── Service Endpoint
+
+This enables another party to discover how to verify interactions with the DID.
+3.4 Verifiable Credentials
+A Verifiable Credential (VC) is a digitally verifiable representation of claims made by an issuer.
+
+Examples:
+- university degree;
+- business registration;
+- professional license;
+- driver's license;
+- tax certificate;
+- vaccination certificate;
+- trade certificate.
+The ecosystem can be understood through three primary roles:
+ISSUER
+   |
+   | Credential
+   ↓
+HOLDER
+   |
+   | Presentation
+   ↓
+VERIFIER
+
+The current W3C Verifiable Credentials model describes this issuer-holder-verifier ecosystem and mechanisms for securing claims against tampering. W3C
+3.5 Example: African merchant credential
+Suppose an Angolan company wants to sell products to a South African buyer.
+
+The Angolan authority issues:
+Credential:
+Business Registration
+
+Subject:
+Company ABC
+
+Country:
+Angola
+
+Registration:
+AO-12345
+
+Status:
+Active
+
+The company stores the credential.
+
+When the South African platform needs verification:
+Company
+   ↓
+Presents credential
+   ↓
+South African platform
+   ↓
+Verifies issuer
+   ↓
+Verifies signature
+   ↓
+Checks credential status
+   ↓
+Accept / Reject
+
+The verifier does not necessarily need to manually request a scanned document.
+3.6 Sovereignty
+The term sovereign identity generally emphasizes that individuals or organizations should have greater control over their digital identifiers and credentials.
+
+However, students must avoid a common misconception:
+Decentralized identity does not mean "no authorities."
+
+A trusted authority may still issue a credential.
+
+For example:
+Government
+     ↓
+Issues credential
+     ↓
+Merchant
+     ↓
+Controls presentation
+     ↓
+Buyer verifies
+
+The authority remains important as the issuer.
+
+The difference is that verification can be cryptographically interoperable rather than dependent on repeatedly querying a centralized database.
+3.7 DID + VC architecture
+             ISSUER
+        Government / Bank
+               |
+               | Signed VC
+               ↓
+           ┌─────────┐
+           │ HOLDER  │
+           │ Merchant│
+           └────┬────┘
+                |
+          Presentation
+                |
+                ↓
+           ┌─────────┐
+           │VERIFIER │
+           │ Platform│
+           └────┬────┘
+                |
+                ↓
+       Cryptographic verification
+                |
+        ┌───────┴───────┐
+        ↓               ↓
+     VALID            INVALID
+
+3.8 Cross-border African use case
+Imagine an AfCFTA-oriented digital trade platform.
+
+A company wants to participate in cross-border commerce.
+
+The platform requests:
+Business credential
+Tax credential
+Trade license
+Authorized representative credential
+
+The merchant presents the credentials.
+
+The platform verifies:
+Issuer authenticity
++
+Digital signature
++
+Credential integrity
++
+Credential status
++
+Presentation integrity
++
+Business policy
+
+Then:
+         VERIFIED
+             ↓
+       Trade account
+             ↓
+      Access to market
+
+3.9 Privacy by design
+Students should avoid designing systems that expose unnecessary personal information.
+
+Suppose a merchant only needs to prove:
+"I am a registered business."
+
+The verifier may not need:
+- owner's full residential address;
+- unrelated identity documents;
+- personal phone records;
+- complete tax history.
+The principle is:
+Prove what is necessary, disclose what is necessary.
+
+This is especially important when designing national or cross-border identity infrastructure.
+3.10 Credential lifecycle
+A credential should have a lifecycle:
+ISSUE
+  ↓
+STORE
+  ↓
+PRESENT
+  ↓
+VERIFY
+  ↓
+USE
+  ↓
+REVOKE / EXPIRE
+
+Students must therefore consider credential status.
+
+A credential that was valid yesterday may no longer be valid today.
+3.11 Student exercise
+Design a Pan-African Merchant Credential
+Create a credential architecture for:
+
+"African Verified Merchant Credential."
+
+Your design should contain:
+Issuer
+Example:
+National business registry
+
+Holder
+Business / merchant
+
+Verifier
+Cross-border marketplace
+
+Credential claims
+Students choose appropriate fields.
+Verification
+Explain how the verifier determines:
+1. who issued the credential;
+2. whether it was modified;
+3. whether it is still valid;
+4. whether the presentation is authentic;
+5. whether the merchant satisfies marketplace policy.
+MODULE 3 KNOWLEDGE CHECK
+Question
+What is the difference between a DID and a Verifiable Credential?
+
+Answer:
+
+A DID provides a decentralized identifier and mechanisms for establishing control and verification relationships. A Verifiable Credential represents digitally verifiable claims made by an issuer about a subject.
+Question
+Who are the three main actors?
+
+Answer:
+
+Issuer → Holder → Verifier
+MODULE 4 — ZTNA & MICROSEGMENTATION LAB
+Duration: 2 hours
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4.1 What is ZTNA?
+Zero Trust Network Access (ZTNA) provides controlled access to applications and resources based on identity and policy rather than simply placing a user onto a trusted network.
+
+Traditional VPN:
+User
+ ↓
+VPN
+ ↓
+Internal Network
+ ↓
+Many Resources
+
+ZTNA:
+User
+ ↓
+Identity verification
+ ↓
+Device verification
+ ↓
+Policy evaluation
+ ↓
+Specific Application
+
+NIST's implementation guidance includes ZTNA-related technologies and practices such as microsegmentation and software-defined perimeter approaches. NIST Computer Security Resource Center
+4.2 VPN vs ZTNA
+Traditional VPN	ZTNA
+Network-centric	Resource-centric
+Broad network access possible	Application/resource-specific
+Often trusts network membership	Continuously evaluates policy
+IP/network focused	Identity + context focused
+Can enable lateral movement	Designed to limit lateral movement
+
+
+This does not mean VPNs are inherently insecure.
+
+It means that:
+VPN access alone should not be treated as equivalent to Zero Trust.
+
+4.3 Microsegmentation
+Microsegmentation divides infrastructure into smaller security zones.
+
+Traditional:
+CORPORATE NETWORK
+│
+├── Finance
+├── HR
+├── Engineering
+├── Database
+└── Production
+
+Microsegmented:
+Finance ──────── Policy
+HR ──────────── Policy
+Engineering ─── Policy
+Database ────── Policy
+Production ──── Policy
+
+Each resource can have its own policy.
+4.4 Why microsegmentation matters
+Suppose an attacker compromises an engineering laptop.
+
+Without segmentation:
+Compromised Laptop
+       ↓
+Engineering
+       ↓
+Database
+       ↓
+Finance
+       ↓
+Production
+
+With microsegmentation:
+Compromised Laptop
+       ↓
+Engineering segment
+       X
+Finance
+
+       X
+Production
+
+       X
+Sensitive Database
+
+The attacker has a much smaller blast radius.
+4.5 Software-defined perimeter
+A software-defined perimeter can hide or restrict resources until the requester satisfies policy.
+
+Conceptually:
+                   INTERNET
+                       |
+                       ↓
+                 ACCESS GATE
+                       |
+              Identity + Device
+                       |
+                 Policy Engine
+                       |
+           ┌───────────┴──────────┐
+           ↓                      ↓
+       ALLOWED                  DENIED
+           |
+           ↓
+       APPLICATION
+
+The objective is not simply to "hide the server."
+
+The objective is to ensure that access is policy-controlled.
+4.6 LAB — Build a Zero Trust environment
+Lab objective
+Students will create a small environment containing:
+                USER
+                 |
+                 ↓
+          Identity Provider
+                 |
+                 ↓
+            ZTNA Gateway
+                 |
+           Policy Decision
+                 |
+        ┌────────┼────────┐
+        ↓        ↓        ↓
+      HR App   ERP App   Admin
+
+4.7 Lab scenario
+You are the security architect for:
+
+AfriTrade Enterprise
+
+The organization has:
+Users:
+- Sales
+- Finance
+- IT administrators
+
+Applications:
+- CRM
+- ERP
+- Finance database
+- Admin console
+
+Policies:
+Sales
+Can access:
+CRM
+
+Cannot access:
+Finance DB
+Admin Console
+
+Finance
+Can access:
+ERP
+Finance DB
+
+Cannot access:
+Admin Console
+
+IT administrator
+Can access:
+Admin Console
+ERP
+CRM
+
+But administrator access requires:
+MFA
++
+managed device
++
+compliant device posture
+
+4.8 Lab policy model
+Students should express policy in a structured way.
+
+Example:
+IF
+
+user.role == "finance"
+
+AND
+
+device.managed == true
+
+AND
+
+device.compliant == true
+
+AND
+
+mfa == true
+
+THEN
+
+allow(finance-db)
+
+Otherwise:
+DENY
+
+4.9 Lab exercise 1 — Identity policy
+Create policies for:
+Sales
+Finance
+Administrator
+
+Students must define:
+- allowed applications;
+- denied applications;
+- authentication requirements;
+- device requirements.
+4.10 Lab exercise 2 — Device posture
+Add device conditions:
+managed = true
+encrypted = true
+patched = true
+secure_boot = true
+
+Now modify the authorization policy:
+Identity
++
+MFA
++
+Device posture
++
+Resource
+=
+Access decision
+
+4.11 Lab exercise 3 — Microsegmentation
+Create four logical segments:
+SEGMENT A
+User Applications
+
+SEGMENT B
+ERP
+
+SEGMENT C
+Finance Database
+
+SEGMENT D
+Administration
+
+Apply:
+User Apps → ERP
+ALLOW according to role
+
+ERP → Finance DB
+ALLOW according to service policy
+
+User Apps → Finance DB
+DENY
+
+User Apps → Admin
+DENY
+
+4.12 Lab exercise 4 — Simulated breach
+The instructor announces:
+"The Sales user's laptop has been compromised."
+
+Students must determine:
+1. What resources can the attacker reach?
+2. Can they access ERP?
+3. Can they access Finance DB?
+4. Can they access Admin?
+5. What happens if the device fails posture checks?
+6. How quickly can the session be revoked?
+The ideal architecture should limit the attacker's movement.
+4.13 Lab exercise 5 — Policy change
+Change the scenario.
+
+The Finance employee is now connecting from:
+Unmanaged device
+
+The user provides the correct password and MFA.
+
+Should access be granted?
+
+Students should reason:
+Correct identity
+       +
+MFA
+       +
+Untrusted device
+       ↓
+Policy evaluation
+       ↓
+DENY / STEP-UP / RESTRICT
+
+The correct outcome depends on the organization's policy, but the key lesson is:
+Authentication alone does not automatically equal authorization.
+
+4.14 Final architecture
+Students should be able to produce an architecture similar to:
+                         INTERNET
+                             |
+                             ↓
+                    ┌────────────────┐
+                    │   ZTNA GATEWAY │
+                    └───────┬────────┘
+                            |
+              ┌─────────────┼─────────────┐
+              ↓             ↓             ↓
+          Identity       Device        Context
+          Provider       Posture        Risk
+              \             |             /
+               \            |            /
+                └───────────┼────────────┘
+                            ↓
+                     POLICY ENGINE
+                            |
+                     ACCESS DECISION
+                            |
+             ┌──────────────┼──────────────┐
+             ↓              ↓              ↓
+           CRM             ERP         ADMIN
+             |              |
+             |              ↓
+             |        FINANCE DB
+             |
+       MICROSEGMENTATION
+
+INTEGRATED FINAL EXERCISE
+Scenario: Pan-African Digital Trade Platform
+You are designing security architecture for a digital trade platform serving:
+- merchants;
+- logistics companies;
+- banks;
+- government agencies;
+- customs authorities;
+- buyers.
+The platform operates across multiple African countries.
+
+The system contains:
+Merchant Portal
+Trade Platform
+Payments
+Government APIs
+Logistics APIs
+Financial Data
+AI Risk Engine
+
+Your architecture must use all four modules.
+Requirement 1 — Zero Trust
+Define:
+- identity policies;
+- least privilege;
+- continuous verification;
+- assumed-breach controls.
+Requirement 2 — Hardware trust
+Define:
+- device identity;
+- TPM-backed credentials;
+- secure/measured boot;
+- device attestation;
+- cryptographic key protection.
+Requirement 3 — Sovereign credentials
+Design:
+Government
+     ↓
+Business credential
+     ↓
+Merchant
+     ↓
+Cross-border presentation
+     ↓
+Trade platform
+
+Requirement 4 — ZTNA
+Define:
+- ZTNA gateway;
+- policy engine;
+- policy enforcement;
+- application access;
+- microsegments.
+FINAL CAPSTONE
+"Design a Zero Trust African Digital Infrastructure"
+Students work individually or in groups.
+Deliverables
+1. Architecture diagram
+One complete diagram connecting:
+Identity
++
+Hardware
++
+Credentials
++
+ZTNA
++
+Microsegmentation
++
+Applications
+
+2. Access-control matrix
+Example:
+Role	CRM	ERP	Finance DB	Government API	Admin
+Merchant	✓	—	—	✓	—
+Finance	—	✓	✓	—	—
+Government	—	—	—	✓	—
+Administrator	✓	✓	✓	✓	✓
+
+
+3. Device trust policy
+Students define:
+Approved device
++
+Secure boot
++
+Encryption
++
+Patch status
++
+Attestation
+=
+Trusted device
+
+4. Credential model
+Define:
+DID
+Credential
+Issuer
+Holder
+Verifier
+Credential status
+Verification process
+
+5. Zero Trust policy
+Students write at least five policies such as:
+ALLOW merchant → Merchant Portal
+
+IF
+valid merchant credential
+AND
+trusted device
+AND
+MFA
+
+OTHERWISE
+DENY
+
+FINAL ASSESSMENT
+Part A — Multiple choice
+1. What is the fundamental assumption of Zero Trust?
+A. Internal networks are safe
+B. VPN users are trusted
+C. Trust should not be implicit
+D. Firewalls are unnecessary
+
+Answer: C
+2. What does least privilege accomplish?
+A. Gives everyone administrative access
+B. Minimizes unnecessary permissions
+C. Removes authentication
+D. Eliminates encryption
+
+Answer: B
+3. What does a TPM provide?
+A. Internet connectivity
+B. Hardware-backed security capabilities
+C. Database storage
+D. Application UI
+
+Answer: B
+4. What is attestation primarily concerned with?
+A. Proving device/platform properties or state
+B. Designing websites
+C. Compressing data
+D. Routing packets
+
+Answer: A
+5. Who issues a Verifiable Credential?
+A. Issuer
+B. Holder
+C. Verifier
+D. Firewall
+
+Answer: A
+6. Who holds a credential?
+A. Issuer
+B. Holder
+C. Router
+D. HSM
+
+Answer: B
+7. What is the purpose of microsegmentation?
+A. Increase lateral movement
+B. Reduce security boundaries
+C. Limit communication between resources
+D. Remove authorization
+
+Answer: C
+8. What does ZTNA primarily provide?
+A. Broad internal network access
+B. Policy-controlled access to specific resources
+C. Public access to private systems
+D. Anonymous access
+
+Answer: B
+PRACTICAL ASSESSMENT RUBRIC
+Criterion	Points
+Zero Trust architecture	20
+Least privilege/access policies	10
+Hardware root of trust	15
+Cryptographic attestation	10
+DID/VC architecture	15
+ZTNA design	10
+Microsegmentation	10
+Threat/breach analysis	5
+Architecture presentation	5
+Total	100
+
+
+Performance levels
+90–100 — Distinction
+Student demonstrates strong architectural understanding and produces a coherent implementation design.
+
+75–89 — Merit
+Student demonstrates good understanding with minor architectural gaps.
+
+50–74 — Pass
+Student demonstrates fundamental understanding but requires further practical development.
+
+Below 50 — Not Yet Competent
+Student requires additional instruction and reassessment.
+STUDENT REFERENCE CARD
+Remember the four layers
+1. ZERO TRUST
+Never implicitly trust. Verify access continuously.
+
+2. HARDWARE TRUST
+Prove that the machine/platform is trustworthy using hardware-backed mechanisms.
+
+3. SOVEREIGN IDENTITY
+Make identity and credentials cryptographically verifiable and interoperable.
+
+4. ZTNA
+Give users access to the resources they need—not an entire trusted network.
+
+THE COMPLETE SECURITY MODEL
+The entire course can be reduced to one authorization equation:
+                 USER IDENTITY
+                       +
+                 DEVICE IDENTITY
+                       +
+                DEVICE ATTESTATION
+                       +
+                VERIFIABLE CREDENTIAL
+                       +
+                       MFA
+                       +
+                  CONTEXT / RISK
+                       +
+                    RESOURCE
+                       +
+                     POLICY
+                       ↓
+               ┌───────────────┐
+               │ ACCESS ENGINE  │
+               └───────┬───────┘
+                       ↓
+                 ALLOW / DENY
+                       ↓
+               MICROSEGMENTED
+                  RESOURCE
+
+The central lesson is that identity, device integrity, cryptographic evidence and resource-level policy must work together. Zero Trust is therefore not a single product; it is an architectural approach spanning identity, endpoints, applications, data, networks and operational policy. NIST's newer SP 1800-35 implementation guidance demonstrates this broader approach through practical Zero Trust implementations, including identity, access control, microsegmentation and software-defined perimeter technologies. NIST Computer Security Resource Center
+Recommended authoritative reading
+- NIST SP 800-207 — Zero Trust Architecture
+- NIST SP 1800-35 — Implementing a Zero Trust Architecture
+- W3C DID Core
+- W3C Verifiable Credentials Data Model

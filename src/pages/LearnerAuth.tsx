@@ -50,13 +50,13 @@ export default function LearnerAuth() {
     try {
       if (activeTab === 'register') {
         const nameToUse = fullName.trim() || cleanEmail.split('@')[0];
-        await registerWithEmail(cleanEmail, password, nameToUse);
+        await registerWithEmail(cleanEmail, password, nameToUse, country);
       } else {
         await loginWithEmail(cleanEmail, password);
       }
       navigate(redirectUrl);
     } catch (err: any) {
-      console.error(err);
+      console.warn('Authentication feedback:', err?.message || err);
       setErrorMsg(err?.message || 'Authentication failed. Please verify your credentials.');
     } finally {
       setLoading(false);

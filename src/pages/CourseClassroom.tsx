@@ -16,8 +16,9 @@ import {
   ArrowLeft, ArrowRight, Award, BookOpen, Check, CheckCircle2, 
   Clock, ExternalLink, Globe, HelpCircle, MessageSquare, Play, 
   RotateCcw, Send, Shield, Sparkles, Star, ThumbsUp, Video, 
-  X, Youtube, CheckCircle, Circle, Terminal, Lock
+  X, Youtube, CheckCircle, Circle, Terminal, Lock, Users, Layers, ChevronDown
 } from 'lucide-react';
+import ModuleContentRenderer from '../components/academy/ModuleContentRenderer';
 
 export default function CourseClassroom() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -61,6 +62,7 @@ export default function CourseClassroom() {
   // Active module & video selection
   const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [showCourseProfile, setShowCourseProfile] = useState(false);
 
   // Exam states
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
@@ -292,6 +294,23 @@ export default function CourseClassroom() {
               <p className="text-slate-300 text-sm max-w-3xl leading-relaxed">
                 {course.overview}
               </p>
+
+              {(course.courseCapabilities || course.intendedAudience || course.prerequisitesList) && (
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowCourseProfile(prev => !prev)}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-xs font-mono text-ai-cyan transition-colors"
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>
+                      {showCourseProfile ? 'Hide' : 'View'} Course Overview,{' '}
+                      {course.intendedAudience ? 'Intended Audience & Prerequisites' : 'Learning Outcomes & Prerequisites'}
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showCourseProfile ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Quick Progress & Certificate Claim Box */}
@@ -334,6 +353,67 @@ export default function CourseClassroom() {
               )}
             </div>
           </div>
+
+          {showCourseProfile && (course.courseCapabilities || course.intendedAudience || course.prerequisitesList) && (
+            <div
+              className={`grid grid-cols-1 gap-5 p-5 rounded-xl bg-white/[0.02] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] ${
+                course.courseCapabilities && course.intendedAudience && course.prerequisitesList
+                  ? 'md:grid-cols-3'
+                  : 'md:grid-cols-2'
+              }`}
+            >
+              {course.courseCapabilities && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-ai-cyan font-bold flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>{course.intendedAudience ? 'Pipeline Capabilities' : 'Course Learning Outcomes'}</span>
+                  </h3>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {course.courseCapabilities.map((cap, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-ai-cyan font-mono font-bold">{idx + 1}.</span>
+                        <span>{cap}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {course.intendedAudience && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-[#c5a059] font-bold flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" />
+                    <span>Intended Audience</span>
+                  </h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-slate-300">
+                    {course.intendedAudience.map((aud, idx) => (
+                      <li key={idx} className="flex items-start gap-1.5">
+                        <span className="w-1 h-1 rounded-full bg-[#c5a059] mt-1.5 shrink-0" />
+                        <span>{aud}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {course.prerequisitesList && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-slate-200 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
+                    <span>Prerequisites</span>
+                  </h3>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {course.prerequisitesList.map((req, idx) => (
+                      <li key={idx} className="flex items-start gap-1.5">
+                        <Check className="w-3 h-3 text-green-400 mt-0.5 shrink-0" />
+                        <span>{req}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Navigation Tabs */}
           <div className="flex flex-wrap items-center gap-2 pt-4">
@@ -472,24 +552,32 @@ export default function CourseClassroom() {
               </div>
 
               {/* Module Summary */}
-              <div className="p-4 rounded-xl bg-white/[0.02] text-sm text-slate-300 leading-relaxed">
-                <strong className="text-white block mb-1">Executive Summary:</strong>
+              <div className="p-4 rounded-xl bg-white/[0.03] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] text-sm text-slate-300 leading-relaxed">
+                <strong className="text-white block mb-1">Executive Summary</strong>
                 {currentModule.summary}
               </div>
 
-              {/* Practical Exercise Box */}
-              <div className="p-5 rounded-xl bg-black/40 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-mono text-[#c5a059] uppercase font-bold">
-                  <Terminal className="w-4 h-4" />
-                  <span>Practical Lab & Kernel Telemetry Sandbox</span>
-                </div>
-                <pre className="overflow-x-auto text-green-300 font-mono text-xs leading-relaxed p-3 rounded-lg bg-black/60">
-{`# Defensive Telemetry Checkpoint [${course.code}]
-$ sudo ngl-defense-agent --module ${currentModule.id} --threshold 0.70
-[STATUS] Active Kernel Filter: ${currentModule.title}
-[CHECK] All signatures verified. Line throughput nominal.`}
-                </pre>
+              {/* Full Structured Lesson Content */}
+              <div className="pt-1">
+                <ModuleContentRenderer content={currentModule.content} />
               </div>
+
+              {/* Key Competencies Mastered */}
+              {currentModule.keyTakeaways && currentModule.keyTakeaways.length > 0 && (
+                <div className="p-5 rounded-xl bg-white/[0.025] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.18)] space-y-3">
+                  <h4 className="text-xs font-mono uppercase tracking-wider text-ai-cyan font-bold">
+                    Key Competencies Mastered
+                  </h4>
+                  <div className="space-y-2">
+                    {currentModule.keyTakeaways.map((item, i) => (
+                      <div key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200">
+                        <CheckCircle2 className="w-4 h-4 text-ai-cyan shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Navigation between modules */}
               <div className="flex items-center justify-between pt-4">

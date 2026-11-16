@@ -271,3 +271,32 @@ export function buildPaperAudioChapters(paper: MinimalPaperForChapters): Article
 
   return chapters;
 }
+
+export function extractInlineTablesForPaper(
+  paper: Pick<MinimalPaperForChapters, 'fullArticleText'>
+): ParsedInlineTable[] {
+  if (!paper.fullArticleText) return [];
+  const blocks = paper.fullArticleText.split('\n\n');
+  const tables: ParsedInlineTable[] = [];
+
+  for (let i = 0; i < blocks.length; i++) {
+    const trimmed = blocks[i].trim();
+    if (!trimmed) continue;
+    const parsed = tryParseTableBlock(trimmed);
+    if (parsed) {
+      const prev = i > 0 ? blocks[i - 1].trim() : '';
+      let derivedTitle = parsed.title;
+      if (!derivedTitle && prev && prev.length < 110 && !prev.endsWith('.')) {
+        derivedTitle = prev;
+      } else if (!derivedTitle && prev && prev.endsWith(':') && prev.length < 120) {
+        derivedTitle = prev.slice(0, -1);
+      }
+      tables.push({
+        title: derivedTitle,
+        columns: parsed.columns,
+        rows: parsed.rows,
+      });
+    }
+  }
+  return tables;
+}

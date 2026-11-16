@@ -32,7 +32,6 @@ import CertificateVerification from './pages/CertificateVerification';
 import CourseReviewsPage from './pages/CourseReviewsPage';
 import LearnerAuth from './pages/LearnerAuth';
 import NotificationCenterPage from './pages/NotificationCenterPage';
-import { ResearchAudioProvider } from './components/ResearchAudioContext';
 
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -96,11 +95,9 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <Router>
-            <ResearchAudioProvider>
-              <SEO />
-              <AnimatedRoutes />
-              <TebogoChatbot />
-            </ResearchAudioProvider>
+            <SEO />
+            <AnimatedRoutes />
+            <TebogoChatbot />
           </Router>
         </AuthProvider>
       </ThemeProvider>

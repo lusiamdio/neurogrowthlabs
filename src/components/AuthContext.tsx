@@ -6,6 +6,8 @@ interface CustomUser {
   id: string;
   email?: string;
   displayName?: string;
+  country?: string;
+  registeredAt?: string;
   [key: string]: any;
 }
 
@@ -14,7 +16,7 @@ interface AuthContextType {
   userRole: string | null;
   loading: boolean;
   loginWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (email: string, password: string, name?: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string, name?: string, country?: string) => Promise<void>;
   updateDisplayName: (name: string) => void;
   logout: () => Promise<void>;
 }
@@ -70,11 +72,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           const sUser = session.user;
+          const cleanEmail = (sUser.email || '').trim().toLowerCase();
+          const storedAccounts = JSON.parse(localStorage.getItem('ngl_registered_learners') || '{}');
+          const localReg = storedAccounts[cleanEmail] || {};
           const mappedUser: CustomUser = {
             uid: sUser.id,
             id: sUser.id,
             email: sUser.email,
-            displayName: sUser.user_metadata?.full_name || sUser.email?.split('@')[0] || 'Learner'
+            displayName: sUser.user_metadata?.full_name || localReg.displayName || sUser.email?.split('@')[0] || 'Learner',
+            country: sUser.user_metadata?.country || localReg.country || 'South Africa',
+            registeredAt: sUser.user_metadata?.registered_at || localReg.registeredAt || sUser.created_at
           };
           setUser(mappedUser);
           
@@ -109,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUserRole(null);
         }
       } catch (err) {
-        console.error("Error getting initial session:", err);
+        console.warn("Session initialization fallback:", err);
       } finally {
         setLoading(false);
       }
@@ -127,10 +134,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (session?.user) {
           const sUser = session.user;
+          const cleanEmail = (sUser.email || '').trim().toLowerCase();
+          const storedAccounts = JSON.parse(localStorage.getItem('ngl_registered_learners') || '{}');
+          const localReg = storedAccounts[cleanEmail] || {};
           const mappedUser: CustomUser = {
             uid: sUser.id,
             id: sUser.id,
             email: sUser.email,
+            displayName: sUser.user_metadata?.full_name || localReg.displayName || sUser.email?.split('@')[0] || 'Learner',
+            country: sUser.user_metadata?.country || localReg.country || 'South Africa',
+            registeredAt: sUser.user_metadata?.registered_at || localReg.registeredAt || sUser.created_at
           };
           setUser(mappedUser);
           
@@ -190,22 +203,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         uid: 'simao-fallback-id',
         id: 'simao-fallback-id',
         email: 'simao@neurogrowthlabs.co.za',
-        displayName: 'Mr. Lusimanadio Soki Simao, MBA'
+        displayName: 'Mr. Lusimanadio Soki Simao, MBA',
+        country: 'South Africa'
       };
       setUser(adminUser);
       setUserRole('super_admin');
       return;
     }
 
+    // 2. Check locally stored resilient learner accounts if registered offline/local-only or browser is offline
+    try {
+      const storedAccounts = JSON.parse(localStorage.getItem('ngl_registered_learners') || '{}');
+      const existingLocal = storedAccounts[cleanEmail];
+      const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+      if (existingLocal && (existingLocal.localOnly || isOffline)) {
+        if (existingLocal.password === password) {
+          const learnerUser: CustomUser = {
+            uid: existingLocal.uid || 'learner-' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16),
+            id: existingLocal.uid || 'learner-' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16),
+            email: cleanEmail,
+            displayName: existingLocal.displayName || cleanEmail.split('@')[0],
+            country: existingLocal.country || 'South Africa',
+            registeredAt: existingLocal.registeredAt,
+            role: 'learner'
+          };
+          setUser(learnerUser);
+          setUserRole('learner');
+          localStorage.setItem('ngl_learner_session', JSON.stringify(learnerUser));
+          return;
+        }
+        throw new Error('Invalid email or password. Please check your credentials.');
+      }
+      if (isOffline && password.length >= 6) {
+        const offlineLearner: CustomUser = {
+          uid: 'learner-' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16),
+          id: 'learner-' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16),
+          email: cleanEmail,
+          displayName: cleanEmail.split('@')[0].replace('.', ' ').toUpperCase(),
+          country: 'South Africa',
+          role: 'learner'
+        };
+        setUser(offlineLearner);
+        setUserRole('learner');
+        localStorage.setItem('ngl_learner_session', JSON.stringify(offlineLearner));
+        return;
+      }
+    } catch (localErr: any) {
+      if (localErr?.message?.includes('Invalid email or password')) throw localErr;
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
       if (error) throw error;
       if (data?.user) {
+        const storedAccounts = JSON.parse(localStorage.getItem('ngl_registered_learners') || '{}');
+        const localReg = storedAccounts[cleanEmail] || {};
         const mappedUser: CustomUser = {
           uid: data.user.id,
           id: data.user.id,
           email: data.user.email,
-          displayName: data.user.user_metadata?.full_name || cleanEmail.split('@')[0]
+          displayName: data.user.user_metadata?.full_name || localReg.displayName || cleanEmail.split('@')[0],
+          country: data.user.user_metadata?.country || localReg.country || 'South Africa',
+          registeredAt: data.user.user_metadata?.registered_at || localReg.registeredAt || data.user.created_at
         };
         setUser(mappedUser);
         localStorage.setItem('ngl_learner_session', JSON.stringify(mappedUser));
@@ -224,6 +283,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               id: account.uid || 'learner-' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16),
               email: cleanEmail,
               displayName: account.displayName || cleanEmail.split('@')[0],
+              country: account.country || 'South Africa',
+              registeredAt: account.registeredAt,
               role: 'learner'
             };
             setUser(learnerUser);
@@ -245,6 +306,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: 'learner-' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16),
           email: cleanEmail,
           displayName: cleanEmail.split('@')[0].replace('.', ' ').toUpperCase(),
+          country: 'South Africa',
           role: 'learner'
         };
         setUser(fallbackLearner);
@@ -257,16 +319,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const registerWithEmail = async (email: string, password: string, name?: string) => {
+  const registerWithEmail = async (email: string, password: string, name?: string, country?: string) => {
     const cleanEmail = email.trim().toLowerCase();
     const formattedName = (name && name.trim()) ? name.trim() : cleanEmail.split('@')[0];
+    const formattedCountry = (country && country.trim()) ? country.trim() : 'South Africa';
+    const registeredAt = new Date().toISOString();
 
     try {
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
         options: {
-          data: { full_name: formattedName }
+          data: { full_name: formattedName, country: formattedCountry, registered_at: registeredAt }
         }
       });
 
@@ -277,7 +341,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           uid: data.user.id,
           id: data.user.id,
           email: data.user.email,
-          displayName: formattedName
+          displayName: formattedName,
+          country: formattedCountry,
+          registeredAt
         };
         setUser(mappedUser);
         setUserRole('learner');
@@ -289,6 +355,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           uid: data.user.id,
           email: cleanEmail,
           displayName: formattedName,
+          country: formattedCountry,
+          registeredAt,
           password
         };
         localStorage.setItem('ngl_registered_learners', JSON.stringify(storedAccounts));
@@ -303,6 +371,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: newUid,
         email: cleanEmail,
         displayName: formattedName,
+        country: formattedCountry,
+        registeredAt,
         role: 'learner'
       };
 
@@ -311,7 +381,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         uid: newUid,
         email: cleanEmail,
         displayName: formattedName,
-        password
+        country: formattedCountry,
+        registeredAt,
+        password,
+        localOnly: true
       };
       localStorage.setItem('ngl_registered_learners', JSON.stringify(storedAccounts));
 

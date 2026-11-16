@@ -11,6 +11,7 @@ import {
   CourseReview, CourseRatingStats, getReviewsForCourse, 
   calculateCourseRatingStats, submitCourseReview, toggleReviewHelpful 
 } from '../../data/academyReviews';
+import ModuleContentRenderer from './ModuleContentRenderer';
 
 interface CoursePlayerModalProps {
   isOpen: boolean;
@@ -337,25 +338,8 @@ export default function CoursePlayerModal({
                     {currentModule.summary}
                   </p>
 
-                  <div className="text-xs sm:text-sm text-slate-300 leading-relaxed space-y-4">
-                    <p>{currentModule.content}</p>
-
-                    <div className="my-5 p-4 rounded-xl bg-[#06080e] border border-white/10 font-mono text-xs text-ai-cyan">
-                      <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-[11px] text-slate-400">
-                        <span className="flex items-center gap-1.5">
-                          <Terminal className="w-3.5 h-3.5 text-ai-cyan" />
-                          <span>Kernel & Defensive Telemetry Sandbox</span>
-                        </span>
-                        <span>eBPF Line Rate Probe</span>
-                      </div>
-                      <pre className="overflow-x-auto text-green-300 text-[11px] leading-relaxed">
-{`# Neurogrowth Labs Real-Time Defensive Sandbox [${course.code}]
-$ sudo ngl-defense-agent --inspect-network eth0 --threshold 0.70
-[STATUS] Active model: ${course.code}
-[METRICS] Line throughput: 42,000 pkt/sec | Latency: 0.18ms
-[EVENT] Zero-day vector evaluation: Clean (All signatures verified)`}
-                      </pre>
-                    </div>
+                  <div className="space-y-5">
+                    <ModuleContentRenderer content={currentModule.content} />
 
                     <div>
                       <h4 className="text-xs font-mono uppercase tracking-wider text-white font-bold mb-2">

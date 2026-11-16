@@ -59,7 +59,7 @@ export default function AuthGateModal({
     try {
       if (activeTab === 'register') {
         const studentName = fullName.trim() || cleanEmail.split('@')[0];
-        await registerWithEmail(cleanEmail, password, studentName);
+        await registerWithEmail(cleanEmail, password, studentName, country);
         setSuccessMsg('Account created successfully. Redirecting...');
       } else {
         await loginWithEmail(cleanEmail, password);
@@ -68,7 +68,7 @@ export default function AuthGateModal({
 
       setTimeout(() => {
         setLoading(false);
-        onSuccess({ email: cleanEmail, displayName: fullName.trim() || cleanEmail.split('@')[0] });
+        onSuccess({ email: cleanEmail, displayName: fullName.trim() || cleanEmail.split('@')[0], country });
         onClose();
       }, 650);
 
@@ -85,11 +85,11 @@ export default function AuthGateModal({
     try {
       const demoEmail = 'learner.africa@neurogrowthlabs.co.za';
       const demoName = 'African Intelligence Scholar';
-      await registerWithEmail(demoEmail, 'LearnerPass2026@', demoName);
+      await registerWithEmail(demoEmail, 'LearnerPass2026@', demoName, 'South Africa');
       setSuccessMsg('Signed in with Verified Scholar credentials.');
       setTimeout(() => {
         setLoading(false);
-        onSuccess({ email: demoEmail, displayName: demoName });
+        onSuccess({ email: demoEmail, displayName: demoName, country: 'South Africa' });
         onClose();
       }, 500);
     } catch (err: any) {
