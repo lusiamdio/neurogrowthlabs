@@ -2,7 +2,7 @@
   "entities": {
     "User": {
       "title": "User",
-      "description": "A registered user of the NeuroGrowth Labs platform.",
+      "description": "A registered user of the Neuro AI Development platform.",
       "type": "object",
       "properties": {
         "uid": { "type": "string", "description": "The user's Firebase Auth UID." },
@@ -132,6 +132,79 @@
         "provider": { "type": "string" }
       },
       "required": ["id", "userId", "userEmail", "type", "subject", "sentAt"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Newsletter subscription record.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "status": { "type": "string", "enum": ["active", "unsubscribed", "bounced"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "status", "createdAt"]
+    },
+    "PartnerApplication": {
+      "title": "Partner Application",
+      "description": "Enterprise or institutional partnership application.",
+      "type": "object",
+      "properties": {
+        "company": { "type": "string" },
+        "type": { "type": "string" },
+        "country": { "type": "string" },
+        "interest": { "type": "string" },
+        "objectives": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["company", "email", "status", "createdAt"]
+    },
+    "ContactSubmission": {
+      "title": "Contact Submission",
+      "description": "Contact gateway inquiry payload.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "organization": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "inquiryType": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "message", "status", "createdAt"]
+    },
+    "Webinar": {
+      "title": "Webinar",
+      "description": "Scheduled executive capacity building webinar session.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "track": { "type": "string" },
+        "duration": { "type": "string" },
+        "focus": { "type": "string" },
+        "team": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["date", "track", "focus"]
+    },
+    "WebinarRegistration": {
+      "title": "Webinar Registration",
+      "description": "Participant registration for a webinar track.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "organization": { "type": "string" },
+        "title": { "type": "string" },
+        "country": { "type": "string" },
+        "interestSector": { "type": "string" },
+        "track": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "track", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -162,6 +235,26 @@
     "email_notifications/{notificationId}": {
       "schema": { "$ref": "#/entities/EmailNotification" },
       "description": "Stores transactional email notification logs."
+    },
+    "subscriptions/{subscriptionId}": {
+      "schema": { "$ref": "#/entities/Subscription" },
+      "description": "Stores newsletter email subscriptions."
+    },
+    "partner_applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/PartnerApplication" },
+      "description": "Stores strategic partner applications."
+    },
+    "contact_submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/ContactSubmission" },
+      "description": "Stores contact form submissions."
+    },
+    "webinars/{webinarId}": {
+      "schema": { "$ref": "#/entities/Webinar" },
+      "description": "Stores scheduled webinar sessions."
+    },
+    "webinar_registrations/{registrationId}": {
+      "schema": { "$ref": "#/entities/WebinarRegistration" },
+      "description": "Stores webinar participant registrations."
     },
     "chat_sessions/{sessionId}": {
       "schema": { "$ref": "#/entities/ChatSession" },

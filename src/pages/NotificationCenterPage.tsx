@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/sections/Navbar';
@@ -22,9 +22,18 @@ export default function NotificationCenterPage() {
   const [filterType, setFilterType] = useState<'all' | 'enrollment' | 'certificate'>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
   };
 
   useEffect(() => {
@@ -75,7 +84,7 @@ export default function NotificationCenterPage() {
         {/* Navigation Breadcrumbs & Back Link */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
-            <Link to="/" className="hover:text-white transition-colors">NeuroGrowth Labs</Link>
+            <Link to="/" className="hover:text-white transition-colors">Neuro AI Development</Link>
             <span aria-hidden="true">/</span>
             <Link to="/academy" className="hover:text-white transition-colors">Academy</Link>
             <span aria-hidden="true">/</span>

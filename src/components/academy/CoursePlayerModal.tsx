@@ -61,6 +61,7 @@ export default function CoursePlayerModal({
 
   // Active YouTube video selection
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [selectedCompanionIndex, setSelectedCompanionIndex] = useState<number | null>(null);
 
   // Final assignment states
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
@@ -86,6 +87,16 @@ export default function CoursePlayerModal({
   const progressPercent = Math.round((completedCount / totalModules) * 100);
 
   const currentVideo = course.youtubeLectures[selectedVideoIndex] || course.youtubeLectures[0];
+  const activeCompanion =
+    selectedCompanionIndex !== null && currentVideo.companionVideos?.[selectedCompanionIndex]
+      ? currentVideo.companionVideos[selectedCompanionIndex]
+      : null;
+  const activeVideoId = activeCompanion ? activeCompanion.videoId : currentVideo.videoId;
+  const activeVideoUrl = activeCompanion
+    ? activeCompanion.url
+    : currentVideo.url || `https://www.youtube.com/watch?v=${currentVideo.videoId}`;
+  const activeVideoTitle = activeCompanion ? activeCompanion.title : currentVideo.title;
+  const activeVideoChannel = activeCompanion ? activeCompanion.channel : currentVideo.channel;
 
   const handleNextModule = () => {
     if (selectedModuleIndex < course.modules.length - 1) {
@@ -441,7 +452,10 @@ export default function CoursePlayerModal({
                     return (
                       <button
                         key={lec.id}
-                        onClick={() => setSelectedVideoIndex(idx)}
+                        onClick={() => {
+                          setSelectedVideoIndex(idx);
+                          setSelectedCompanionIndex(null);
+                        }}
                         className={`w-full text-left p-3 rounded-xl border transition-all flex items-start gap-3 ${
                           isSelected
                             ? 'bg-ai-cyan/10 border-ai-cyan/40 text-white shadow-sm'
@@ -475,10 +489,10 @@ export default function CoursePlayerModal({
                 <div>
                   <div className="flex items-center justify-between mb-3 text-xs">
                     <span className="font-mono text-ai-cyan">
-                      Lecture {selectedVideoIndex + 1} of 5 · {currentVideo.channel}
+                      Lecture {selectedVideoIndex + 1} of 5 · {activeVideoChannel}
                     </span>
                     <a
-                      href={currentVideo.url}
+                      href={activeVideoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1"
@@ -491,16 +505,46 @@ export default function CoursePlayerModal({
                   {/* Responsive YouTube Video Embed */}
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/15 bg-black shadow-lg mb-4">
                     <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${currentVideo.videoId}?rel=0`}
-                      title={currentVideo.title}
+                      src={`https://www.youtube-nocookie.com/embed/${activeVideoId}?rel=0`}
+                      title={activeVideoTitle}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       className="w-full h-full"
                     />
                   </div>
 
+                  {currentVideo.companionVideos && currentVideo.companionVideos.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCompanionIndex(null)}
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors ${
+                          selectedCompanionIndex === null
+                            ? 'bg-ai-cyan text-midnight-black font-bold'
+                            : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        Part 1 · Primary ({currentVideo.channel})
+                      </button>
+                      {currentVideo.companionVideos.map((comp, compIdx) => (
+                        <button
+                          key={comp.videoId}
+                          type="button"
+                          onClick={() => setSelectedCompanionIndex(compIdx)}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors ${
+                            selectedCompanionIndex === compIdx
+                              ? 'bg-ai-cyan text-midnight-black font-bold'
+                              : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          Part {compIdx + 2} · {comp.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   <h3 className="text-lg font-bold text-white mb-2">
-                    {currentVideo.title}
+                    {activeVideoTitle}
                   </h3>
 
                   <p className="text-xs text-slate-300 leading-relaxed p-3.5 rounded-lg bg-white/[0.02] border border-white/10">

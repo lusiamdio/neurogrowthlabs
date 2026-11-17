@@ -7,6 +7,14 @@ export interface CourseModule {
   keyTakeaways: string[];
 }
 
+export interface SupplementalLectureVideo {
+  label: string;
+  title: string;
+  url: string;
+  videoId: string;
+  channel: string;
+}
+
 export interface YouTubeLecture {
   id: string;
   title: string;
@@ -15,6 +23,7 @@ export interface YouTubeLecture {
   duration: string;
   channel: string;
   description: string;
+  companionVideos?: SupplementalLectureVideo[];
 }
 
 export interface AssignmentQuestion {
@@ -139,7 +148,7 @@ export const ACADEMY_COURSES: Course[] = [
     instructor: {
       name: 'Mr. Lusimanadio Soki Simao, MBA',
       role: 'Founder & Chief AI Strategist',
-      org: 'Neurogrowth Labs'
+      org: 'Neuro AI Development'
     },
     skills: [
       'Neural Anomaly Detection',
@@ -152,8 +161,8 @@ export const ACADEMY_COURSES: Course[] = [
       {
         id: 'yt-101-1',
         title: 'Lecture 1: AI-Powered Network Intrusion Detection & eBPF Telemetry',
-        url: 'https://www.youtube.com/watch?v=kY3B7V0q_Wc',
-        videoId: 'kY3B7V0q_Wc',
+        url: 'https://youtu.be/druq1s-OkI4?si=lHiNMx7cn6iFAV8c',
+        videoId: 'druq1s-OkI4',
         duration: '42 mins',
         channel: 'MIT Cyber Security Systems',
         description: 'Comprehensive overview of kernel-level telemetry extraction using eBPF probes and feeding NetFlow matrices into streaming transformer architectures.'
@@ -161,8 +170,8 @@ export const ACADEMY_COURSES: Course[] = [
       {
         id: 'yt-101-2',
         title: 'Lecture 2: Neural Anomaly Detection vs Signature-Based IDS',
-        url: 'https://www.youtube.com/watch?v=F3i9Hn3wzY8',
-        videoId: 'F3i9Hn3wzY8',
+        url: 'https://youtu.be/qj3OwMTkSG0?si=jO6-Fehiotm_qCu8',
+        videoId: 'qj3OwMTkSG0',
         duration: '38 mins',
         channel: 'Black Hat Enterprise Security',
         description: 'Why signature matchers fail against polymorphic command-and-control beacons, and how bidirectional temporal models pinpoint zero-day intrusions.'
@@ -170,8 +179,8 @@ export const ACADEMY_COURSES: Course[] = [
       {
         id: 'yt-101-3',
         title: 'Lecture 3: Autonomous SOC Incident Response & Playbook Automation',
-        url: 'https://www.youtube.com/watch?v=2TzM1FvWvjA',
-        videoId: '2TzM1FvWvjA',
+        url: 'https://youtu.be/iAx4PgYoWD4?si=3_SaJhy42t2lpcRh',
+        videoId: 'iAx4PgYoWD4',
         duration: '35 mins',
         channel: 'SANS Offensive & Defensive Institute',
         description: 'Designing AI agents that parse SIEM alerts, execute dynamic firewall rules, and isolate compromised pods with zero operator dwell time.'
@@ -179,8 +188,8 @@ export const ACADEMY_COURSES: Course[] = [
       {
         id: 'yt-101-4',
         title: 'Lecture 4: Securing Subsea Cable Landing Stations & Peering Backbones',
-        url: 'https://www.youtube.com/watch?v=Il3_K6D7x0A',
-        videoId: 'Il3_K6D7x0A',
+        url: 'https://www.youtube.com/live/nyFA8wTYAxk?si=UlozXB3Avo5AxcZR',
+        videoId: 'nyFA8wTYAxk',
         duration: '48 mins',
         channel: 'African Network Operators Group (AfNOG)',
         description: 'Architecting resilient edge routing and neural inspection across sub-Saharan multi-homed ISP exchange points and high-latency corridors.'
@@ -188,10 +197,10 @@ export const ACADEMY_COURSES: Course[] = [
       {
         id: 'yt-101-5',
         title: 'Lecture 5: Graph Neural Networks for Lateral Movement Detection',
-        url: 'https://www.youtube.com/watch?v=mQyB3q4k6Wc',
-        videoId: 'mQyB3q4k6Wc',
+        url: 'https://www.youtube.com/watch?v=1t124vguwJ8',
+        videoId: '1t124vguwJ8',
         duration: '45 mins',
-        channel: 'Stanford AI & Network Security',
+        channel: 'NDSS Symposium',
         description: 'Mapping corporate Active Directory authentication graphs to catch privilege escalation and pass-the-hash attacks before data exfiltration occurs.'
       }
     ],
@@ -1579,7 +1588,7 @@ And the most important engineering principle is:
     instructor: {
       name: 'Nguyen Van Hoang',
       role: 'Head of Applied AI Research',
-      org: 'Neurogrowth Labs'
+      org: 'Neuro AI Development'
     },
     skills: [
       'Adversarial Robustness Testing',
@@ -1595,43 +1604,43 @@ And the most important engineering principle is:
         url: 'https://www.youtube.com/watch?v=CIfsB_EYsVI',
         videoId: 'CIfsB_EYsVI',
         duration: '50 mins',
-        channel: 'Stanford CS231n Advanced AI',
+        channel: 'Stanford University School of Engineering',
         description: 'Mathematical derivation of loss landscape vulnerabilities, L-infinity perturbation budgets, and the geometry of adversarial examples.'
       },
       {
         id: 'yt-204-2',
         title: 'Lecture 2: Projected Gradient Descent (PGD) & Certified Robustness',
-        url: 'https://www.youtube.com/watch?v=q6p1N_V4uLg',
-        videoId: 'q6p1N_V4uLg',
+        url: 'https://www.youtube.com/watch?v=O84mcq7P_es',
+        videoId: 'O84mcq7P_es',
         duration: '45 mins',
-        channel: 'MIT CSAIL Robust Learning Lab',
+        channel: 'Sebastien Bubeck',
         description: 'Constructing universal first-order adversarial attacks and implementing randomized smoothing for provable mathematical bounds.'
       },
       {
         id: 'yt-204-3',
         title: 'Lecture 3: Training-Time Backdoor Poisoning & Spectral Signatures',
-        url: 'https://www.youtube.com/watch?v=kY3B7V0q_Wd',
-        videoId: 'kY3B7V0q_Wd',
+        url: 'https://youtu.be/DPAmkTFjeuk?si=xeuC38GL0eMlvviM',
+        videoId: 'DPAmkTFjeuk',
         duration: '40 mins',
-        channel: 'NeurIPS Machine Learning Security',
+        channel: 'Microsoft Security Response Center (MSRC)',
         description: 'How malicious actors inject clean-label triggers into open datasets and how spectral decomposition in latent representations exposes poisons.'
       },
       {
         id: 'yt-204-4',
         title: 'Lecture 4: Red-Teaming LLMs & Indirect Prompt Injection Defenses',
-        url: 'https://www.youtube.com/watch?v=sOwe3_N6Z1U',
-        videoId: 'sOwe3_N6Z1U',
+        url: 'https://www.youtube.com/watch?v=s_Ztu6c-IGQ',
+        videoId: 's_Ztu6c-IGQ',
         duration: '55 mins',
-        channel: 'OpenAI Security & Red Teaming',
+        channel: 'Microsoft Developer',
         description: 'Methods for preventing prompt leakage, SQL injection via RAG document stores, and building dual-model semantic verification rings.'
       },
       {
         id: 'yt-204-5',
         title: 'Lecture 5: Hardening Supervisory Control & Data Acquisition (SCADA) ML',
-        url: 'https://www.youtube.com/watch?v=3R8dYq3M1Vo',
-        videoId: '3R8dYq3M1Vo',
+        url: 'https://youtu.be/PN9TYVsTJ0g?si=F8xsjNkpiD46a3pZ',
+        videoId: 'PN9TYVsTJ0g',
         duration: '42 mins',
-        channel: 'IEEE Smart Grid & Industrial Cyber',
+        channel: 'Naren Projects',
         description: 'Securing electrical grid frequency estimators and automated transformer tap changers against false data injection attacks.'
       }
     ],
@@ -2796,7 +2805,7 @@ Before completing the course, you should be able to answer:
     instructor: {
       name: 'Linford Musiyambodza',
       role: 'Principal Cloud & Security Architect',
-      org: 'Neurogrowth Labs'
+      org: 'Neuro AI Development'
     },
     skills: [
       'NIST SP 800-207 Zero Trust',
@@ -2809,46 +2818,46 @@ Before completing the course, you should be able to answer:
       {
         id: 'yt-310-1',
         title: 'Lecture 1: NIST SP 800-207 Zero Trust Principles & Enterprise Migrations',
-        url: 'https://www.youtube.com/watch?v=kY3B7V0q_We',
-        videoId: 'kY3B7V0q_We',
+        url: 'https://www.youtube.com/watch?v=bCDyF8vTFCY',
+        videoId: 'bCDyF8vTFCY',
         duration: '44 mins',
-        channel: 'NIST Cyber Infrastructure Series',
+        channel: 'TIexames',
         description: 'Decoupling Policy Decision Points (PDP) and Policy Enforcement Points (PEP) to eliminate implicit trust inside corporate intranets.'
       },
       {
         id: 'yt-310-2',
         title: 'Lecture 2: Hardware Root of Trust & TPM 2.0 Remote Attestation',
-        url: 'https://www.youtube.com/watch?v=L9wX0vQ1a_c',
-        videoId: 'L9wX0vQ1a_c',
+        url: 'https://youtu.be/jtbWnod5hoY?si=91GdzVnbGVCG4jXJ',
+        videoId: 'jtbWnod5hoY',
         duration: '38 mins',
-        channel: 'Linux Foundation Security Core',
+        channel: 'The Linux Foundation',
         description: 'Validating PCR registers, firmware measurements, and configuring confidential computing enclaves (AMD SEV / Intel SGX).'
       },
       {
         id: 'yt-310-3',
         title: 'Lecture 3: Mutual TLS & Microsegmentation with Istio and Cilium eBPF',
-        url: 'https://www.youtube.com/watch?v=F1a8B9q7m_Y',
-        videoId: 'F1a8B9q7m_Y',
+        url: 'https://www.youtube.com/watch?v=O3C9F3U7AV8',
+        videoId: 'O3C9F3U7AV8',
         duration: '46 mins',
-        channel: 'Cloud Native Computing Foundation (CNCF)',
+        channel: 'The Learning Channel',
         description: 'Automating SPIFFE/SPIRE cryptographic X.509 identity certificates across multi-cloud Kubernetes clusters.'
       },
       {
         id: 'yt-310-4',
         title: 'Lecture 4: Decentralized Identifiers (W3C DIDs) & Verifiable Credentials',
-        url: 'https://www.youtube.com/watch?v=2TzM1FvWvjB',
-        videoId: '2TzM1FvWvjB',
+        url: 'https://www.youtube.com/watch?v=Kky-YcEkOb0',
+        videoId: 'Kky-YcEkOb0',
         duration: '40 mins',
-        channel: 'W3C Sovereign Identity Working Group',
+        channel: 'Identity Expert',
         description: 'Implementing cross-border digital identity for Pan-African banking without relying on foreign commercial certificate authorities.'
       },
       {
         id: 'yt-310-5',
         title: 'Lecture 5: Zero-Knowledge Proofs (ZKPs) for Privacy-Preserving Compliance',
-        url: 'https://www.youtube.com/watch?v=sOwe3_N6Z1V',
-        videoId: 'sOwe3_N6Z1V',
+        url: 'https://www.youtube.com/watch?v=7SwTy1MCgEY',
+        videoId: '7SwTy1MCgEY',
         duration: '50 mins',
-        channel: 'Applied Cryptography & Financial Systems',
+        channel: 'a16z Frontier',
         description: 'Enabling KYC age and solvency verification across African borders without transferring underlying personally identifiable information.'
       }
     ],
@@ -3697,7 +3706,7 @@ Remember the four layers: **(1) ZERO TRUST** → **(2) HARDWARE TRUST** → **(3
     instructor: {
       name: 'Francis Matsoso',
       role: 'Director of Threat Telemetry',
-      org: 'Neurogrowth Labs'
+      org: 'Neuro AI Development'
     },
     skills: [
       'Dark Web OSINT Automation',
@@ -3710,46 +3719,46 @@ Remember the four layers: **(1) ZERO TRUST** → **(2) HARDWARE TRUST** → **(3
       {
         id: 'yt-402-1',
         title: 'Lecture 1: The Cyber Threat Intelligence Lifecycle & STIX 2.1 Standards',
-        url: 'https://www.youtube.com/watch?v=sOwe3_N6Z1W',
-        videoId: 'sOwe3_N6Z1W',
+        url: 'https://youtu.be/y1QAZLGRdoA?si=jpnFwCpgiGNVH5BS',
+        videoId: 'y1QAZLGRdoA',
         duration: '42 mins',
-        channel: 'SANS Cyber Threat Intelligence Summit',
+        channel: 'Cyber Security Entertainment',
         description: 'Transforming unstructured forensic indicators into structured STIX objects and synchronizing over TAXII server feeds.'
       },
       {
         id: 'yt-402-2',
         title: 'Lecture 2: Dark Web OSINT Reconnaissance & Tor Operational Security',
-        url: 'https://www.youtube.com/watch?v=3R8dYq3M1Vp',
-        videoId: '3R8dYq3M1Vp',
+        url: 'https://youtu.be/_KzObeom88Y?si=GklRt2-cvWDbauOE',
+        videoId: '_KzObeom88Y',
         duration: '48 mins',
-        channel: 'DefCon Reconnaissance Village',
+        channel: 'NetworkChuck',
         description: 'Safely indexing hidden service forums, Telegram marketplace channels, and tracking initial access broker auctions.'
       },
       {
         id: 'yt-402-3',
         title: 'Lecture 3: Multilingual NLP for Threat Chatter Analysis in African Dialects',
-        url: 'https://www.youtube.com/watch?v=kY3B7V0q_Wf',
-        videoId: 'kY3B7V0q_Wf',
+        url: 'https://youtu.be/wilwuzgLWdk?si=3yEsf-Qroyo-eikx',
+        videoId: 'wilwuzgLWdk',
         duration: '39 mins',
-        channel: 'Applied AI in Cyber Operations',
+        channel: 'Graham Neubig',
         description: 'Fine-tuning transformer models to detect slang, money mule solicitation, and SIM-swap coordination in Pidgin and Swahili.'
       },
       {
         id: 'yt-402-4',
         title: 'Lecture 4: Threat Actor Attribution Using Neo4j Knowledge Graphs',
-        url: 'https://www.youtube.com/watch?v=F3i9Hn3wzY9',
-        videoId: 'F3i9Hn3wzY9',
+        url: 'https://youtu.be/buXyenH97VA?si=RJrM-Pdo-dbs8DXe',
+        videoId: 'buXyenH97VA',
         duration: '45 mins',
-        channel: 'Mandiant Threat Intelligence Lab',
+        channel: 'Neo4j',
         description: 'Correlating SSL certificate serials, Bitcoin transaction hops, and malware compile timestamps to unmask APT syndicates.'
       },
       {
         id: 'yt-402-5',
         title: 'Lecture 5: Synthesizing Behavioral Sigma & YARA Rules with LLMs',
-        url: 'https://www.youtube.com/watch?v=2TzM1FvWvjC',
-        videoId: '2TzM1FvWvjC',
+        url: 'https://www.youtube.com/watch?v=oPsSUxt7ufs',
+        videoId: 'oPsSUxt7ufs',
         duration: '44 mins',
-        channel: 'Offensive Security Research',
+        channel: 'Security BSides San Francisco',
         description: 'Automating the creation of verified SIEM detection rules from newly disassembled malware payloads without false positives.'
       }
     ],
@@ -4556,7 +4565,7 @@ Produce a single **AI-Assisted Threat Intelligence & Defense Architecture** inte
     instructor: {
       name: 'Muhammad Nur Ismanto',
       role: 'Chief Compliance & Systems Architect',
-      org: 'Neurogrowth Labs'
+      org: 'Neuro AI Development'
     },
     skills: [
       'African Union Malabo Convention',
@@ -4569,47 +4578,63 @@ Produce a single **AI-Assisted Threat Intelligence & Defense Architecture** inte
       {
         id: 'yt-505-1',
         title: 'Lecture 1: The African Union Malabo Convention & Continental Data Sovereignty',
-        url: 'https://www.youtube.com/watch?v=sOwe3_N6Z1X',
-        videoId: 'sOwe3_N6Z1X',
+        url: 'https://www.youtube.com/watch?v=8qYG67Z7L2o',
+        videoId: '8qYG67Z7L2o',
         duration: '46 mins',
-        channel: 'African Union Digital Transformation Hub',
-        description: 'Analyzing legal obligations for cross-border data flows, biometric residency, and pan-African cybercrime prosecution.'
+        channel: 'APHRC',
+        description: 'Analyzing legal obligations for cross-border data flows, biometric residency, and pan-African data sovereignty and AI governance.'
       },
       {
         id: 'yt-505-2',
         title: 'Lecture 2: Conducting Algorithmic Impact Assessments (AIAs) & Bias Audits',
-        url: 'https://www.youtube.com/watch?v=3R8dYq3M1Vq',
-        videoId: '3R8dYq3M1Vq',
+        url: 'https://www.youtube.com/watch?v=UBUBcmoDon0',
+        videoId: 'UBUBcmoDon0',
         duration: '40 mins',
-        channel: 'Oxford Institute for Ethics in AI',
-        description: 'Quantitative testing for disparate impact ratio, demographic parity, and proxy discrimination across credit scoring models.'
+        channel: 'CPDPConferences',
+        description: 'Quantitative testing for disparate impact ratio, demographic parity, and augmented compliance via Algorithmic Impact Assessments.'
       },
       {
         id: 'yt-505-3',
         title: 'Lecture 3: POPIA, NDPR & Kenya DPA Harmonization for Tech Startups',
-        url: 'https://www.youtube.com/watch?v=kY3B7V0q_Wg',
-        videoId: 'kY3B7V0q_Wg',
+        url: 'https://www.youtube.com/watch?v=pBU4YrY5F3Q',
+        videoId: 'pBU4YrY5F3Q',
         duration: '43 mins',
-        channel: 'Pan-African Privacy Practitioners Network',
-        description: 'Establishing operational compliance programs, data subject access requests, and 72-hour breach notification protocols.'
+        channel: 'LexisNexis South Africa',
+        description: 'Establishing operational compliance programs across POPIA (South Africa), NDPR (Nigeria), and Kenya DPA, including data subject rights and breach notification protocols.',
+        companionVideos: [
+          {
+            label: 'NDPR (Nigeria)',
+            title: 'Nigeria Data Protection Regulation (NDPR): What you need to know',
+            url: 'https://www.youtube.com/watch?v=J_t6OX1HRKg',
+            videoId: 'J_t6OX1HRKg',
+            channel: 'NACCIMA'
+          },
+          {
+            label: 'Kenya DPA (ODPC)',
+            title: '5 Years Journey of Impact in Data Protection - Full Documentary',
+            url: 'https://www.youtube.com/watch?v=LaBgdIbnCYY',
+            videoId: 'LaBgdIbnCYY',
+            channel: 'Office of the Data Protection Commissioner'
+          }
+        ]
       },
       {
         id: 'yt-505-4',
         title: 'Lecture 4: Sovereign Cloud Architectures & Data Localization Rules',
-        url: 'https://www.youtube.com/watch?v=F3i9Hn3wzZa',
-        videoId: 'F3i9Hn3wzZa',
+        url: 'https://www.youtube.com/watch?v=X-xMgJ9yEeg',
+        videoId: 'X-xMgJ9yEeg',
         duration: '38 mins',
-        channel: 'Sovereign Infrastructure Policy Council',
-        description: 'Deploying air-gapped sovereign AI clusters in national datacenters to satisfy strict biometric and health records regulations.'
+        channel: 'Google Cloud',
+        description: 'Deploying sovereign cloud architectures and cryptographic residency controls to satisfy strict biometric and health records regulations.'
       },
       {
         id: 'yt-505-5',
         title: 'Lecture 5: Structuring Institutional AI Ethics Boards & Whistleblower Protections',
-        url: 'https://www.youtube.com/watch?v=2TzM1FvWvjD',
-        videoId: '2TzM1FvWvjD',
+        url: 'https://www.youtube.com/watch?v=viyXQhPAqME',
+        videoId: 'viyXQhPAqME',
         duration: '35 mins',
-        channel: 'Harvard Berkman Klein Center',
-        description: 'Creating internal review gates, model cards, and transparent reporting before putting generative models into public production.'
+        channel: 'The Alan Turing Institute',
+        description: 'Implementing the Process-Based Governance (PBG) framework, internal review gates, and transparent reporting before deploying generative models.'
       }
     ],
     finalAssignment: {
@@ -5078,7 +5103,7 @@ export const RESEARCH_PAPERS: ResearchPaper[] = [
     subtitle: 'An Empirical Evaluation of Edge Caching, Subsea Landings, and Regional GPU Clusters',
     authors: [
       { name: 'Dr. Kwame Osei-Tutu', affiliation: 'African Institute of Distributed Systems' },
-      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & Chief AI Strategist, Neurogrowth Labs' },
+      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & Chief AI Strategist, Neuro AI Development' },
       { name: 'Dr. Aminata Diallo', affiliation: 'Dakar High-Performance Computing Laboratory' }
     ],
     publishDate: 'September 2026',
@@ -5117,9 +5142,9 @@ export const RESEARCH_PAPERS: ResearchPaper[] = [
     title: 'Multilingual Low-Resource NLP for African Fintech: Fine-Tuning LLMs on Swahili, Yoruba, Amharic, and Zulu Transactional Dialects',
     subtitle: 'Overcoming Tokenizer Fragmentation and Vocabulary Bias in Conversational Mobile Banking',
     authors: [
-      { name: 'Nguyen Van Hoang', affiliation: 'Head of Applied AI Research, Neurogrowth Labs' },
-      { name: 'Francis Matsoso', affiliation: 'Senior Research Fellow, Neurogrowth Labs' },
-      { name: 'Linford Musiyambodza', affiliation: 'Computational Linguistics Specialist, Neurogrowth Labs' }
+      { name: 'Nguyen Van Hoang', affiliation: 'Head of Applied AI Research, Neuro AI Development' },
+      { name: 'Francis Matsoso', affiliation: 'Senior Research Fellow, Neuro AI Development' },
+      { name: 'Linford Musiyambodza', affiliation: 'Computational Linguistics Specialist, Neuro AI Development' }
     ],
     publishDate: 'June 2026',
     category: 'Natural Language Processing',
@@ -5156,8 +5181,8 @@ export const RESEARCH_PAPERS: ResearchPaper[] = [
     title: 'Cyber-Resilience in Pan-African Cross-Border Payments: Machine Learning for Instant Fraud Mitigation under the PAPSS Framework',
     subtitle: 'Graph Neural Networks for High-Frequency Anti-Money Laundering and Currency Arbitrage Detection',
     authors: [
-      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & Chief AI Strategist, Neurogrowth Labs' },
-      { name: 'Muhammad Nur Ismanto', affiliation: 'Chief Systems Architect, Neurogrowth Labs' },
+      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & Chief AI Strategist, Neuro AI Development' },
+      { name: 'Muhammad Nur Ismanto', affiliation: 'Chief Systems Architect, Neuro AI Development' },
       { name: 'Dr. Sarah Chimutashu', affiliation: 'Centre for African Financial Stability' }
     ],
     publishDate: 'August 2026',
@@ -5237,7 +5262,7 @@ export const RESEARCH_PAPERS: ResearchPaper[] = [
     authors: [
       { name: 'Dr. Zanele Khumalo', affiliation: 'Cape Town Medical AI Research Group' },
       { name: 'Dr. Christian Mensah', affiliation: 'Accra Bioengineering Institute' },
-      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & Chief AI Strategist, Neurogrowth Labs' }
+      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & Chief AI Strategist, Neuro AI Development' }
     ],
     publishDate: 'July 2026',
     category: 'Healthcare AI & Ethics',
@@ -5275,8 +5300,8 @@ export const RESEARCH_PAPERS: ResearchPaper[] = [
     title: 'Digging Smarter',
     subtitle: 'How artificial intelligence is rewiring the African mining value chain, where the evidence is strong, where the hype runs ahead of it, and what the continent must build to lead rather than follow',
     authors: [
-      { name: 'Lusimadio', affiliation: 'Founder & CEO, NeuroGrowth Labs' },
-      { name: 'Neurogrowth Labs Intelligence Directorate', affiliation: 'Mining & Technology Research' }
+      { name: 'Lusimadio', affiliation: 'Founder & CEO, Neuro AI Development' },
+      { name: 'Neuro AI Development Intelligence Directorate', affiliation: 'Mining & Technology Research' }
     ],
     publishDate: 'November 2026',
     category: 'Mining, Technology & AI',
@@ -5303,7 +5328,7 @@ export const RESEARCH_PAPERS: ResearchPaper[] = [
     ],
     bibtex: `@article{lusimadio2026diggingsmarter,
   title={Digging Smarter: How artificial intelligence is rewiring the African mining value chain, where the evidence is strong, where the hype runs ahead of it, and what the continent must build to lead rather than follow},
-  author={Lusimadio and Neurogrowth Labs Intelligence Directorate},
+  author={Lusimadio and Neuro AI Development Intelligence Directorate},
   journal={Feature Article: Mining and Technology},
   volume={1},
   pages={1--6},
@@ -5413,7 +5438,7 @@ Figures from vendors and company announcements are described as reported rather 
     title: 'Digging Deeper, Leaving Better',
     subtitle: 'Sustainability in Africa’s Mining Operations',
     authors: [
-      { name: 'Lusimadio', affiliation: 'Founder & CEO, NeuroGrowth Labs' }
+      { name: 'Lusimadio', affiliation: 'Founder & CEO, Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Sustainability in African Mining',
@@ -5421,7 +5446,7 @@ Figures from vendors and company announcements are described as reported rather 
     downloadCount: 1890,
     citationCount: 62,
     readingTime: 'about 16 minutes',
-    pdfUrl: '/assets/aistudio/NeuroGrowth_Labs_Sustainability_in_African_Mining_fab6a149.pdf',
+    pdfUrl: '/assets/aistudio/Neuro_AI_Development_Sustainability_in_African_Mining_fab6a149.pdf',
     executiveSummary: `Africa holds the minerals the world needs to decarbonise. The question that will define the next fifty years is whether the continent keeps the value, the land and the dignity that come with them. 01 Africa holds a historic share of the critical minerals powering the energy transition. 02 Mining’s past costs, in water, land, climate and community trust, were design failures, not destiny. 03 Five shifts define sustainable mining: clean power, water stewardship, tailings safety, technology and closure from day one. 04 Environmental progress is not enough without local value, strong governance and real community partnership.`,
     abstract: `Every electric vehicle, wind turbine, solar panel and battery storage system begins in the ground. And a remarkable share of that ground is African. The Democratic Republic of Congo produces the majority of the world’s cobalt. South Africa holds the lion’s share of known platinum group metal reserves. Guinea sits on Simandou, one of the largest untapped high-grade iron ore deposits on earth. Zambia, Zimbabwe, Mali, Namibia, Ghana, Tanzania and Mozambique each hold minerals that sit at the heart of the energy transition. Africa is commonly cited as holding around a third of the world’s mineral reserves, including many of the critical minerals that clean-energy technologies depend on. This is a historic moment of leverage. It is also a moment of risk. Africa has lived through extraction cycles before, in which wealth left on ships and the damage stayed behind. The difference this time must be a deliberate one. Sustainability in mining is no longer a reputational side project or a line in an annual report. It is the central strategic question for the continent’s economies, communities and ecosystems.`,
     methodology: `Pan-African comparative policy and field analysis examining operational case studies across South Africa (Witwatersrand acid mine drainage, Gold Fields, Impala), Ghana (galamsey alluvial gold impact on Pra/Ankobra/Offin rivers), Zambia (Kitwe tailings dam failure response), DRC, Zimbabwe, and Guinea Simandou, evaluating implementation of the Global Industry Standard on Tailings Management (GISTM) and the African Continental Free Trade Area (AfCFTA) critical mineral processing frameworks.`,
@@ -5442,13 +5467,13 @@ Figures from vendors and company announcements are described as reported rather 
     bibtex: `@article{lusimadio2026diggingdeeper,
   title={Digging Deeper, Leaving Better: Sustainability in Africa’s Mining Operations},
   author={Lusimadio},
-  journal={NeuroGrowth Labs Thought Leadership Series on Pan-African Resources},
+  journal={Neuro AI Development Thought Leadership Series on Pan-African Resources},
   volume={1},
   pages={1--8},
   year={2026},
   doi={10.5281/ngl.afr.2026.07}
 }`,
-    fullArticleText: `NEUROGROWTH LABS
+    fullArticleText: `NEURO AI DEVELOPMENT
 AI-NATIVE TECHNOLOGY | CAPE TOWN | ANGOLA
 THOUGHT LEADERSHIP | PAN-AFRICAN RESOURCES | NOVEMBER 2026
 
@@ -5456,8 +5481,8 @@ DIGGING DEEPER, LEAVING BETTER
 Sustainability in Africa’s Mining Operations
 
 Lusimadio
-Founder & CEO, NeuroGrowth Labs
-ai.neurogrowthlabs.co.za
+Founder & CEO, Neuro AI Development
+ai.neuroaidevelopment.co.za
 
 Africa holds the minerals the world needs to decarbonise. The question that will define the next fifty years is whether the continent keeps the value, the land and the dignity that come with them.
 
@@ -5574,9 +5599,9 @@ The minerals beneath Africa are finite. The responsibility, and the opportunity,
 THE LAST WORD
 Africa does not have to choose between development and sustainability. It has to insist on both.
 
-ABOUT NEUROGROWTH LABS
-NeuroGrowth Labs is an AI-native technology and managed IT services company based in Cape Town, South Africa, with operations in Angola. It builds technology infrastructure for pan-African trade, finance, sustainability and development.
-ai.neurogrowthlabs.co.za`
+ABOUT NEURO AI DEVELOPMENT
+Neuro AI Development is an AI-native technology and managed IT services company based in Cape Town, South Africa, with operations in Angola. It builds technology infrastructure for pan-African trade, finance, sustainability and development.
+ai.neuroaidevelopment.co.za`
   },
   {
     id: 'paper-8-african-language-foundation-models',
@@ -5584,8 +5609,8 @@ ai.neurogrowthlabs.co.za`
     title: 'African-Language Foundation Models: A Research and Development Framework for Inclusive Speech, Translation and Text Understanding',
     subtitle: 'Technical Research Paper | Version 1.0 | Three-Tier Language Coverage, Community Data Sovereignty & Modular AfriFM Architecture',
     authors: [
-      { name: 'Lusimadio', affiliation: 'Founder & CEO, NeuroGrowth Labs, Cape Town' },
-      { name: 'NeuroGrowth Labs AI R&D Department', affiliation: 'Cape Town, South Africa & Angola' }
+      { name: 'Lusimadio', affiliation: 'Founder & CEO, Neuro AI Development, Cape Town' },
+      { name: 'Neuro AI Development AI R&D Department', affiliation: 'Cape Town, South Africa & Angola' }
     ],
     publishDate: 'November 2026',
     category: 'Natural Language Processing',
@@ -5593,8 +5618,8 @@ ai.neurogrowthlabs.co.za`
     downloadCount: 1580,
     citationCount: 34,
     readingTime: 'about 22 minutes',
-    executiveSummary: `More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. This paper sets out the research and development framework of NeuroGrowth Labs for building multilingual foundation models for major and low-resource African languages—proposing a three-tier language coverage strategy, a community-governed data pipeline grounded in consent and data sovereignty, the modular AfriFM family (Text, MT, Speech, Embed), a benchmark-led evaluation protocol, and an application-anchored deployment pathway.`,
-    abstract: `More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. The resulting gap is not merely technical: it determines who can read, speak to, and be served by AI systems. The African Union’s Continental Artificial Intelligence Strategy identifies African-language and cultural representation as essential to inclusive AI adoption. This paper sets out the research and development framework of NeuroGrowth Labs for building multilingual foundation models for major and low-resource African languages, with strong speech, machine translation and text-understanding capabilities. We propose (i) a three-tier language coverage strategy that sequences effort by data availability and societal need; (ii) a community-governed data pipeline built on consent, provenance and data-sovereignty principles; (iii) a modular model family spanning text, speech, translation and embeddings, trained through vocabulary-aware continued pretraining, parameter-efficient adaptation and distillation; (iv) a benchmark-led evaluation protocol combining public benchmarks, dialect-aware held-out sets and native-speaker human evaluation; and (v) an application-anchored deployment path through NeuroGrowth Labs’ operating ventures. We state explicit hypotheses, success criteria, risks and limitations, and we argue that disciplined, evaluation-first engineering, rather than parameter count alone, is the most credible path to equitable African-language AI.`,
+    executiveSummary: `More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. This paper sets out the research and development framework of Neuro AI Development for building multilingual foundation models for major and low-resource African languages—proposing a three-tier language coverage strategy, a community-governed data pipeline grounded in consent and data sovereignty, the modular AfriFM family (Text, MT, Speech, Embed), a benchmark-led evaluation protocol, and an application-anchored deployment pathway.`,
+    abstract: `More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. The resulting gap is not merely technical: it determines who can read, speak to, and be served by AI systems. The African Union’s Continental Artificial Intelligence Strategy identifies African-language and cultural representation as essential to inclusive AI adoption. This paper sets out the research and development framework of Neuro AI Development for building multilingual foundation models for major and low-resource African languages, with strong speech, machine translation and text-understanding capabilities. We propose (i) a three-tier language coverage strategy that sequences effort by data availability and societal need; (ii) a community-governed data pipeline built on consent, provenance and data-sovereignty principles; (iii) a modular model family spanning text, speech, translation and embeddings, trained through vocabulary-aware continued pretraining, parameter-efficient adaptation and distillation; (iv) a benchmark-led evaluation protocol combining public benchmarks, dialect-aware held-out sets and native-speaker human evaluation; and (v) an application-anchored deployment path through Neuro AI Development’ operating ventures. We state explicit hypotheses, success criteria, risks and limitations, and we argue that disciplined, evaluation-first engineering, rather than parameter count alone, is the most credible path to equitable African-language AI.`,
     methodology: `Disciplined, evaluation-first R&D methodology organising 27+ priority African languages into three tiers (Major, Mid-resource, and Low-resource including Angolan Bantu languages Umbundu, Kimbundu, Kikongo, and Chokwe), applying CARE-informed data governance, morphology-aware vocabulary extension, MAFT continued pretraining, LoRA/QLoRA parameter-efficient adaptation, CTC/seq2seq self-supervised speech fine-tuning, and multi-layer evaluation across FLORES-200, FLEURS, MasakhaNER, IrokoBench, AfroBench, dialect sets, code-switching probes, and native human scoring.`,
     findings: [
       'A modular four-component model family (AfriFM-Text, AfriFM-MT, AfriFM-Speech, AfriFM-Embed) avoids monolithic compute bottlenecks and aligns cleanly with edge-device and enterprise API constraints.',
@@ -5609,8 +5634,8 @@ ai.neurogrowthlabs.co.za`
     ],
     bibtex: `@article{lusimadio2026afrifm,
   title={African-Language Foundation Models: A Research and Development Framework for Inclusive Speech, Translation and Text Understanding},
-  author={Lusimadio and NeuroGrowth Labs AI R\\&D Department},
-  journal={NeuroGrowth Labs Technical Research Paper},
+  author={Lusimadio and Neuro AI Development AI R\\&D Department},
+  journal={Neuro AI Development Technical Research Paper},
   volume={1},
   number={0},
   pages={1--18},
@@ -5620,13 +5645,13 @@ ai.neurogrowthlabs.co.za`
 }`,
     fullArticleText: `African-Language Foundation Models: A Research and Development Framework for Inclusive Speech, Translation and Text Understanding
 
-NeuroGrowth Labs, AI Research & Development Department Technical Research Paper | Version 1.0 | November 2026 Correspondence: Lusimadio, Founder & CEO, NeuroGrowth Labs, Cape Town, South Africa
+Neuro AI Development, AI Research & Development Department Technical Research Paper | Version 1.0 | November 2026 Correspondence: Lusimadio, Founder & CEO, Neuro AI Development, Cape Town, South Africa
 
 Status note: This paper presents a research programme, its design rationale, methodology and evaluation protocol. It does not report experimental results. All quantitative figures labelled as targets are design objectives to be validated, not achieved outcomes.
 
 Abstract
 
-More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. The resulting gap is not merely technical: it determines who can read, speak to, and be served by AI systems. The African Union’s Continental Artificial Intelligence Strategy identifies African-language and cultural representation as essential to inclusive AI adoption. This paper sets out the research and development framework of NeuroGrowth Labs for building multilingual foundation models for major and low-resource African languages, with strong speech, machine translation and text-understanding capabilities. We propose (i) a three-tier language coverage strategy that sequences effort by data availability and societal need; (ii) a community-governed data pipeline built on consent, provenance and data-sovereignty principles; (iii) a modular model family spanning text, speech, translation and embeddings, trained through vocabulary-aware continued pretraining, parameter-efficient adaptation and distillation; (iv) a benchmark-led evaluation protocol combining public benchmarks, dialect-aware held-out sets and native-speaker human evaluation; and (v) an application-anchored deployment path through NeuroGrowth Labs’ operating ventures. We state explicit hypotheses, success criteria, risks and limitations, and we argue that disciplined, evaluation-first engineering, rather than parameter count alone, is the most credible path to equitable African-language AI.
+More than 2,000 languages are spoken across Africa, yet the large-scale language technologies now shaping commerce, education, finance and public services are built overwhelmingly on a few high-resource languages. The resulting gap is not merely technical: it determines who can read, speak to, and be served by AI systems. The African Union’s Continental Artificial Intelligence Strategy identifies African-language and cultural representation as essential to inclusive AI adoption. This paper sets out the research and development framework of Neuro AI Development for building multilingual foundation models for major and low-resource African languages, with strong speech, machine translation and text-understanding capabilities. We propose (i) a three-tier language coverage strategy that sequences effort by data availability and societal need; (ii) a community-governed data pipeline built on consent, provenance and data-sovereignty principles; (iii) a modular model family spanning text, speech, translation and embeddings, trained through vocabulary-aware continued pretraining, parameter-efficient adaptation and distillation; (iv) a benchmark-led evaluation protocol combining public benchmarks, dialect-aware held-out sets and native-speaker human evaluation; and (v) an application-anchored deployment path through Neuro AI Development’ operating ventures. We state explicit hypotheses, success criteria, risks and limitations, and we argue that disciplined, evaluation-first engineering, rather than parameter count alone, is the most credible path to equitable African-language AI.
 
 Keywords: African languages; low-resource NLP; multilingual foundation models; automatic speech recognition; machine translation; cross-lingual transfer; data sovereignty; inclusive AI.
 
@@ -5640,9 +5665,9 @@ Language is the interface through which people access economic opportunity. When
 
 The African Union’s Continental Artificial Intelligence Strategy, endorsed in 2024, frames AI as a tool for inclusive development and explicitly treats African-language and cultural representation as a condition of inclusive adoption. This paper takes that framing as a design requirement rather than an aspiration: a model that performs well only in English, French, Portuguese or Arabic cannot be described as serving the continent. Representation, in our view, must be measurable, which is why evaluation sits at the centre of the framework proposed here.
 
-1.3 Why NeuroGrowth Labs
+1.3 Why Neuro AI Development
 
-NeuroGrowth Labs is an AI-native technology and managed IT services company based in Cape Town, with operations in South Africa and Angola. Its portfolio creates direct, recurring demand for African-language capability and, importantly, a channel for real-world feedback. Examples include IBOS (an operating system for informal and micro-enterprise formalisation), CogniSacra (decentralised education with verifiable credentials), AfriQuantX (capital-markets infrastructure) and AfriTranslate (a multilingual translation API covering 27 African languages). Angola adds a distinctive requirement: Portuguese-medium institutions coexisting with Bantu languages such as Umbundu, Kimbundu, Kikongo and Chokwe, which are comparatively under-served in current language technology.
+Neuro AI Development is an AI-native technology and managed IT services company based in Cape Town, with operations in South Africa and Angola. Its portfolio creates direct, recurring demand for African-language capability and, importantly, a channel for real-world feedback. Examples include IBOS (an operating system for informal and micro-enterprise formalisation), CogniSacra (decentralised education with verifiable credentials), AfriQuantX (capital-markets infrastructure) and AfriTranslate (a multilingual translation API covering 27 African languages). Angola adds a distinctive requirement: Portuguese-medium institutions coexisting with Bantu languages such as Umbundu, Kimbundu, Kikongo and Chokwe, which are comparatively under-served in current language technology.
 
 1.4 Contributions
 
@@ -5702,7 +5727,7 @@ Tier 3: Low-resource — Limited or no digital text; sparse speech; high social 
 
 The initial release wave targets the 27-language footprint already served by AfriTranslate, extended deliberately to Tier 3 Angolan languages through Angola-based partners engaged under contractor arrangements. Pivot languages (English, French, Portuguese, Arabic) are retained for interoperability and for the evaluation of cross-lingual transfer.
 
-Selection criteria. Languages are prioritised using four weighted factors: (a) speaker population and geographic reach; (b) availability of seed data and community partners; (c) demand from NeuroGrowth Labs applications and public-interest use cases; and (d) marginal benefit from family-level transfer. The framework also reserves capacity for languages with small speaker populations that face intergenerational-transmission risk, where documentation value may outweigh commercial demand.
+Selection criteria. Languages are prioritised using four weighted factors: (a) speaker population and geographic reach; (b) availability of seed data and community partners; (c) demand from Neuro AI Development applications and public-interest use cases; and (d) marginal benefit from family-level transfer. The framework also reserves capacity for languages with small speaker populations that face intergenerational-transmission risk, where documentation value may outweigh commercial demand.
 
 5. Data Strategy and Governance
 
@@ -5720,7 +5745,7 @@ Data is the binding constraint for African-language AI, and it is also where tru
 We draw on four categories of data.
 1.  Existing open resources, including FLORES-200, MasakhaNER, MAFAND-MT, AfriSenti, Common Voice, FLEURS and publicly licensed web and religious, news and governmental corpora, each audited for licence, quality and contamination.
 2.  Community-sourced and commissioned data, including read and spontaneous speech, parallel translations, and instruction-response pairs written by native speakers, modelled on participatory methods.
-3.  Application-derived data, collected only with explicit user opt-in and de-identification, from NeuroGrowth Labs products such as IBOS and CogniSacra.
+3.  Application-derived data, collected only with explicit user opt-in and de-identification, from Neuro AI Development products such as IBOS and CogniSacra.
 4.  Synthetic data, generated by translation, back-translation or model distillation, always flagged as synthetic and sampled for native-speaker verification, because uncontrolled synthetic data can propagate translationese and systematic errors.
 
 5.3 Data quality pipeline
@@ -5861,15 +5886,15 @@ Talent retention | Competition for scarce expertise | Equity participation, rese
 
 13. Limitations
 
-This paper is a framework and research plan, not an empirical study. Its hypotheses are untested, its targets provisional, and its estimates of data and compute requirements will change with evidence. Language tiering is necessarily coarse, because linguistic boundaries, dialect continua and orthographic standards are contested for many African languages, and our choices may not reflect every community’s own categorisation. Existing public benchmarks cover only a fraction of African languages and are frequently built by translation from English, which can bias what they measure. Reliance on open-weight base models inherits their pretraining biases, licences and limitations. Finally, the application anchors are NeuroGrowth Labs’ own products; findings from them may not generalise to all domains or user populations, and we intend to test that explicitly through external partnerships and independent evaluation.
+This paper is a framework and research plan, not an empirical study. Its hypotheses are untested, its targets provisional, and its estimates of data and compute requirements will change with evidence. Language tiering is necessarily coarse, because linguistic boundaries, dialect continua and orthographic standards are contested for many African languages, and our choices may not reflect every community’s own categorisation. Existing public benchmarks cover only a fraction of African languages and are frequently built by translation from English, which can bias what they measure. Reliance on open-weight base models inherits their pretraining biases, licences and limitations. Finally, the application anchors are Neuro AI Development’ own products; findings from them may not generalise to all domains or user populations, and we intend to test that explicitly through external partnerships and independent evaluation.
 
 14. Conclusion
 
-Inclusive AI in Africa requires models that understand how Africans speak, write and reason, in the languages they actually use. The African Union’s emphasis on language and cultural representation is therefore best read as an engineering and evaluation mandate. The framework in this paper proposes a pragmatic route: sequence languages by need and data readiness, build data with communities rather than extracting it, adapt strong open models using efficient methods, evaluate honestly and per language, and validate in real products. NeuroGrowth Labs will publish its baselines, evaluation sets, model cards and findings as the programme progresses, and invites researchers, language communities, universities and institutions across the continent to collaborate, critique and contribute.
+Inclusive AI in Africa requires models that understand how Africans speak, write and reason, in the languages they actually use. The African Union’s emphasis on language and cultural representation is therefore best read as an engineering and evaluation mandate. The framework in this paper proposes a pragmatic route: sequence languages by need and data readiness, build data with communities rather than extracting it, adapt strong open models using efficient methods, evaluate honestly and per language, and validate in real products. Neuro AI Development will publish its baselines, evaluation sets, model cards and findings as the programme progresses, and invites researchers, language communities, universities and institutions across the continent to collaborate, critique and contribute.
 
 Acknowledgements
 
-This framework builds on the work of the Masakhane community, the NLLB, MMS, Aya and AfroBench teams, and numerous African researchers, linguists, annotators and language communities whose labour underpins the field. Errors and omissions in this paper are the responsibility of NeuroGrowth Labs.
+This framework builds on the work of the Masakhane community, the NLLB, MMS, Aya and AfroBench teams, and numerous African researchers, linguists, annotators and language communities whose labour underpins the field. Errors and omissions in this paper are the responsibility of Neuro AI Development.
 
 References
 
@@ -5910,8 +5935,8 @@ Reference note: Citations are provided from the authors’ working knowledge and
     title: 'Low-Resource Natural Language Processing for African Languages: Corpora, Speech Datasets, Machine Translation, Speech Recognition, and Evaluation Benchmarks for Under-Served Languages',
     subtitle: 'Technical Research Paper & R&D Programme Specification | Version 1.0 (November 2026)',
     authors: [
-      { name: 'Office of the Founder & CEO', affiliation: 'NeuroGrowth Labs, Cape Town & Angola' },
-      { name: 'NeuroGrowth Labs AI R&D', affiliation: 'AI Research & Development' }
+      { name: 'Office of the Founder & CEO', affiliation: 'Neuro AI Development, Cape Town & Angola' },
+      { name: 'Neuro AI Development AI R&D', affiliation: 'AI Research & Development' }
     ],
     publishDate: 'November 2026',
     category: 'Natural Language Processing',
@@ -5919,8 +5944,8 @@ Reference note: Citations are provided from the authors’ working knowledge and
     downloadCount: 1710,
     citationCount: 41,
     readingTime: 'about 28 minutes',
-    executiveSummary: `Africa is home to roughly a third of the world's living languages, yet coverage remains sharply uneven across languages, tasks, and modalities. This methodology and programme specification paper defines NeuroGrowth Labs' research framework for Low-Resource NLP across under-served African languages: a transparent coverage-aware prioritisation score P(l, t), community-governed text corpora and speech dataset protocols, data-efficient MT and ASR modelling strategies, validated evaluation benchmarks, and seven pre-specified experimental studies (S1–S7).`,
-    abstract: `Africa is home to roughly a third of the world's living languages, yet these languages account for a small fraction of the data, models, and benchmarks that define contemporary natural language processing (NLP). Over the past six years, community-driven initiatives and academic groups have produced substantial advances in named entity recognition, machine translation, sentiment analysis, and speech technology for African languages. Nevertheless, coverage remains sharply uneven: a handful of languages with large speaker populations or colonial-era written standards receive most attention, while hundreds of languages remain effectively absent from the technology stack. This paper presents the research framework of NeuroGrowth Labs for Low-Resource NLP for African Languages. We (i) characterise the coverage problem and its structural causes; (ii) propose a coverage-aware prioritisation method for selecting languages and tasks; (iii) specify protocols for community-governed text corpora and speech datasets, including consent, licensing, and quality assurance; (iv) outline modelling strategies for machine translation (MT) and automatic speech recognition (ASR) under extreme data scarcity, including multilingual transfer, adaptive pre-training, parameter-efficient adaptation, back-translation, and self-supervised speech representation learning; (v) define an evaluation architecture combining task benchmarks, human-validated metrics, robustness probes, and fairness audits; and (vi) describe responsible-AI, governance, and sustainability commitments. This is a methodology and programme paper: it reports no new empirical results, and all experimental designs are presented as pre-specified protocols to be executed and reported in subsequent publications. We invite collaboration from linguists, speaker communities, universities, and public institutions.`,
+    executiveSummary: `Africa is home to roughly a third of the world's living languages, yet coverage remains sharply uneven across languages, tasks, and modalities. This methodology and programme specification paper defines Neuro AI Development' research framework for Low-Resource NLP across under-served African languages: a transparent coverage-aware prioritisation score P(l, t), community-governed text corpora and speech dataset protocols, data-efficient MT and ASR modelling strategies, validated evaluation benchmarks, and seven pre-specified experimental studies (S1–S7).`,
+    abstract: `Africa is home to roughly a third of the world's living languages, yet these languages account for a small fraction of the data, models, and benchmarks that define contemporary natural language processing (NLP). Over the past six years, community-driven initiatives and academic groups have produced substantial advances in named entity recognition, machine translation, sentiment analysis, and speech technology for African languages. Nevertheless, coverage remains sharply uneven: a handful of languages with large speaker populations or colonial-era written standards receive most attention, while hundreds of languages remain effectively absent from the technology stack. This paper presents the research framework of Neuro AI Development for Low-Resource NLP for African Languages. We (i) characterise the coverage problem and its structural causes; (ii) propose a coverage-aware prioritisation method for selecting languages and tasks; (iii) specify protocols for community-governed text corpora and speech datasets, including consent, licensing, and quality assurance; (iv) outline modelling strategies for machine translation (MT) and automatic speech recognition (ASR) under extreme data scarcity, including multilingual transfer, adaptive pre-training, parameter-efficient adaptation, back-translation, and self-supervised speech representation learning; (v) define an evaluation architecture combining task benchmarks, human-validated metrics, robustness probes, and fairness audits; and (vi) describe responsible-AI, governance, and sustainability commitments. This is a methodology and programme paper: it reports no new empirical results, and all experimental designs are presented as pre-specified protocols to be executed and reported in subsequent publications. We invite collaboration from linguists, speaker communities, universities, and public institutions.`,
     methodology: `Coverage-aware multi-factor prioritisation scoring P(l, t) across typological and regional clusters (including Southern Bantu, Central/Lusophone Bantu such as Kikongo, Kimbundu, Umbundu, Chokwe, Nilotic, Cushitic, Chadic, Mande, and Afro-Asiatic), paired with dual-annotated speech transcription, paired diacritised/undiacritised text corpora, NLLB/MAFT/LoRA MT ablations, wav2vec 2.0/XLS-R ASR adaptation, and seven pre-registered empirical studies (S1–S7).`,
     findings: [
       'Defines a formal, reproducible prioritisation formula P(l, t) = w1*Need(l) + w2*Gap(l, t) + w3*Feasibility(l) + w4*Leverage(l) + w5*Partnership(l) plus a living Coverage Atlas.',
@@ -5935,8 +5960,8 @@ Reference note: Citations are provided from the authors’ working knowledge and
     ],
     bibtex: `@article{ngl2026lowresource,
   title={Low-Resource Natural Language Processing for African Languages: Corpora, Speech Datasets, Machine Translation, Speech Recognition, and Evaluation Benchmarks for Under-Served Languages},
-  author={{NeuroGrowth Labs AI Research \\& Development}},
-  journal={NeuroGrowth Labs Technical Research Paper and R\\&D Programme Specification},
+  author={{Neuro AI Development AI Research \\& Development}},
+  journal={Neuro AI Development Technical Research Paper and R\\&D Programme Specification},
   volume={1},
   number={0},
   pages={1--24},
@@ -5946,13 +5971,13 @@ Reference note: Citations are provided from the authors’ working knowledge and
 }`,
     fullArticleText: `Low-Resource Natural Language Processing for African Languages: Corpora, Speech Datasets, Machine Translation, Speech Recognition, and Evaluation Benchmarks for Under-Served Languages
 
-NeuroGrowth Labs — AI Research & Development Cape Town, South Africa · Operations in Angola
+Neuro AI Development — AI Research & Development Cape Town, South Africa · Operations in Angola
 
-Document type: Technical research paper and R&D programme specification Status: Version 1.0 (November 2026) Correspondence: Office of the Founder & CEO, NeuroGrowth Labs
+Document type: Technical research paper and R&D programme specification Status: Version 1.0 (November 2026) Correspondence: Office of the Founder & CEO, Neuro AI Development
 
 Abstract
 
-Africa is home to roughly a third of the world's living languages, yet these languages account for a small fraction of the data, models, and benchmarks that define contemporary natural language processing (NLP). Over the past six years, community-driven initiatives and academic groups have produced substantial advances in named entity recognition, machine translation, sentiment analysis, and speech technology for African languages. Nevertheless, coverage remains sharply uneven: a handful of languages with large speaker populations or colonial-era written standards receive most attention, while hundreds of languages remain effectively absent from the technology stack. This paper presents the research framework of NeuroGrowth Labs for Low-Resource NLP for African Languages. We (i) characterise the coverage problem and its structural causes; (ii) propose a coverage-aware prioritisation method for selecting languages and tasks; (iii) specify protocols for community-governed text corpora and speech datasets, including consent, licensing, and quality assurance; (iv) outline modelling strategies for machine translation (MT) and automatic speech recognition (ASR) under extreme data scarcity, including multilingual transfer, adaptive pre-training, parameter-efficient adaptation, back-translation, and self-supervised speech representation learning; (v) define an evaluation architecture combining task benchmarks, human-validated metrics, robustness probes, and fairness audits; and (vi) describe responsible-AI, governance, and sustainability commitments. This is a methodology and programme paper: it reports no new empirical results, and all experimental designs are presented as pre-specified protocols to be executed and reported in subsequent publications. We invite collaboration from linguists, speaker communities, universities, and public institutions.
+Africa is home to roughly a third of the world's living languages, yet these languages account for a small fraction of the data, models, and benchmarks that define contemporary natural language processing (NLP). Over the past six years, community-driven initiatives and academic groups have produced substantial advances in named entity recognition, machine translation, sentiment analysis, and speech technology for African languages. Nevertheless, coverage remains sharply uneven: a handful of languages with large speaker populations or colonial-era written standards receive most attention, while hundreds of languages remain effectively absent from the technology stack. This paper presents the research framework of Neuro AI Development for Low-Resource NLP for African Languages. We (i) characterise the coverage problem and its structural causes; (ii) propose a coverage-aware prioritisation method for selecting languages and tasks; (iii) specify protocols for community-governed text corpora and speech datasets, including consent, licensing, and quality assurance; (iv) outline modelling strategies for machine translation (MT) and automatic speech recognition (ASR) under extreme data scarcity, including multilingual transfer, adaptive pre-training, parameter-efficient adaptation, back-translation, and self-supervised speech representation learning; (v) define an evaluation architecture combining task benchmarks, human-validated metrics, robustness probes, and fairness audits; and (vi) describe responsible-AI, governance, and sustainability commitments. This is a methodology and programme paper: it reports no new empirical results, and all experimental designs are presented as pre-specified protocols to be executed and reported in subsequent publications. We invite collaboration from linguists, speaker communities, universities, and public institutions.
 
 Keywords: low-resource NLP; African languages; machine translation; automatic speech recognition; corpus construction; speech datasets; evaluation benchmarks; data governance; multilingual transfer learning; language equity.
 
@@ -5979,7 +6004,7 @@ Despite this progress, five problems persist.
 
 1.4 Contributions of This Paper
 
-This paper contributes: (a) a coverage-aware prioritisation framework for allocating R&D effort across languages and tasks; (b) data collection and governance protocols for text and speech; (c) a modelling roadmap for MT and ASR under data scarcity; (d) an evaluation architecture that couples automatic metrics with human validation and robustness analysis; and (e) a responsible-AI and sustainability charter. We explicitly distinguish between established findings from the literature, which we cite, and NeuroGrowth Labs' planned experiments, which we state as hypotheses.
+This paper contributes: (a) a coverage-aware prioritisation framework for allocating R&D effort across languages and tasks; (b) data collection and governance protocols for text and speech; (c) a modelling roadmap for MT and ASR under data scarcity; (d) an evaluation architecture that couples automatic metrics with human validation and robustness analysis; and (e) a responsible-AI and sustainability charter. We explicitly distinguish between established findings from the literature, which we cite, and Neuro AI Development' planned experiments, which we state as hypotheses.
 
 2. Background and Related Work
 
@@ -6009,7 +6034,7 @@ Mager et al. (2023) discuss ethical considerations for MT of Indigenous language
 
 2.7 Gap Analysis
 
-The literature supports four conclusions that motivate this programme: (1) data quality and domain match matter at least as much as data volume; (2) small, carefully constructed human-translated or human-transcribed datasets are disproportionately valuable; (3) cross-lingual transfer helps but is limited by typological distance and script/orthography handling; and (4) evaluation infrastructure has lagged behind model development. NeuroGrowth Labs' programme targets these four levers.
+The literature supports four conclusions that motivate this programme: (1) data quality and domain match matter at least as much as data volume; (2) small, carefully constructed human-translated or human-transcribed datasets are disproportionately valuable; (3) cross-lingual transfer helps but is limited by typological distance and script/orthography handling; and (4) evaluation infrastructure has lagged behind model development. Neuro AI Development' programme targets these four levers.
 
 3. Research Questions and Hypotheses
 
@@ -6049,7 +6074,7 @@ Weights are set through a documented, stakeholder-reviewed process and published
 
 4.3 Language Families and Regional Clusters
 
-To exploit transfer, we organise work in clusters aligned to major families and regional contact zones: Bantu (for example Southern Bantu languages in South Africa, and Central and Southern Bantu languages including Kikongo, Kimbundu, Umbundu, and Chokwe in Angola), Nilotic and Cushitic languages in East Africa, Chadic and Mande languages in West Africa, and Afro-Asiatic languages including Amharic and Arabic varieties. Portuguese-language bridges are a specific priority for Lusophone Africa, where Portuguese serves as an official and administrative language alongside widely spoken Bantu languages. This is directly relevant to NeuroGrowth Labs' operating footprint across South Africa and Angola.
+To exploit transfer, we organise work in clusters aligned to major families and regional contact zones: Bantu (for example Southern Bantu languages in South Africa, and Central and Southern Bantu languages including Kikongo, Kimbundu, Umbundu, and Chokwe in Angola), Nilotic and Cushitic languages in East Africa, Chadic and Mande languages in West Africa, and Afro-Asiatic languages including Amharic and Arabic varieties. Portuguese-language bridges are a specific priority for Lusophone Africa, where Portuguese serves as an official and administrative language alongside widely spoken Bantu languages. This is directly relevant to Neuro AI Development' operating footprint across South Africa and Angola.
 
 4.4 Living Coverage Atlas
 
@@ -6126,7 +6151,7 @@ For high-stakes contexts (clinical instructions, legal notices, financial disclo
 
 6.6 Applied Context
 
-NeuroGrowth Labs' AfriTranslate API, a multilingual translation service spanning 27 African languages and integrated with messaging channels, provides a deployment surface for the models developed under this programme. Production telemetry, collected only with user consent and appropriate privacy safeguards, can inform error analysis, but the research evaluations reported under this programme will rely on independently constructed test sets rather than production traffic alone.
+Neuro AI Development' AfriTranslate API, a multilingual translation service spanning 27 African languages and integrated with messaging channels, provides a deployment surface for the models developed under this programme. Production telemetry, collected only with user consent and appropriate privacy safeguards, can inform error analysis, but the research evaluations reported under this programme will rely on independently constructed test sets rather than production traffic alone.
 
 7. Automatic Speech Recognition and Speech Synthesis
 
@@ -6227,17 +6252,17 @@ All models are released with model cards (Mitchell et al., 2019) reporting disag
 
 10.5 Environmental and Resource Considerations
 
-We prioritise parameter-efficient methods, shared base models, and reuse of existing checkpoints, and we report training compute and estimated emissions. Where feasible, we support compute access for African institutions rather than concentrating all experimentation within NeuroGrowth Labs.
+We prioritise parameter-efficient methods, shared base models, and reuse of existing checkpoints, and we report training compute and estimated emissions. Where feasible, we support compute access for African institutions rather than concentrating all experimentation within Neuro AI Development.
 
 11. Organisation, Partnerships, and Sustainability
 
 11.1 Operating Model
 
-The programme is delivered by the NeuroGrowth Labs AI R&D function in collaboration with external partners. Core workstreams are: (1) data and linguistics, (2) text and MT modelling, (3) speech modelling, (4) evaluation and benchmarking, (5) responsible AI and governance, and (6) engineering and deployment. Each workstream includes at least one named linguistic or community liaison.
+The programme is delivered by the Neuro AI Development AI R&D function in collaboration with external partners. Core workstreams are: (1) data and linguistics, (2) text and MT modelling, (3) speech modelling, (4) evaluation and benchmarking, (5) responsible AI and governance, and (6) engineering and deployment. Each workstream includes at least one named linguistic or community liaison.
 
 11.2 Partnership Strategy
 
-We will seek partnerships with African universities, language councils and academies, national statistical and public-broadcasting bodies, community-based organisations, and existing research collectives such as Masakhane and Lelapa AI, as well as continental policy bodies. We will align where appropriate with the African Union's language policy and digital transformation strategies, and with youth-development networks within NeuroGrowth Labs' wider ecosystem, creating training and fellowship pathways for early-career African researchers and linguists.
+We will seek partnerships with African universities, language councils and academies, national statistical and public-broadcasting bodies, community-based organisations, and existing research collectives such as Masakhane and Lelapa AI, as well as continental policy bodies. We will align where appropriate with the African Union's language policy and digital transformation strategies, and with youth-development networks within Neuro AI Development' wider ecosystem, creating training and fellowship pathways for early-career African researchers and linguists.
 
 11.3 Funding and Sustainability
 
@@ -6271,11 +6296,11 @@ This paper is a programme and methodology specification. It presents no new empi
 
 14. Conclusion
 
-Progress in African NLP demonstrates that community-led, carefully curated, and methodologically rigorous work can narrow the gap for under-served languages. Yet coverage remains uneven across languages, tasks, and modalities, and evaluation has not kept pace with modelling. NeuroGrowth Labs proposes an integrated programme that links transparent prioritisation, community-governed data creation, data-efficient modelling for translation and speech recognition, and validated, robust, equity-aware evaluation. By committing to pre-registration, open documentation, and shared benefit, we aim to contribute durable public goods and to demonstrate that commercially sustainable language technology and linguistic equity can reinforce each other. We invite researchers, institutions, and communities across Africa and beyond to collaborate in building language technology that serves all of Africa's languages.
+Progress in African NLP demonstrates that community-led, carefully curated, and methodologically rigorous work can narrow the gap for under-served languages. Yet coverage remains uneven across languages, tasks, and modalities, and evaluation has not kept pace with modelling. Neuro AI Development proposes an integrated programme that links transparent prioritisation, community-governed data creation, data-efficient modelling for translation and speech recognition, and validated, robust, equity-aware evaluation. By committing to pre-registration, open documentation, and shared benefit, we aim to contribute durable public goods and to demonstrate that commercially sustainable language technology and linguistic equity can reinforce each other. We invite researchers, institutions, and communities across Africa and beyond to collaborate in building language technology that serves all of Africa's languages.
 
 Acknowledgements
 
-NeuroGrowth Labs acknowledges the pioneering contributions of the Masakhane community, African linguists, language practitioners, and the many speakers whose knowledge underpins this field.
+Neuro AI Development acknowledges the pioneering contributions of the Masakhane community, African linguists, language practitioners, and the many speakers whose knowledge underpins this field.
 
 References
 
@@ -6340,8 +6365,8 @@ Wang, J., et al. (2024). AfriMTE and AfriCOMET: Enhancing COMET to embrace under
     title: 'Efficient AI for Low-Connectivity Settings: Offline-First, Edge, Quantized, and Low-Bandwidth Intelligence on Affordable Devices',
     subtitle: 'AI Research & Development Technical Report | Offline-First Efficiency Stack (OFES) & Quantized Mobile Inference Analysis',
     authors: [
-      { name: 'NeuroGrowth Labs AI R&D', affiliation: 'Cape Town, South Africa' },
-      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & CEO, NeuroGrowth Labs' }
+      { name: 'Neuro AI Development AI R&D', affiliation: 'Cape Town, South Africa' },
+      { name: 'Mr. Lusimanadio Soki Simao, MBA', affiliation: 'Founder & CEO, Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Infrastructure & Cloud',
@@ -6365,8 +6390,8 @@ Wang, J., et al. (2024). AfriMTE and AfriCOMET: Enhancing COMET to embrace under
     ],
     bibtex: `@techreport{ngl2026efficientai,
   title={Efficient AI for Low-Connectivity Settings: Offline-First, Edge, Quantized, and Low-Bandwidth Intelligence on Affordable Devices},
-  author={{NeuroGrowth Labs AI Research \\& Development}},
-  institution={NeuroGrowth Labs},
+  author={{Neuro AI Development AI Research \\& Development}},
+  institution={Neuro AI Development},
   address={Cape Town, South Africa},
   year={2026},
   month={November},
@@ -6374,7 +6399,7 @@ Wang, J., et al. (2024). AfriMTE and AfriCOMET: Enhancing COMET to embrace under
 }`,
     fullArticleText: `Efficient AI for Low-Connectivity Settings: Offline-First, Edge, Quantized, and Low-Bandwidth Intelligence on Affordable Devices
 
-NeuroGrowth Labs — AI Research & Development Technical Report · Cape Town, South Africa · November 2026
+Neuro AI Development — AI Research & Development Technical Report · Cape Town, South Africa · November 2026
 
 Document status: position and research-agenda paper. It synthesises published work, derives first-order engineering analyses, and proposes a reference architecture and evaluation protocol. It reports no new empirical benchmark results; figures given in worked examples are illustrative arithmetic and are labelled as such.
 
@@ -6561,7 +6586,7 @@ Each mode transition should be communicated clearly to the user, for example by 
     title: 'African-Contextual Vision Models: Datasets, Methods and Deployment Science for Crops, Livestock, Roads, Buildings, Informal Settlements and Local Visual Conditions',
     subtitle: 'Research Paper, Version 1.0 | Taxonomy of Distribution Shifts, Six-Domain Curation & Stratified Evaluation Science',
     authors: [
-      { name: 'NeuroGrowth Labs AI Research & Development Department', affiliation: 'Cape Town, South Africa, with operations in Angola' }
+      { name: 'Neuro AI Development AI Research & Development Department', affiliation: 'Cape Town, South Africa, with operations in Angola' }
     ],
     publishDate: 'November 2026',
     category: 'Applied AI & Computer Vision',
@@ -6569,10 +6594,10 @@ Each mode transition should be communicated clearly to the user, for example by 
     downloadCount: 1630,
     citationCount: 37,
     readingTime: 'about 25 minutes',
-    executiveSummary: `The gap between published computer-vision benchmark scores and dependable field deployment in Africa stems primarily from a shortage of local, representative, well-governed visual data rather than algorithms. This paper defines NeuroGrowth Labs' six-domain research programme spanning crops, livestock, roads, buildings, informal settlements, and local visual conditions—introducing a seven-type distribution shift taxonomy, CARE/POPIA/Angola governance tiers, self-supervised adaptation and selective abstention, and stratified out-of-distribution evaluation.`,
+    executiveSummary: `The gap between published computer-vision benchmark scores and dependable field deployment in Africa stems primarily from a shortage of local, representative, well-governed visual data rather than algorithms. This paper defines Neuro AI Development' six-domain research programme spanning crops, livestock, roads, buildings, informal settlements, and local visual conditions—introducing a seven-type distribution shift taxonomy, CARE/POPIA/Angola governance tiers, self-supervised adaptation and selective abstention, and stratified out-of-distribution evaluation.`,
     abstract: `Computer-vision research on and in Africa now has a substantial publication base, spanning plant-disease recognition, satellite-based building and road extraction, wildlife monitoring and poverty mapping. Yet the gap between published performance and dependable field deployment remains wide. We argue that the principal cause is not a shortage of algorithms but a shortage of local, representative, well-governed visual data, together with evaluation practices that do not measure the shifts that matter in African operating conditions. Models trained predominantly on imagery from North America, Europe and East Asia encounter different crop varieties, intercropping systems, livestock breeds, construction materials, road surfaces, settlement morphologies, illumination, atmospheric conditions, camera hardware and connectivity constraints.
 
-This paper sets out the research programme of NeuroGrowth Labs for African-contextual vision models: the creation of open, documented datasets and models for six domains (crops, livestock, roads, buildings, informal settlements and local visual conditions) and a methodology for building them. We contribute (i) a taxonomy of the local-data gap expressed as distinct, testable distribution shifts; (ii) a domain-by-domain programme specifying tasks, data acquisition, annotation protocols and evaluation targets; (iii) a data-governance framework aligned with the CARE principles, South Africa's Protection of Personal Information Act (POPIA) and Angola's data-protection law; (iv) a modelling strategy combining foundation-model adaptation, self-supervised pre-training on unlabelled local imagery, domain generalisation and edge-efficient distillation; and (v) a deployment-oriented evaluation framework that reports performance stratified by region, season, sensor and community rather than by a single aggregate score. This is a programme and methodology paper. It reports no new empirical benchmark results; where we describe targets and hypotheses, we state them as such.`,
+This paper sets out the research programme of Neuro AI Development for African-contextual vision models: the creation of open, documented datasets and models for six domains (crops, livestock, roads, buildings, informal settlements and local visual conditions) and a methodology for building them. We contribute (i) a taxonomy of the local-data gap expressed as distinct, testable distribution shifts; (ii) a domain-by-domain programme specifying tasks, data acquisition, annotation protocols and evaluation targets; (iii) a data-governance framework aligned with the CARE principles, South Africa's Protection of Personal Information Act (POPIA) and Angola's data-protection law; (iv) a modelling strategy combining foundation-model adaptation, self-supervised pre-training on unlabelled local imagery, domain generalisation and edge-efficient distillation; and (v) a deployment-oriented evaluation framework that reports performance stratified by region, season, sensor and community rather than by a single aggregate score. This is a programme and methodology paper. It reports no new empirical benchmark results; where we describe targets and hypotheses, we state them as such.`,
     methodology: `Multi-modal dataset curation (low-cost smartphones, drones, multi-temporal satellite imagery) across seven explicit shift axes (Semantic, Appearance, Compositional, Sensor, Environmental, Label, and Annotation shift), evaluated with leave-one-region-out, leave-one-season-out, and leave-one-device-out splits alongside conformal calibration and community-governed tiered dataset access.`,
     findings: [
       'Decomposes visual benchmark-to-field degradation into seven falsifiable distribution shifts—highlighting compositional shifts (intercropping, dense irregular roofs) and atmospheric/sensor shifts (Harmattan haze, cracked/low-cost optics) rarely audited together.',
@@ -6587,8 +6612,8 @@ This paper sets out the research programme of NeuroGrowth Labs for African-conte
     ],
     bibtex: `@article{ngl2026africanvision,
   title={African-Contextual Vision Models: Datasets, Methods and Deployment Science for Crops, Livestock, Roads, Buildings, Informal Settlements and Local Visual Conditions},
-  author={{NeuroGrowth Labs AI Research \\& Development Department}},
-  journal={NeuroGrowth Labs Research Paper},
+  author={{Neuro AI Development AI Research \\& Development Department}},
+  journal={Neuro AI Development Research Paper},
   volume={1},
   number={0},
   pages={1--20},
@@ -6598,13 +6623,13 @@ This paper sets out the research programme of NeuroGrowth Labs for African-conte
 }`,
     fullArticleText: `African-Contextual Vision Models: Datasets, Methods and Deployment Science for Crops, Livestock, Roads, Buildings, Informal Settlements and Local Visual Conditions
 
-NeuroGrowth Labs, AI Research & Development Department Cape Town, South Africa, with operations in Angola Research Paper, Version 1.0, November 2026
+Neuro AI Development, AI Research & Development Department Cape Town, South Africa, with operations in Angola Research Paper, Version 1.0, November 2026
 
 Abstract
 
 Computer-vision research on and in Africa now has a substantial publication base, spanning plant-disease recognition, satellite-based building and road extraction, wildlife monitoring and poverty mapping. Yet the gap between published performance and dependable field deployment remains wide. We argue that the principal cause is not a shortage of algorithms but a shortage of local, representative, well-governed visual data, together with evaluation practices that do not measure the shifts that matter in African operating conditions. Models trained predominantly on imagery from North America, Europe and East Asia encounter different crop varieties, intercropping systems, livestock breeds, construction materials, road surfaces, settlement morphologies, illumination, atmospheric conditions, camera hardware and connectivity constraints.
 
-This paper sets out the research programme of NeuroGrowth Labs for African-contextual vision models: the creation of open, documented datasets and models for six domains (crops, livestock, roads, buildings, informal settlements and local visual conditions) and a methodology for building them. We contribute (i) a taxonomy of the local-data gap expressed as distinct, testable distribution shifts; (ii) a domain-by-domain programme specifying tasks, data acquisition, annotation protocols and evaluation targets; (iii) a data-governance framework aligned with the CARE principles, South Africa's Protection of Personal Information Act (POPIA) and Angola's data-protection law; (iv) a modelling strategy combining foundation-model adaptation, self-supervised pre-training on unlabelled local imagery, domain generalisation and edge-efficient distillation; and (v) a deployment-oriented evaluation framework that reports performance stratified by region, season, sensor and community rather than by a single aggregate score. This is a programme and methodology paper. It reports no new empirical benchmark results; where we describe targets and hypotheses, we state them as such.
+This paper sets out the research programme of Neuro AI Development for African-contextual vision models: the creation of open, documented datasets and models for six domains (crops, livestock, roads, buildings, informal settlements and local visual conditions) and a methodology for building them. We contribute (i) a taxonomy of the local-data gap expressed as distinct, testable distribution shifts; (ii) a domain-by-domain programme specifying tasks, data acquisition, annotation protocols and evaluation targets; (iii) a data-governance framework aligned with the CARE principles, South Africa's Protection of Personal Information Act (POPIA) and Angola's data-protection law; (iv) a modelling strategy combining foundation-model adaptation, self-supervised pre-training on unlabelled local imagery, domain generalisation and edge-efficient distillation; and (v) a deployment-oriented evaluation framework that reports performance stratified by region, season, sensor and community rather than by a single aggregate score. This is a programme and methodology paper. It reports no new empirical benchmark results; where we describe targets and hypotheses, we state them as such.
 
 Keywords: computer vision, African context, dataset curation, domain shift, precision agriculture, livestock monitoring, remote sensing, informal settlements, edge AI, responsible AI, data governance
 
@@ -6833,7 +6858,7 @@ We propose a layered architecture that separates data, model and application con
 5.  Serving layer. Cloud inference APIs for connected users and compressed on-device models for offline users, with confidence-aware responses and escalation routes.
 6.  Feedback layer. Opt-in correction signals from end users feed continual learning, with drift monitoring that triggers re-evaluation and, where warranted, retraining.
 
-This architecture is intended to integrate with other NeuroGrowth Labs platforms through documented interfaces, while keeping research datasets and their governance independent of commercial products.
+This architecture is intended to integrate with other Neuro AI Development platforms through documented interfaces, while keeping research datasets and their governance independent of commercial products.
 
 9. Risks, Limitations and Responsible AI
 
@@ -6875,7 +6900,7 @@ African computer-vision research has outgrown the stage at which the principal q
 
 Acknowledgements
 
-NeuroGrowth Labs thanks prospective partners among farmer cooperatives, veterinary services, municipal agencies, universities and community organisations whose participation will determine the quality and legitimacy of this work.
+Neuro AI Development thanks prospective partners among farmer cooperatives, veterinary services, municipal agencies, universities and community organisations whose participation will determine the quality and legitimacy of this work.
 
 References
 
@@ -6916,7 +6941,7 @@ Yeh, C., Perez, A., Driscoll, A., et al. (2020). Using publicly available satell
     title: 'Shared African Compute Infrastructure: Renewable-Powered Regional Hubs, GPU Sharing and Interoperable Cloud Services',
     subtitle: 'AI Research and Development Paper | Renewable Compute Hubs, Accelerator Utilisation & Federated Cloud Interoperability',
     authors: [
-      { name: 'NeuroGrowth Labs AI Research & Development', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development AI Research & Development', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Infrastructure & Cloud',
@@ -6940,8 +6965,8 @@ Yeh, C., Perez, A., Driscoll, A., et al. (2020). Using publicly available satell
     ],
     bibtex: `@article{ngl2026sharedcompute,
   title={Shared African Compute Infrastructure: Renewable-Powered Regional Hubs, GPU Sharing and Interoperable Cloud Services},
-  author={{NeuroGrowth Labs AI Research \\& Development}},
-  journal={NeuroGrowth Labs AI Research and Development Paper},
+  author={{Neuro AI Development AI Research \\& Development}},
+  journal={Neuro AI Development AI Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.12}
@@ -6950,7 +6975,7 @@ Yeh, C., Perez, A., Driscoll, A., et al. (2020). Using publicly available satell
 
 Nov 15, 2026 · @Pro
 
-NeuroGrowth Labs · AI Research and Development Paper
+Neuro AI Development · AI Research and Development Paper
 
 Abstract
 
@@ -7199,7 +7224,7 @@ Governance | Transparency | Timeliness and completeness of public reporting; aud
 
 These indicators are designed to feed the monitoring dashboard and mid-term review that the African Union's strategy requires (AfricArXiv).
 
-Conclusion. Africa's compute gap is a systems problem of power, utilisation and interoperability, and the evidence points to a shared, federated answer. The continent holds about 0.6% of global data-centre capacity and about 1% of AI compute, and projected growth only keeps pace with the world (Baker McKenzie). A network of renewable-powered regional hubs, run on common GPU-sharing and open-interface rules and held accountable through public indicators, can raise utilisation, lower unit costs and widen access without requiring every country to build alone. The programme is staged so that evidence arrives before large capital is committed. Its central claim is testable: if pooled, interoperable hubs do not deliver measurably higher utilisation and lower cost per task in the pilot, the gates are designed to stop the build-out before capital is committed. NeuroGrowth Labs invites partners among governments, utilities, operators, universities and financiers to join that test.
+Conclusion. Africa's compute gap is a systems problem of power, utilisation and interoperability, and the evidence points to a shared, federated answer. The continent holds about 0.6% of global data-centre capacity and about 1% of AI compute, and projected growth only keeps pace with the world (Baker McKenzie). A network of renewable-powered regional hubs, run on common GPU-sharing and open-interface rules and held accountable through public indicators, can raise utilisation, lower unit costs and widen access without requiring every country to build alone. The programme is staged so that evidence arrives before large capital is committed. Its central claim is testable: if pooled, interoperable hubs do not deliver measurably higher utilisation and lower cost per task in the pilot, the gates are designed to stop the build-out before capital is committed. Neuro AI Development invites partners among governments, utilities, operators, universities and financiers to join that test.
 
 References
 
@@ -7240,7 +7265,7 @@ Not sourced from the web. The technical descriptions of GPU partitioning, schedu
     title: 'High-Quality African Datasets and Data Commons',
     subtitle: 'Building Privacy-Preserving, Interoperable, Openly Documented Data Infrastructure for Health, Agriculture, Climate, Education and Public Services',
     authors: [
-      { name: 'NeuroGrowth Labs AI Research & Development', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development AI Research & Development', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Data Governance & Commons',
@@ -7265,8 +7290,8 @@ Not sourced from the web. The technical descriptions of GPU partitioning, schedu
     ],
     bibtex: `@article{ngl2026datacommons,
   title={High-Quality African Datasets and Data Commons: Building Privacy-Preserving, Interoperable, Openly Documented Data Infrastructure for Health, Agriculture, Climate, Education and Public Services},
-  author={{NeuroGrowth Labs AI Research \\& Development}},
-  journal={NeuroGrowth Labs AI Research and Development Paper},
+  author={{Neuro AI Development AI Research \\& Development}},
+  journal={Neuro AI Development AI Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.13}
@@ -7274,7 +7299,7 @@ Not sourced from the web. The technical descriptions of GPU partitioning, schedu
     fullArticleText: `High-Quality African Datasets and Data Commons
 Building Privacy-Preserving, Interoperable, Openly Documented Data Infrastructure for Health, Agriculture, Climate, Education and Public Services
 
-NeuroGrowth Labs · AI Research and Development Paper · Nov 15, 2026
+Neuro AI Development · AI Research and Development Paper · Nov 15, 2026
 
 1. Introduction
 
@@ -7579,7 +7604,7 @@ The immediate next step is a bounded pilot in two or three countries and two sec
     title: 'Data Sovereignty and Governance Frameworks for AI Research and Development in Africa',
     subtitle: 'Consent, Provenance, Indigenous-Knowledge Protection, Cross-Border Data Flows, and African Data-Rights Standards',
     authors: [
-      { name: 'NeuroGrowth Labs AI Research & Development Series', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development AI Research & Development Series', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Data Governance & Policy',
@@ -7603,8 +7628,8 @@ The immediate next step is a bounded pilot in two or three countries and two sec
     ],
     bibtex: `@article{ngl2026datasovereignty,
   title={Data Sovereignty and Governance Frameworks for AI Research and Development in Africa: Consent, Provenance, Indigenous-Knowledge Protection, Cross-Border Data Flows, and African Data-Rights Standards},
-  author={{NeuroGrowth Labs AI Research \\& Development Series}},
-  journal={NeuroGrowth Labs Technical and Policy Paper},
+  author={{Neuro AI Development AI Research \\& Development Series}},
+  journal={Neuro AI Development Technical and Policy Paper},
   volume={1},
   number={0},
   year={2026},
@@ -7614,7 +7639,7 @@ The immediate next step is a bounded pilot in two or three countries and two sec
     fullArticleText: `Data Sovereignty and Governance Frameworks for AI Research and Development in Africa
 Consent, Provenance, Indigenous-Knowledge Protection, Cross-Border Data Flows, and African Data-Rights Standards
 
-NeuroGrowth Labs, AI Research and Development Series Technical and Policy Paper, Version 1.0, November 2026
+Neuro AI Development, AI Research and Development Series Technical and Policy Paper, Version 1.0, November 2026
 
 Document type: Conceptual framework and position paper. The framework proposed here is a design proposal and has not yet been empirically validated; the evaluation protocol in Section 9 specifies how that validation should proceed.
 
@@ -7664,7 +7689,7 @@ Data sovereignty is sometimes equated with data localisation or closure. We take
 
 2.3 From FAIR to FAIR-and-CARE
 
-The FAIR principles (Findable, Accessible, Interoperable, Reusable) optimise data for machine and human reuse (Wilkinson et al., 2016) but are silent on power, ethics, and benefit. The CARE Principles for Indigenous Data Governance (Collective Benefit, Authority to Control, Responsibility, Ethics) were developed to complement FAIR by centring people and purpose (Carroll et al., 2020). Related community-developed frameworks include OCAP® (Ownership, Control, Access, Possession) from First Nations in Canada and the work of Te Mana Raraunga on Māori data sovereignty. NeuroGrowth Labs adopts the integrated position that technical reusability must be conditioned on legitimate authority and demonstrable benefit.
+The FAIR principles (Findable, Accessible, Interoperable, Reusable) optimise data for machine and human reuse (Wilkinson et al., 2016) but are silent on power, ethics, and benefit. The CARE Principles for Indigenous Data Governance (Collective Benefit, Authority to Control, Responsibility, Ethics) were developed to complement FAIR by centring people and purpose (Carroll et al., 2020). Related community-developed frameworks include OCAP® (Ownership, Control, Access, Possession) from First Nations in Canada and the work of Te Mana Raraunga on Māori data sovereignty. Neuro AI Development adopts the integrated position that technical reusability must be conditioned on legitimate authority and demonstrable benefit.
 
 3. Research Consent in AI Pipelines
 
@@ -7764,7 +7789,7 @@ Compute-to-data | Analysis travels to data; data does not leave | Preserves cont
 
 6.3 Position
 
-NeuroGrowth Labs advocates a proportionate, risk-tiered approach. Blanket localisation can raise costs, deter investment, and may not by itself improve security or rights protection. Unrestricted transfer, conversely, can entrench dependency and expose communities to unaccountable use. We recommend classifying data by sensitivity and by community and legal constraints, and then matching transfer conditions to class. Highly sensitive and community-restricted data should preferentially be handled through compute-to-data architectures, trusted research environments, federated learning, or locally governed enclaves, with movement of raw data a last resort.
+Neuro AI Development advocates a proportionate, risk-tiered approach. Blanket localisation can raise costs, deter investment, and may not by itself improve security or rights protection. Unrestricted transfer, conversely, can entrench dependency and expose communities to unaccountable use. We recommend classifying data by sensitivity and by community and legal constraints, and then matching transfer conditions to class. Highly sensitive and community-restricted data should preferentially be handled through compute-to-data architectures, trusted research environments, federated learning, or locally governed enclaves, with movement of raw data a last resort.
 
 6.4 Continental integration
 
@@ -7845,7 +7870,7 @@ Withdrawal and retirement | Withdrawal handling; derived-asset review; retrainin
 
 8.4 Data governance structures
 
-NeuroGrowth Labs recommends that research institutions consider mechanisms such as data trusts, data cooperatives, and community data stewardship bodies, in which a fiduciary or community-controlled entity holds and licenses data on behalf of originators. These structures can negotiate terms with developers, hold bargaining power collectively, and administer benefit-sharing. Their legal form will vary by jurisdiction, and their legitimacy depends on genuine representativeness and transparent accountability.
+Neuro AI Development recommends that research institutions consider mechanisms such as data trusts, data cooperatives, and community data stewardship bodies, in which a fiduciary or community-controlled entity holds and licenses data on behalf of originators. These structures can negotiate terms with developers, hold bargaining power collectively, and administer benefit-sharing. Their legal form will vary by jurisdiction, and their legitimacy depends on genuine representativeness and transparent accountability.
 
 8.5 Roles and responsibilities
 
@@ -7923,7 +7948,7 @@ For communities and civil society
 
 13. Conclusion
 
-Data sovereignty in AI is not a single legal status but an ongoing capacity to decide, to verify, and to obtain redress across the entire data lifecycle. The AU's emphasis on data governance and safeguards against misuse provides a legitimate continental foundation, and Africa's growing body of national law and community-led practice offers a base for innovation in governance, not merely imitation of external models. Realising that potential requires moving from documents to infrastructure: consent that is dynamic, provenance that is verifiable, indigenous authority that is honoured in code as well as in law, cross-border rules that are proportionate, and institutions with the capacity to enforce them. The SDLGF is offered as a practical step in that direction, and NeuroGrowth Labs invites collaboration with researchers, regulators, and communities to test, critique, and improve it.
+Data sovereignty in AI is not a single legal status but an ongoing capacity to decide, to verify, and to obtain redress across the entire data lifecycle. The AU's emphasis on data governance and safeguards against misuse provides a legitimate continental foundation, and Africa's growing body of national law and community-led practice offers a base for innovation in governance, not merely imitation of external models. Realising that potential requires moving from documents to infrastructure: consent that is dynamic, provenance that is verifiable, indigenous authority that is honoured in code as well as in law, cross-border rules that are proportionate, and institutions with the capacity to enforce them. The SDLGF is offered as a practical step in that direction, and Neuro AI Development invites collaboration with researchers, regulators, and communities to test, critique, and improve it.
 
 Glossary
 
@@ -7967,7 +7992,7 @@ Wilkinson, M. D., Dumontier, M., Aalbersberg, I. J., et al. (2016). The FAIR Gui
 World Intellectual Property Organization (2024). WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge.
 W3C (2013). PROV-DM: The PROV Data Model.
 
-© 2026 NeuroGrowth Labs. This paper is provided for research and policy discussion and does not constitute legal advice.`
+© 2026 Neuro AI Development. This paper is provided for research and policy discussion and does not constitute legal advice.`
   },
   {
     id: 'paper-15-ai-primary-care-diagnostics-africa',
@@ -7975,7 +8000,7 @@ W3C (2013). PROV-DM: The PROV Data Model.
     title: 'AI-Assisted Primary-Care Diagnostics: A Validation-First Research and Development Framework for African Health Systems',
     subtitle: 'AI Research and Development Division Technical Paper, Version 1.0 | Maternal Health, TB, Malaria, Anaemia, Diabetes & Child Nutrition',
     authors: [
-      { name: 'NeuroGrowth Labs AI Research & Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development AI Research & Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Healthcare AI & Ethics',
@@ -7983,10 +8008,10 @@ W3C (2013). PROV-DM: The PROV Data Model.
     downloadCount: 1620,
     citationCount: 38,
     readingTime: 'about 19 minutes',
-    executiveSummary: `Frontline primary-care facilities across sub-Saharan Africa face severe shortages of specialist diagnostics alongside high burdens of maternal mortality, tuberculosis, malaria, anaemia, diabetes, and child malnutrition. Adopting a validation-first posture, NeuroGrowth Labs outlines a unified modality-driven R&D framework spanning affordable sensors, compressed offline inference, multi-reader reference standards, equity-gated subgroup release criteria, and a five-stage clinical validation pathway aligned with TRIPOD+AI, STARD, SPIRIT-AI, CONSORT-AI, and DECIDE-AI.`,
+    executiveSummary: `Frontline primary-care facilities across sub-Saharan Africa face severe shortages of specialist diagnostics alongside high burdens of maternal mortality, tuberculosis, malaria, anaemia, diabetes, and child malnutrition. Adopting a validation-first posture, Neuro AI Development outlines a unified modality-driven R&D framework spanning affordable sensors, compressed offline inference, multi-reader reference standards, equity-gated subgroup release criteria, and a five-stage clinical validation pathway aligned with TRIPOD+AI, STARD, SPIRIT-AI, CONSORT-AI, and DECIDE-AI.`,
     abstract: `Background. Primary-care facilities across sub-Saharan Africa carry the heaviest burden of maternal, infectious, metabolic, and nutritional disease, yet often lack the specialist expertise, laboratory capacity, and imaging infrastructure required for timely diagnosis. Advances in machine learning applied to low-cost imaging, audio, and point-of-care (POC) data offer a route to extend diagnostic capability to the frontline health worker.
 
-Objective. This paper sets out the research and development (R&D) framework of NeuroGrowth Labs for building, validating, and deploying AI-assisted diagnostic tools in six domains: maternal health, tuberculosis (TB), malaria, anaemia, diabetes, and child nutrition.
+Objective. This paper sets out the research and development (R&D) framework of Neuro AI Development for building, validating, and deploying AI-assisted diagnostic tools in six domains: maternal health, tuberculosis (TB), malaria, anaemia, diabetes, and child nutrition.
 
 Approach. We propose a unified, modality-driven architecture in which affordable sensors (handheld ultrasound, smartphone cameras, digital stethoscopes and microphones, POC analysers, and anthropometric capture) feed domain-specific models operating within a common governance, validation, and monitoring layer. Validation proceeds through a staged pathway: retrospective development on locally representative data, prospective multi-site diagnostic accuracy studies, implementation research, and post-deployment surveillance for drift and equity.
 
@@ -8005,8 +8030,8 @@ Contribution. We specify target product profiles, data and annotation strategies
     ],
     bibtex: `@article{ngl2026primarycarediagnostics,
   title={AI-Assisted Primary-Care Diagnostics: A Validation-First Research and Development Framework for African Health Systems},
-  author={{NeuroGrowth Labs AI Research \\& Development Division}},
-  journal={NeuroGrowth Labs Technical Paper},
+  author={{Neuro AI Development AI Research \\& Development Division}},
+  journal={Neuro AI Development Technical Paper},
   volume={1},
   number={0},
   year={2026},
@@ -8015,13 +8040,13 @@ Contribution. We specify target product profiles, data and annotation strategies
 }`,
     fullArticleText: `AI-Assisted Primary-Care Diagnostics: A Validation-First Research and Development Framework for African Health Systems
 
-NeuroGrowth Labs, AI Research and Development Division Technical Paper, Version 1.0, November 2026
+Neuro AI Development, AI Research and Development Division Technical Paper, Version 1.0, November 2026
 
 Abstract
 
 Background. Primary-care facilities across sub-Saharan Africa carry the heaviest burden of maternal, infectious, metabolic, and nutritional disease, yet often lack the specialist expertise, laboratory capacity, and imaging infrastructure required for timely diagnosis. Advances in machine learning applied to low-cost imaging, audio, and point-of-care (POC) data offer a route to extend diagnostic capability to the frontline health worker.
 
-Objective. This paper sets out the research and development (R&D) framework of NeuroGrowth Labs for building, validating, and deploying AI-assisted diagnostic tools in six domains: maternal health, tuberculosis (TB), malaria, anaemia, diabetes, and child nutrition.
+Objective. This paper sets out the research and development (R&D) framework of Neuro AI Development for building, validating, and deploying AI-assisted diagnostic tools in six domains: maternal health, tuberculosis (TB), malaria, anaemia, diabetes, and child nutrition.
 
 Approach. We propose a unified, modality-driven architecture in which affordable sensors (handheld ultrasound, smartphone cameras, digital stethoscopes and microphones, POC analysers, and anthropometric capture) feed domain-specific models operating within a common governance, validation, and monitoring layer. Validation proceeds through a staged pathway: retrospective development on locally representative data, prospective multi-site diagnostic accuracy studies, implementation research, and post-deployment surveillance for drift and equity.
 
@@ -8051,7 +8076,7 @@ AI diagnostic deployments are already underway across Africa, including maternal
 
 1.3 Scope and position of this paper
 
-NeuroGrowth Labs adopts a validation-first posture: no tool is positioned for clinical use until it has demonstrated prespecified accuracy, calibration, and equity properties in the intended-use population and workflow. This paper does not describe a finished product; it describes the research programme, methods, and decision criteria that will govern development.
+Neuro AI Development adopts a validation-first posture: no tool is positioned for clinical use until it has demonstrated prespecified accuracy, calibration, and equity properties in the intended-use population and workflow. This paper does not describe a finished product; it describes the research programme, methods, and decision criteria that will govern development.
 
 1.4 Research questions
 
@@ -8238,7 +8263,7 @@ A documented hazard analysis will enumerate failure modes (false negatives, fals
 
 9.3 Regulatory pathway
 
-Software that informs diagnosis is likely to be regulated as a medical device, often as software as a medical device (SaMD). Regulatory requirements differ across jurisdictions and are evolving; they include national regulators such as the South African Health Products Regulatory Authority (SAHPRA), the Nigerian National Agency for Food and Drug Administration and Control (NAFDAC), and the Kenya Pharmacy and Poisons Board, alongside regional harmonisation efforts such as the African Medicines Agency. NeuroGrowth Labs will engage regulators early, align quality management with ISO 13485 and software lifecycle standards such as IEC 62304, and maintain documentation to support submissions. Intended-use statements will be kept narrow and claims will not exceed evidence.
+Software that informs diagnosis is likely to be regulated as a medical device, often as software as a medical device (SaMD). Regulatory requirements differ across jurisdictions and are evolving; they include national regulators such as the South African Health Products Regulatory Authority (SAHPRA), the Nigerian National Agency for Food and Drug Administration and Control (NAFDAC), and the Kenya Pharmacy and Poisons Board, alongside regional harmonisation efforts such as the African Medicines Agency. Neuro AI Development will engage regulators early, align quality management with ISO 13485 and software lifecycle standards such as IEC 62304, and maintain documentation to support submissions. Intended-use statements will be kept narrow and claims will not exceed evidence.
 
 9.4 Transparency and accountability
 
@@ -8274,11 +8299,11 @@ Domains will proceed at different speeds. TB and diabetic retinopathy screening,
 
 12. Conclusion
 
-AI-assisted diagnostics have the potential to extend specialist-level interpretation to the places where most African patients first seek care. That potential will be realised only if tools are validated in the populations and workflows where they will be used, evaluated for equity as rigorously as for accuracy, integrated with the referral and treatment services that give a diagnosis meaning, and governed transparently with African partners. NeuroGrowth Labs presents this framework as a commitment to that standard and invites collaboration from clinicians, researchers, regulators, ministries of health, and communities in refining and testing it.
+AI-assisted diagnostics have the potential to extend specialist-level interpretation to the places where most African patients first seek care. That potential will be realised only if tools are validated in the populations and workflows where they will be used, evaluated for equity as rigorously as for accuracy, integrated with the referral and treatment services that give a diagnosis meaning, and governed transparently with African partners. Neuro AI Development presents this framework as a commitment to that standard and invites collaboration from clinicians, researchers, regulators, ministries of health, and communities in refining and testing it.
 
 Acknowledgements
 
-NeuroGrowth Labs thanks the clinical, public-health, and community partners whose input shapes this programme. Statements of epidemiological burden are approximate and drawn from WHO, UNICEF, and IDF publications; readers should consult the latest editions of those sources for current figures.
+Neuro AI Development thanks the clinical, public-health, and community partners whose input shapes this programme. Statements of epidemiological burden are approximate and drawn from WHO, UNICEF, and IDF publications; readers should consult the latest editions of those sources for current figures.
 
 Conflicts of Interest
 
@@ -8309,7 +8334,7 @@ References
     title: 'Multilingual Health Information Assistants: A Clinician-Supervised Framework for Community Health Worker Integration',
     subtitle: 'AI for Health Systems Programme | Speech-First, Grounded Guidance & Tiered Clinical Escalation',
     authors: [
-      { name: 'NeuroGrowth Labs AI for Health Systems Programme', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development AI for Health Systems Programme', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Healthcare AI & Ethics',
@@ -8318,7 +8343,7 @@ References
     citationCount: 31,
     readingTime: 'about 21 minutes',
     executiveSummary: `Linguistic mismatch between official-language health job aids and households speaking local African languages impairs community health worker (CHW) care and clinical auditability. Rejecting the unconstrained chatbot model, this framework defines Multilingual Health Information Assistants (MHIAs) built around six architectural layers: speech-first and USSD/SMS channels, code-switch-aware ASR/TTS, an independent high-sensitivity safety gateway, RAG grounded in clinician-curated guidance with back-translation checks, a five-tier escalation model with pre-authored high-acuity responses, and a four-stage CONSORT-AI/DECIDE-AI evaluation protocol.`,
-    abstract: `Access to accurate health information remains profoundly unequal across linguistic lines. Across the African continent, where well over a thousand languages are spoken, most digital health content and nearly all commercial language technologies are optimised for a handful of high-resource languages. This paper presents NeuroGrowth Labs' research and development framework for Multilingual Health Information Assistants (MHIAs): AI systems that deliver health guidance in local languages, operate under explicit clinician supervision, and are embedded in the workflows of community health workers (CHWs). We argue that safe deployment in this setting requires a departure from the "general-purpose chatbot" paradigm. Instead, we propose a layered architecture combining (i) retrieval-grounded generation over clinician-curated, jurisdiction-specific guidance, (ii) a tiered risk-and-escalation engine that routes high-acuity cases to humans, (iii) speech-first and low-bandwidth interaction channels, (iv) community-participatory language data practices, and (v) a continuous clinical governance loop. We specify design requirements, a reference architecture, a safety case structure, a staged evaluation protocol aligned with CONSORT-AI, SPIRIT-AI and DECIDE-AI reporting guidance, and a phased deployment roadmap. The framework is explicitly aligned with the African Union's stated priority of language inclusion within its Continental Artificial Intelligence Strategy and with WHO guidance on the ethics and governance of AI for health. This paper is a framework and protocol contribution; it reports no clinical outcome data, and all performance targets stated herein are design objectives to be validated prospectively.`,
+    abstract: `Access to accurate health information remains profoundly unequal across linguistic lines. Across the African continent, where well over a thousand languages are spoken, most digital health content and nearly all commercial language technologies are optimised for a handful of high-resource languages. This paper presents Neuro AI Development' research and development framework for Multilingual Health Information Assistants (MHIAs): AI systems that deliver health guidance in local languages, operate under explicit clinician supervision, and are embedded in the workflows of community health workers (CHWs). We argue that safe deployment in this setting requires a departure from the "general-purpose chatbot" paradigm. Instead, we propose a layered architecture combining (i) retrieval-grounded generation over clinician-curated, jurisdiction-specific guidance, (ii) a tiered risk-and-escalation engine that routes high-acuity cases to humans, (iii) speech-first and low-bandwidth interaction channels, (iv) community-participatory language data practices, and (v) a continuous clinical governance loop. We specify design requirements, a reference architecture, a safety case structure, a staged evaluation protocol aligned with CONSORT-AI, SPIRIT-AI and DECIDE-AI reporting guidance, and a phased deployment roadmap. The framework is explicitly aligned with the African Union's stated priority of language inclusion within its Continental Artificial Intelligence Strategy and with WHO guidance on the ethics and governance of AI for health. This paper is a framework and protocol contribution; it reports no clinical outcome data, and all performance targets stated herein are design objectives to be validated prospectively.`,
     methodology: `Safety-case-driven health systems R&D framework integrating participatory clinical terminology curation, per-language ASR/MT/LLM routing, deterministic danger-sign and safeguarding gateways surrounding constrained RAG, five-tier risk escalation, and four-stage prospective evaluation (Offline Technical/Clinical, Shadow Mode, DECIDE-AI Early Live, SPIRIT-AI/CONSORT-AI Pragmatic Cluster Trial).`,
     findings: [
       'Commercial tokenisers and general-purpose LLMs impose latency/cost penalties, hallucinations, and weak clinical fidelity in low-resource and code-switched African languages—requiring safety to be enforced architecturally outside the generative model.',
@@ -8333,19 +8358,19 @@ References
     ],
     bibtex: `@article{ngl2026mhia,
   title={Multilingual Health Information Assistants: A Clinician-Supervised Framework for Community Health Worker Integration},
-  author={{NeuroGrowth Labs AI for Health Systems Programme}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development AI for Health Systems Programme}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.16}
 }`,
     fullArticleText: `Multilingual Health Information Assistants: A Clinician-Supervised Framework for Community Health Worker Integration
 
-NeuroGrowth Labs Research and Development Paper AI for Health Systems Programme November 2026
+Neuro AI Development Research and Development Paper AI for Health Systems Programme November 2026
 
 Abstract
 
-Access to accurate health information remains profoundly unequal across linguistic lines. Across the African continent, where well over a thousand languages are spoken, most digital health content and nearly all commercial language technologies are optimised for a handful of high-resource languages. This paper presents NeuroGrowth Labs' research and development framework for Multilingual Health Information Assistants (MHIAs): AI systems that deliver health guidance in local languages, operate under explicit clinician supervision, and are embedded in the workflows of community health workers (CHWs). We argue that safe deployment in this setting requires a departure from the "general-purpose chatbot" paradigm. Instead, we propose a layered architecture combining (i) retrieval-grounded generation over clinician-curated, jurisdiction-specific guidance, (ii) a tiered risk-and-escalation engine that routes high-acuity cases to humans, (iii) speech-first and low-bandwidth interaction channels, (iv) community-participatory language data practices, and (v) a continuous clinical governance loop. We specify design requirements, a reference architecture, a safety case structure, a staged evaluation protocol aligned with CONSORT-AI, SPIRIT-AI and DECIDE-AI reporting guidance, and a phased deployment roadmap. The framework is explicitly aligned with the African Union's stated priority of language inclusion within its Continental Artificial Intelligence Strategy and with WHO guidance on the ethics and governance of AI for health. This paper is a framework and protocol contribution; it reports no clinical outcome data, and all performance targets stated herein are design objectives to be validated prospectively.
+Access to accurate health information remains profoundly unequal across linguistic lines. Across the African continent, where well over a thousand languages are spoken, most digital health content and nearly all commercial language technologies are optimised for a handful of high-resource languages. This paper presents Neuro AI Development' research and development framework for Multilingual Health Information Assistants (MHIAs): AI systems that deliver health guidance in local languages, operate under explicit clinician supervision, and are embedded in the workflows of community health workers (CHWs). We argue that safe deployment in this setting requires a departure from the "general-purpose chatbot" paradigm. Instead, we propose a layered architecture combining (i) retrieval-grounded generation over clinician-curated, jurisdiction-specific guidance, (ii) a tiered risk-and-escalation engine that routes high-acuity cases to humans, (iii) speech-first and low-bandwidth interaction channels, (iv) community-participatory language data practices, and (v) a continuous clinical governance loop. We specify design requirements, a reference architecture, a safety case structure, a staged evaluation protocol aligned with CONSORT-AI, SPIRIT-AI and DECIDE-AI reporting guidance, and a phased deployment roadmap. The framework is explicitly aligned with the African Union's stated priority of language inclusion within its Continental Artificial Intelligence Strategy and with WHO guidance on the ethics and governance of AI for health. This paper is a framework and protocol contribution; it reports no clinical outcome data, and all performance targets stated herein are design objectives to be validated prospectively.
 
 Keywords: multilingual NLP, low-resource languages, digital health, community health workers, clinical safety, retrieval-augmented generation, human-in-the-loop AI, African Union, health equity
 
@@ -8614,7 +8639,7 @@ Additionally, a clinician-supervised model assumes sufficient clinician capacity
 
 12. Conclusion
 
-Language is a determinant of access to health information and, ultimately, to care. Multilingual health information assistants offer a route to extending reliable guidance to communities currently excluded by language, but only if they are engineered as accountable components of health systems rather than as autonomous conversational agents. The framework presented here places safety in the architecture: grounding in clinician-approved content, independent danger-sign detection, pre-authored high-acuity messages, human escalation, per-language performance floors, and continuous governance. It places inclusion in the process: community-owned language data, participatory terminology development, and speech-first design. And it places evidence at the centre: staged evaluation, pre-specified safety thresholds, and explicit stop criteria. In doing so it responds directly to the African Union's priority on language inclusion and to international guidance on responsible AI for health. NeuroGrowth Labs invites ministries of health, CHW programmes, linguistic communities, and research partners to collaborate on validating and refining this framework in the field.
+Language is a determinant of access to health information and, ultimately, to care. Multilingual health information assistants offer a route to extending reliable guidance to communities currently excluded by language, but only if they are engineered as accountable components of health systems rather than as autonomous conversational agents. The framework presented here places safety in the architecture: grounding in clinician-approved content, independent danger-sign detection, pre-authored high-acuity messages, human escalation, per-language performance floors, and continuous governance. It places inclusion in the process: community-owned language data, participatory terminology development, and speech-first design. And it places evidence at the centre: staged evaluation, pre-specified safety thresholds, and explicit stop criteria. In doing so it responds directly to the African Union's priority on language inclusion and to international guidance on responsible AI for health. Neuro AI Development invites ministries of health, CHW programmes, linguistic communities, and research partners to collaborate on validating and refining this framework in the field.
 
 References
 
@@ -8645,7 +8670,7 @@ World Health Organization. (2024). Ethics and governance of artificial intellige
     title: 'AI for Epidemic Surveillance and Outbreak Response: A Privacy-Preserving, Equity-Aware Multimodal Framework for Early Detection',
     subtitle: 'Health Systems and Applied AI Programme | Clinical, Mobility, Environmental & Genomic Signal Fusion',
     authors: [
-      { name: 'NeuroGrowth Labs Health Systems & Applied AI Programme', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Health Systems & Applied AI Programme', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Healthcare AI & Public Health',
@@ -8653,8 +8678,8 @@ World Health Organization. (2024). Ethics and governance of artificial intellige
     downloadCount: 1510,
     citationCount: 29,
     readingTime: 'about 19 minutes',
-    executiveSummary: `Conventional indicator-based epidemic surveillance lags pathogen transmission by days to weeks while syndromic, human-mobility, environmental/wastewater, and genomic signals remain siloed. NeuroGrowth Labs proposes a five-layer federated early-warning architecture pairing hybrid mechanistic-ML multimodal fusion (tolerant to missing modalities and reporting delays) with a privacy-by-design stack (federated learning, differential privacy, MPC, TEEs) and place-based, coverage-aware equity safeguards aligned with Africa CDC, the Africa Health Strategy 2016–2030, and AU data governance.`,
-    abstract: `Epidemics are detected too late in the places where the capacity to respond is most constrained. Conventional indicator-based surveillance depends on clinical case reporting, which lags transmission by days to weeks, is unevenly distributed, and is vulnerable to under-ascertainment. Meanwhile, complementary signals that carry earlier information, including health-facility syndromic data, aggregated human mobility, environmental and climatic conditions, wastewater and vector indicators, and pathogen genomic sequences, remain siloed across institutions and jurisdictions. This paper presents the NeuroGrowth Labs research and development agenda for an artificial intelligence (AI) system that fuses these four signal families into a calibrated, explainable early-warning capability. We specify a layered reference architecture, a set of modelling approaches suited to sparse and heterogeneous data, a privacy-by-design stack combining data minimisation, federated learning, differential privacy and secure computation, and an equity framework designed to prevent discriminatory surveillance of communities, migrants, or minority groups. We further propose an evaluation protocol based on retrospective back-testing, prospective silent deployment and subgroup performance auditing, together with a governance model aligned with the Africa Health Strategy 2016–2030, the African Union (AU) Continental Artificial Intelligence Strategy, the AU Data Policy Framework, and the work of the Africa Centres for Disease Control and Prevention (Africa CDC). This is a design and research agenda; it does not report new empirical results, and all performance figures given are design targets to be validated rather than findings.`,
+    executiveSummary: `Conventional indicator-based epidemic surveillance lags pathogen transmission by days to weeks while syndromic, human-mobility, environmental/wastewater, and genomic signals remain siloed. Neuro AI Development proposes a five-layer federated early-warning architecture pairing hybrid mechanistic-ML multimodal fusion (tolerant to missing modalities and reporting delays) with a privacy-by-design stack (federated learning, differential privacy, MPC, TEEs) and place-based, coverage-aware equity safeguards aligned with Africa CDC, the Africa Health Strategy 2016–2030, and AU data governance.`,
+    abstract: `Epidemics are detected too late in the places where the capacity to respond is most constrained. Conventional indicator-based surveillance depends on clinical case reporting, which lags transmission by days to weeks, is unevenly distributed, and is vulnerable to under-ascertainment. Meanwhile, complementary signals that carry earlier information, including health-facility syndromic data, aggregated human mobility, environmental and climatic conditions, wastewater and vector indicators, and pathogen genomic sequences, remain siloed across institutions and jurisdictions. This paper presents the Neuro AI Development research and development agenda for an artificial intelligence (AI) system that fuses these four signal families into a calibrated, explainable early-warning capability. We specify a layered reference architecture, a set of modelling approaches suited to sparse and heterogeneous data, a privacy-by-design stack combining data minimisation, federated learning, differential privacy and secure computation, and an equity framework designed to prevent discriminatory surveillance of communities, migrants, or minority groups. We further propose an evaluation protocol based on retrospective back-testing, prospective silent deployment and subgroup performance auditing, together with a governance model aligned with the Africa Health Strategy 2016–2030, the African Union (AU) Continental Artificial Intelligence Strategy, the AU Data Policy Framework, and the work of the Africa Centres for Disease Control and Prevention (Africa CDC). This is a design and research agenda; it does not report new empirical results, and all performance figures given are design targets to be validated rather than findings.`,
     methodology: `Multimodal public-health AI systems architecture combining a mechanistic metapopulation compartmental backbone with late-to-intermediate neural fusion across clinical (DHIS2/HL7 FHIR), privacy-protected mobility graphs, satellite/wastewater One Health series, and coarse-metadata pathogen genomics; audited through retrospective time-respecting back-testing, silent parallel deployment, supervised operational pilots, and modality ablation.`,
     findings: [
       'Under-detection of marginalised populations and over-surveillance/stigmatisation are not an inevitable trade-off; privacy-preserving federated custody and place-based equity safeguards sustain institutional and public trust needed for early detection.',
@@ -8669,8 +8694,8 @@ World Health Organization. (2024). Ethics and governance of artificial intellige
     ],
     bibtex: `@article{ngl2026epidemicsurveillance,
   title={AI for Epidemic Surveillance and Outbreak Response: A Privacy-Preserving, Equity-Aware Multimodal Framework for Early Detection},
-  author={{NeuroGrowth Labs Health Systems \\& Applied AI Programme}},
-  journal={NeuroGrowth Labs Research and Development Paper Series},
+  author={{Neuro AI Development Health Systems \\& Applied AI Programme}},
+  journal={Neuro AI Development Research and Development Paper Series},
   volume={1},
   number={0},
   year={2026},
@@ -8679,13 +8704,13 @@ World Health Organization. (2024). Ethics and governance of artificial intellige
 }`,
     fullArticleText: `AI for Epidemic Surveillance and Outbreak Response: A Privacy-Preserving, Equity-Aware Multimodal Framework for Early Detection
 
-NeuroGrowth Labs – Research and Development Paper Series Health Systems and Applied AI Programme | November 2026 | Version 1.0
+Neuro AI Development – Research and Development Paper Series Health Systems and Applied AI Programme | November 2026 | Version 1.0
 
 Keywords: epidemic intelligence, early warning, multimodal machine learning, genomic surveillance, federated learning, differential privacy, algorithmic fairness, One Health, African Union
 
 Abstract
 
-Epidemics are detected too late in the places where the capacity to respond is most constrained. Conventional indicator-based surveillance depends on clinical case reporting, which lags transmission by days to weeks, is unevenly distributed, and is vulnerable to under-ascertainment. Meanwhile, complementary signals that carry earlier information, including health-facility syndromic data, aggregated human mobility, environmental and climatic conditions, wastewater and vector indicators, and pathogen genomic sequences, remain siloed across institutions and jurisdictions. This paper presents the NeuroGrowth Labs research and development agenda for an artificial intelligence (AI) system that fuses these four signal families into a calibrated, explainable early-warning capability. We specify a layered reference architecture, a set of modelling approaches suited to sparse and heterogeneous data, a privacy-by-design stack combining data minimisation, federated learning, differential privacy and secure computation, and an equity framework designed to prevent discriminatory surveillance of communities, migrants, or minority groups. We further propose an evaluation protocol based on retrospective back-testing, prospective silent deployment and subgroup performance auditing, together with a governance model aligned with the Africa Health Strategy 2016–2030, the African Union (AU) Continental Artificial Intelligence Strategy, the AU Data Policy Framework, and the work of the Africa Centres for Disease Control and Prevention (Africa CDC). This is a design and research agenda; it does not report new empirical results, and all performance figures given are design targets to be validated rather than findings.
+Epidemics are detected too late in the places where the capacity to respond is most constrained. Conventional indicator-based surveillance depends on clinical case reporting, which lags transmission by days to weeks, is unevenly distributed, and is vulnerable to under-ascertainment. Meanwhile, complementary signals that carry earlier information, including health-facility syndromic data, aggregated human mobility, environmental and climatic conditions, wastewater and vector indicators, and pathogen genomic sequences, remain siloed across institutions and jurisdictions. This paper presents the Neuro AI Development research and development agenda for an artificial intelligence (AI) system that fuses these four signal families into a calibrated, explainable early-warning capability. We specify a layered reference architecture, a set of modelling approaches suited to sparse and heterogeneous data, a privacy-by-design stack combining data minimisation, federated learning, differential privacy and secure computation, and an equity framework designed to prevent discriminatory surveillance of communities, migrants, or minority groups. We further propose an evaluation protocol based on retrospective back-testing, prospective silent deployment and subgroup performance auditing, together with a governance model aligned with the Africa Health Strategy 2016–2030, the African Union (AU) Continental Artificial Intelligence Strategy, the AU Data Policy Framework, and the work of the Africa Centres for Disease Control and Prevention (Africa CDC). This is a design and research agenda; it does not report new empirical results, and all performance figures given are design targets to be validated rather than findings.
 
 1. Introduction
 
@@ -8738,7 +8763,7 @@ A prominent audit of a widely used US health-risk algorithm found that using cos
 
 3. Design Principles
 
-The NeuroGrowth Labs programme is governed by eight principles:
+The Neuro AI Development programme is governed by eight principles:
 1.  Public health purpose limitation. Data are collected and processed only for defined surveillance and response functions.
 2.  Data minimisation and aggregation first. Population-level, aggregated and de-identified signals are preferred over individual-level data. The system is designed to answer questions about places and populations, not to track persons.
 3.  Privacy by design and by default. Technical controls are built in rather than added after the fact.
@@ -8937,7 +8962,7 @@ Agenda 2063 | Contributes to healthy and well-nourished citizens and to capable 
 
 14. Conclusion
 
-Early detection of epidemics is a problem of integration under constraints: of heterogeneous signals, of institutions with different mandates, and of public health benefit with individual and collective rights. NeuroGrowth Labs proposes that these objectives are mutually reinforcing when addressed through federated architectures, hybrid mechanistic and learned models, calibrated and explainable outputs, strong use restrictions and sustained community participation. The proposed agenda emphasises falsifiable evaluation, transparent reporting of failures and subgroup disparities, and transfer of capability to African institutions. We invite collaboration from ministries of health, public health institutes, genomics networks, academia, civil society and development partners to test, critique and refine this framework.
+Early detection of epidemics is a problem of integration under constraints: of heterogeneous signals, of institutions with different mandates, and of public health benefit with individual and collective rights. Neuro AI Development proposes that these objectives are mutually reinforcing when addressed through federated architectures, hybrid mechanistic and learned models, calibrated and explainable outputs, strong use restrictions and sustained community participation. The proposed agenda emphasises falsifiable evaluation, transparent reporting of failures and subgroup disparities, and transfer of capability to African institutions. We invite collaboration from ministries of health, public health institutes, genomics networks, academia, civil society and development partners to test, critique and refine this framework.
 
 References
 
@@ -8960,15 +8985,15 @@ World Health Organization (2005). International Health Regulations (2005). Genev
 
 Note to readers: citations should be verified against primary sources before external publication or formal citation.
 
-© 2026 NeuroGrowth Labs. This paper is intended for research, policy and partnership discussion.`
+© 2026 Neuro AI Development. This paper is intended for research, policy and partnership discussion.`
   },
   {
     id: 'paper-18-ai-pharmaceutical-supply-chain-resilience',
     doi: '10.5281/ngl.afr.2026.18',
     title: 'AI-Enabled Pharmaceutical and Supply-Chain Resilience: An Integrated Framework for Demand Forecasting, Counterfeit Detection, Cold-Chain Optimization, and Stockout Reduction in Public Health Systems',
-    subtitle: 'Research and Development Division Technical Research Paper | NeuroGrowth Resilience Stack (NRS)',
+    subtitle: 'Research and Development Division Technical Research Paper | Neuro AI Development Resilience Stack (NRS)',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Healthcare AI & Public Health',
@@ -8976,8 +9001,8 @@ Note to readers: citations should be verified against primary sources before ext
     downloadCount: 1290,
     citationCount: 22,
     readingTime: 'about 16 minutes',
-    executiveSummary: `Public health systems face compounding vulnerabilities from essential-medicine stockouts, thermal cold-chain excursions, and substandard or falsified (SF) products. This paper introduces the NeuroGrowth Resilience Stack (NRS), an integrated AI framework linking four uncertainty-coupled modules—censored-demand probabilistic forecasting, multi-layer counterfeit and diversion detection, cumulative potency-risk cold-chain routing, and equity-constrained stockout prevention—backed by offline-first open standards (HL7 FHIR, GS1, DHIS2) and a three-stage evaluation protocol spanning retrospective backtesting, shadow deployment, and a pragmatic stepped-wedge trial.`,
-    abstract: `Public health systems depend on the uninterrupted availability of safe, effective and properly stored medicines. In many low- and middle-income countries (LMICs), and increasingly in resource-constrained high-income settings, this depends on fragile supply chains marked by sparse data, intermittent demand, infrastructure variability and exposure to substandard and falsified (SF) products. Stockouts of essential medicines, temperature excursions in vaccine and biologic distribution, and counterfeit infiltration each cause avoidable morbidity, wasted expenditure and erosion of public trust. This paper introduces the NeuroGrowth Resilience Stack (NRS), an integrated AI framework with four coupled modules: (1) probabilistic demand forecasting for essential medicines at facility level; (2) multi-signal counterfeit and diversion detection combining serialization data, anomaly detection and low-cost spectral screening; (3) cold-chain monitoring and risk-aware routing; and (4) a stockout-prevention engine that converts forecasts and risk signals into replenishment and redistribution decisions. We describe the data requirements, model classes, uncertainty quantification, privacy-preserving deployment, governance safeguards and a staged evaluation protocol (retrospective backtesting, shadow-mode deployment, and a stepped-wedge pragmatic trial). We argue that the principal value of AI in this domain lies less in model novelty than in decision integration under uncertainty, robust operation with imperfect data, and accountable human oversight.`,
+    executiveSummary: `Public health systems face compounding vulnerabilities from essential-medicine stockouts, thermal cold-chain excursions, and substandard or falsified (SF) products. This paper introduces the Neuro AI Development Resilience Stack (NRS), an integrated AI framework linking four uncertainty-coupled modules—censored-demand probabilistic forecasting, multi-layer counterfeit and diversion detection, cumulative potency-risk cold-chain routing, and equity-constrained stockout prevention—backed by offline-first open standards (HL7 FHIR, GS1, DHIS2) and a three-stage evaluation protocol spanning retrospective backtesting, shadow deployment, and a pragmatic stepped-wedge trial.`,
+    abstract: `Public health systems depend on the uninterrupted availability of safe, effective and properly stored medicines. In many low- and middle-income countries (LMICs), and increasingly in resource-constrained high-income settings, this depends on fragile supply chains marked by sparse data, intermittent demand, infrastructure variability and exposure to substandard and falsified (SF) products. Stockouts of essential medicines, temperature excursions in vaccine and biologic distribution, and counterfeit infiltration each cause avoidable morbidity, wasted expenditure and erosion of public trust. This paper introduces the Neuro AI Development Resilience Stack (NRS), an integrated AI framework with four coupled modules: (1) probabilistic demand forecasting for essential medicines at facility level; (2) multi-signal counterfeit and diversion detection combining serialization data, anomaly detection and low-cost spectral screening; (3) cold-chain monitoring and risk-aware routing; and (4) a stockout-prevention engine that converts forecasts and risk signals into replenishment and redistribution decisions. We describe the data requirements, model classes, uncertainty quantification, privacy-preserving deployment, governance safeguards and a staged evaluation protocol (retrospective backtesting, shadow-mode deployment, and a stepped-wedge pragmatic trial). We argue that the principal value of AI in this domain lies less in model novelty than in decision integration under uncertainty, robust operation with imperfect data, and accountable human oversight.`,
     methodology: `Coupled decision-integration architecture combining censored-demand hierarchical probabilistic forecasting (Croston-Syntetos-Boylan, gradient-boosted quantiles, attention-based sequence models with split conformal calibration), four-layer counterfeit detection (GS1 serialization provenance, temporal graph anomaly detection, smartphone/NIR/Raman open-set screening, and bandit risk sampling), cumulative thermal-potency cold-chain modeling with stochastic vehicle routing, and multi-echelon equity-constrained replenishment optimization.`,
     findings: [
       'Stockouts, cold-chain excursions, and counterfeit infiltration interact as coupled failures under uncertainty—treating them in siloed vendor dashboards misses shared root signals and shifts risk onto remote clinics.',
@@ -8992,21 +9017,21 @@ Note to readers: citations should be verified against primary sources before ext
     ],
     bibtex: `@article{ngl2026pharmaceuticalresilience,
   title={AI-Enabled Pharmaceutical and Supply-Chain Resilience: An Integrated Framework for Demand Forecasting, Counterfeit Detection, Cold-Chain Optimization, and Stockout Reduction in Public Health Systems},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Technical Research Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Technical Research Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.18}
 }`,
     fullArticleText: `AI-Enabled Pharmaceutical and Supply-Chain Resilience: An Integrated Framework for Demand Forecasting, Counterfeit Detection, Cold-Chain Optimization, and Stockout Reduction in Public Health Systems
 
-NeuroGrowth Labs – Research and Development Division Technical Research Paper, November 2026
+Neuro AI Development – Research and Development Division Technical Research Paper, November 2026
 
 Status note: This paper presents a system architecture, methodological framework and evaluation protocol. Quantitative targets are design objectives, not reported results. Citations should be verified against primary sources before external publication.
 
 Abstract
 
-Public health systems depend on the uninterrupted availability of safe, effective and properly stored medicines. In many low- and middle-income countries (LMICs), and increasingly in resource-constrained high-income settings, this depends on fragile supply chains marked by sparse data, intermittent demand, infrastructure variability and exposure to substandard and falsified (SF) products. Stockouts of essential medicines, temperature excursions in vaccine and biologic distribution, and counterfeit infiltration each cause avoidable morbidity, wasted expenditure and erosion of public trust. This paper introduces the NeuroGrowth Resilience Stack (NRS), an integrated AI framework with four coupled modules: (1) probabilistic demand forecasting for essential medicines at facility level; (2) multi-signal counterfeit and diversion detection combining serialization data, anomaly detection and low-cost spectral screening; (3) cold-chain monitoring and risk-aware routing; and (4) a stockout-prevention engine that converts forecasts and risk signals into replenishment and redistribution decisions. We describe the data requirements, model classes, uncertainty quantification, privacy-preserving deployment, governance safeguards and a staged evaluation protocol (retrospective backtesting, shadow-mode deployment, and a stepped-wedge pragmatic trial). We argue that the principal value of AI in this domain lies less in model novelty than in decision integration under uncertainty, robust operation with imperfect data, and accountable human oversight.
+Public health systems depend on the uninterrupted availability of safe, effective and properly stored medicines. In many low- and middle-income countries (LMICs), and increasingly in resource-constrained high-income settings, this depends on fragile supply chains marked by sparse data, intermittent demand, infrastructure variability and exposure to substandard and falsified (SF) products. Stockouts of essential medicines, temperature excursions in vaccine and biologic distribution, and counterfeit infiltration each cause avoidable morbidity, wasted expenditure and erosion of public trust. This paper introduces the Neuro AI Development Resilience Stack (NRS), an integrated AI framework with four coupled modules: (1) probabilistic demand forecasting for essential medicines at facility level; (2) multi-signal counterfeit and diversion detection combining serialization data, anomaly detection and low-cost spectral screening; (3) cold-chain monitoring and risk-aware routing; and (4) a stockout-prevention engine that converts forecasts and risk signals into replenishment and redistribution decisions. We describe the data requirements, model classes, uncertainty quantification, privacy-preserving deployment, governance safeguards and a staged evaluation protocol (retrospective backtesting, shadow-mode deployment, and a stepped-wedge pragmatic trial). We argue that the principal value of AI in this domain lies less in model novelty than in decision integration under uncertainty, robust operation with imperfect data, and accountable human oversight.
 
 Keywords: pharmaceutical supply chain; demand forecasting; counterfeit medicines; cold chain; stockout; probabilistic forecasting; anomaly detection; public health logistics; AI governance
 
@@ -9056,7 +9081,7 @@ Operations research offers mature tools: newsvendor models, (s, S) and base-stoc
 
 3. System Overview
 
-The NeuroGrowth Resilience Stack comprises a data layer, four analytical modules, a decision layer and a governance layer.
+The Neuro AI Development Resilience Stack comprises a data layer, four analytical modules, a decision layer and a governance layer.
 
 Data layer. Inputs include eLMIS stock and consumption records, facility metadata, dispensing and patient-visit counts, disease surveillance data, procurement and shipment records, serialization and verification events, temperature logger streams, equipment status, road and weather data, and supplier performance history. A data quality service handles deduplication, unit harmonization (for example pack versus dose units), outlier flagging, and explicit tracking of missingness, because reported zero consumption frequently reflects a stockout rather than an absence of demand.
 
@@ -9207,11 +9232,11 @@ Alignment with standards. The framework is designed to be consistent with nation
 
 10. Conclusion
 
-Availability, authenticity and integrity of medicines are interdependent properties of a single system. Addressing them in isolation leaves gaps that patients bear. The NeuroGrowth Resilience Stack proposes a way to treat them jointly: calibrated probabilistic forecasts feed inventory decisions, authenticity and cold-chain signals adjust those decisions, and human oversight and governance keep the system accountable. The central claim is not that AI replaces logistics expertise, but that, when built on honest uncertainty, equity-aware objectives and rigorous prospective evaluation, it can help public health systems anticipate failures rather than react to them. The next step is to move from framework to evidence through shadow deployment and pragmatic trials in partnership with ministries of health, regulators and procurement agencies.
+Availability, authenticity and integrity of medicines are interdependent properties of a single system. Addressing them in isolation leaves gaps that patients bear. The Neuro AI Development Resilience Stack proposes a way to treat them jointly: calibrated probabilistic forecasts feed inventory decisions, authenticity and cold-chain signals adjust those decisions, and human oversight and governance keep the system accountable. The central claim is not that AI replaces logistics expertise, but that, when built on honest uncertainty, equity-aware objectives and rigorous prospective evaluation, it can help public health systems anticipate failures rather than react to them. The next step is to move from framework to evidence through shadow deployment and pragmatic trials in partnership with ministries of health, regulators and procurement agencies.
 
 Acknowledgments
 
-NeuroGrowth Labs acknowledges the supply chain professionals, pharmacists, regulators and community health workers whose operational insight shapes this work.
+Neuro AI Development acknowledges the supply chain professionals, pharmacists, regulators and community health workers whose operational insight shapes this work.
 
 References
 
@@ -9238,7 +9263,7 @@ United States Drug Supply Chain Security Act (DSCSA), Title II of the Drug Quali
     title: 'Fair and Explainable Clinical AI: Subgroup Evaluation and Transparent Uncertainty Reporting',
     subtitle: 'AI Research and Development Paper | Six-Axis Equity Auditing & Conformal Clinical Uncertainty',
     authors: [
-      { name: 'Lusimadio Soki Simao', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Lusimadio Soki Simao', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Healthcare AI & Ethics',
@@ -9246,8 +9271,8 @@ United States Drug Supply Chain Security Act (DSCSA), Title II of the Drug Quali
     downloadCount: 1485,
     citationCount: 27,
     readingTime: 'about 23 minutes',
-    executiveSummary: `Clinical AI is entering African health systems faster than the subgroup evidence required to ensure safety and equity. This paper establishes an auditable NeuroGrowth Labs evaluation and reporting framework spanning six equity axes (sex, age, ethnicity, disability, geography, language) and their intersections, combining partial-pooling small-subgroup estimation, leave-one-country-out and linguistic shift tests, clinician-facing conformal prediction sets with abstention, and AU Continental AI Strategy release gates planned for South Africa, Nigeria, and Angola.`,
-    abstract: `Clinical artificial intelligence (AI) is entering African health systems faster than the evidence needed to show that it is safe and equitable for the people it serves. This paper presents a research and development framework from NeuroGrowth Labs for evaluating clinical AI across six axes of potential inequity: sex, age, ethnicity, disability, geography and language, together with their intersections. The framework combines four components: (i) stratified and intersectional performance testing with interval estimates sized for small subgroups; (ii) calibration and error-rate parity analysis; (iii) robustness testing under geographic, device and linguistic distribution shift; and (iv) a clinician-facing uncertainty reporting standard built on calibrated risk estimates, conformal prediction sets with subgroup-conditional coverage checks, and explicit abstention. A governance layer translates the safeguards against AI bias and misuse called for in the African Union Continental AI Strategy into auditable release gates, documentation artefacts and post-deployment monitoring duties. The paper is a methods and protocol contribution. It specifies metrics, statistical procedures, acceptance criteria and a staged validation plan for South Africa, Nigeria and Angola, and it reports no empirical performance results. We argue that fairness claims are meaningful only when they are testable, that explanations are useful only when their reliability is itself evaluated, and that uncertainty belongs in the clinical output as a first-class element.`,
+    executiveSummary: `Clinical AI is entering African health systems faster than the subgroup evidence required to ensure safety and equity. This paper establishes an auditable Neuro AI Development evaluation and reporting framework spanning six equity axes (sex, age, ethnicity, disability, geography, language) and their intersections, combining partial-pooling small-subgroup estimation, leave-one-country-out and linguistic shift tests, clinician-facing conformal prediction sets with abstention, and AU Continental AI Strategy release gates planned for South Africa, Nigeria, and Angola.`,
+    abstract: `Clinical artificial intelligence (AI) is entering African health systems faster than the evidence needed to show that it is safe and equitable for the people it serves. This paper presents a research and development framework from Neuro AI Development for evaluating clinical AI across six axes of potential inequity: sex, age, ethnicity, disability, geography and language, together with their intersections. The framework combines four components: (i) stratified and intersectional performance testing with interval estimates sized for small subgroups; (ii) calibration and error-rate parity analysis; (iii) robustness testing under geographic, device and linguistic distribution shift; and (iv) a clinician-facing uncertainty reporting standard built on calibrated risk estimates, conformal prediction sets with subgroup-conditional coverage checks, and explicit abstention. A governance layer translates the safeguards against AI bias and misuse called for in the African Union Continental AI Strategy into auditable release gates, documentation artefacts and post-deployment monitoring duties. The paper is a methods and protocol contribution. It specifies metrics, statistical procedures, acceptance criteria and a staged validation plan for South Africa, Nigeria and Angola, and it reports no empirical performance results. We argue that fairness claims are meaningful only when they are testable, that explanations are useful only when their reliability is itself evaluated, and that uncertainty belongs in the clinical output as a first-class element.`,
     methodology: `Pre-registered eight-stage fairness and uncertainty evaluation protocol combining six-axis stratified/intersectional auditing (patient-clustered bootstrap with >=2,000 resamples and Benjamini-Hochberg multiplicity control), multilevel partial pooling for sparse subgroups, leave-one-site-out and native-speaker language testing, subgroup-conditional conformal prediction sets and calibrated abstention, explanation faithfulness/stability sanity checks, and a four-phase clinical validation roadmap (public benchmarks, retrospective SA/Nigeria/Angola evaluation, silent deployment, and DECIDE-AI/CONSORT-AI clinician-in-the-loop trials).`,
     findings: [
       'Marginal performance metrics frequently mask severe disparities across sex, age, skin tone/ethnicity, disability, rural geography, and low-resource African languages—requiring worst-group lower confidence bounds as binding release criteria.',
@@ -9263,20 +9288,20 @@ United States Drug Supply Chain Security Act (DSCSA), Title II of the Drug Quali
     bibtex: `@article{simao2026fairclinicalai,
   title={Fair and Explainable Clinical AI: Subgroup Evaluation and Transparent Uncertainty Reporting},
   author={Simao, Lusimadio Soki},
-  journal={NeuroGrowth Labs AI Research and Development Paper},
+  journal={Neuro AI Development AI Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.19}
 }`,
     fullArticleText: `Fair and Explainable Clinical AI: Subgroup Evaluation and Transparent Uncertainty Reporting
 
-NeuroGrowth Labs, AI Research and Development Paper
+Neuro AI Development, AI Research and Development Paper
 
 Nov 15, 2026 · @Lusimadio Soki Simao
 
 Abstract
 
-Clinical artificial intelligence (AI) is entering African health systems faster than the evidence needed to show that it is safe and equitable for the people it serves. This paper presents a research and development framework from NeuroGrowth Labs for evaluating clinical AI across six axes of potential inequity: sex, age, ethnicity, disability, geography and language, together with their intersections. The framework combines four components: (i) stratified and intersectional performance testing with interval estimates sized for small subgroups; (ii) calibration and error-rate parity analysis; (iii) robustness testing under geographic, device and linguistic distribution shift; and (iv) a clinician-facing uncertainty reporting standard built on calibrated risk estimates, conformal prediction sets with subgroup-conditional coverage checks, and explicit abstention. A governance layer translates the safeguards against AI bias and misuse called for in the African Union Continental AI Strategy into auditable release gates, documentation artefacts and post-deployment monitoring duties. The paper is a methods and protocol contribution. It specifies metrics, statistical procedures, acceptance criteria and a staged validation plan for South Africa, Nigeria and Angola, and it reports no empirical performance results. We argue that fairness claims are meaningful only when they are testable, that explanations are useful only when their reliability is itself evaluated, and that uncertainty belongs in the clinical output as a first-class element.
+Clinical artificial intelligence (AI) is entering African health systems faster than the evidence needed to show that it is safe and equitable for the people it serves. This paper presents a research and development framework from Neuro AI Development for evaluating clinical AI across six axes of potential inequity: sex, age, ethnicity, disability, geography and language, together with their intersections. The framework combines four components: (i) stratified and intersectional performance testing with interval estimates sized for small subgroups; (ii) calibration and error-rate parity analysis; (iii) robustness testing under geographic, device and linguistic distribution shift; and (iv) a clinician-facing uncertainty reporting standard built on calibrated risk estimates, conformal prediction sets with subgroup-conditional coverage checks, and explicit abstention. A governance layer translates the safeguards against AI bias and misuse called for in the African Union Continental AI Strategy into auditable release gates, documentation artefacts and post-deployment monitoring duties. The paper is a methods and protocol contribution. It specifies metrics, statistical procedures, acceptance criteria and a staged validation plan for South Africa, Nigeria and Angola, and it reports no empirical performance results. We argue that fairness claims are meaningful only when they are testable, that explanations are useful only when their reliability is itself evaluated, and that uncertainty belongs in the clinical output as a first-class element.
 
 Keywords: clinical AI, algorithmic fairness, explainability, uncertainty quantification, conformal prediction, health equity, African Union AI governance
 
@@ -9560,7 +9585,7 @@ Fairness at release does not guarantee fairness in use. Deployed tools are monit
 
 7.3 Roles and accountability
 
-Evaluation should be separable from development. Developers produce the evaluation plan and documentation. An independent reviewer, which may be a hospital committee, a regulator or an academic partner, verifies the results and signs the gate decision. NeuroGrowth Labs proposes to apply the same standard to its own tools and to publish the outcomes of those assessments, including failures, subject to its internal governance approval. Clinicians remain accountable for care decisions, and procurement contracts should state the responsibilities of vendors and health facilities for monitoring and incident reporting.
+Evaluation should be separable from development. Developers produce the evaluation plan and documentation. An independent reviewer, which may be a hospital committee, a regulator or an academic partner, verifies the results and signs the gate decision. Neuro AI Development proposes to apply the same standard to its own tools and to publish the outcomes of those assessments, including failures, subject to its internal governance approval. Clinicians remain accountable for care decisions, and procurement contracts should state the responsibilities of vendors and health facilities for monitoring and incident reporting.
 
 7.4 Alignment with regional and international frameworks
 
@@ -9593,7 +9618,7 @@ Collecting sensitive attributes for fairness testing carries risks as well as be
 
 9. Conclusion
 
-Clinical AI will reach African patients whether or not the evidence of equity is ready. This paper proposes that the evidence be built into the evaluation itself: performance tested across sex, age, ethnicity, disability, geography and language and their intersections; uncertainty calibrated, tested by subgroup and shown to clinicians; explanations treated as claims to be audited; and AU safeguards against bias and misuse expressed as release gates, documents and monitoring duties that an independent party can verify. The framework is a specification and a plan, and its value will be established only by the validation described in Section 6. NeuroGrowth Labs invites clinicians, regulators, researchers and patient communities to test, challenge and improve it.
+Clinical AI will reach African patients whether or not the evidence of equity is ready. This paper proposes that the evidence be built into the evaluation itself: performance tested across sex, age, ethnicity, disability, geography and language and their intersections; uncertainty calibrated, tested by subgroup and shown to clinicians; explanations treated as claims to be audited; and AU safeguards against bias and misuse expressed as release gates, documents and monitoring duties that an independent party can verify. The framework is a specification and a plan, and its value will be established only by the validation described in Section 6. Neuro AI Development invites clinicians, regulators, researchers and patient communities to test, challenge and improve it.
 
 References
 
@@ -9674,7 +9699,7 @@ Policy and legal sources
     title: 'Smallholder Crop-Advisory AI: Localized Decision Support for Planting, Irrigation, Crop Protection, Fertilization and Harvest',
     subtitle: 'AI Research and Development Paper | Five-Layer Agrifood Blueprint Aligned with the AU Kampala CAADP 2026–2035 Agenda',
     authors: [
-      { name: 'Lusimadio Soki Simao', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Lusimadio Soki Simao', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Agriculture & Applied AI',
@@ -9682,8 +9707,8 @@ Policy and legal sources
     downloadCount: 1340,
     citationCount: 24,
     readingTime: 'about 17 minutes',
-    executiveSummary: `NeuroGrowth Labs presents a five-layer, decision-first crop-advisory AI blueprint tailored to rain-fed smallholders in South Africa, Nigeria, and Angola. Combining Sentinel-2/Sentinel-1 remote sensing, CHIRPS/ERA5 and probabilistic AI weather forecasts, on-device leaf-level crop protection diagnostics, and local-language delivery across voice IVR, SMS/USSD, WhatsApp, and extension agents, the programme specifies a cluster-randomized trial and strict farmer data-ownership governance aligned with the AU Kampala CAADP Strategy (2026–2035).`,
-    abstract: `NeuroGrowth Labs proposes a modular, locally adapted advisory system that turns satellite, weather and farmer-generated data into timely recommendations on planting, irrigation, pest and disease management, fertilizer use and harvest planning for smallholder farmers. Existing evidence shows that digital advisory raises adoption of recommended practices and yields modestly, at very low cost per farmer, yet most services remain generic, weakly localized and poorly validated against objective outcomes. We describe a five-layer architecture that fuses Sentinel-class remote sensing, probabilistic weather forecasts and structured farmer reports; an advisory engine that couples agronomic rules with calibrated machine-learning models and explicit uncertainty; and a multilingual delivery layer spanning voice, SMS, USSD, WhatsApp and extension agents. We specify an evaluation protocol that combines offline model benchmarking with a cluster-randomized field trial, to be piloted in South Africa, Nigeria and Angola. This paper reports a design and research agenda, not field results: all performance targets are hypotheses to be tested. Its intended contribution is a reproducible, governance-aware blueprint aligned with the African Union's 2026-2035 agrifood agenda.`,
+    executiveSummary: `Neuro AI Development presents a five-layer, decision-first crop-advisory AI blueprint tailored to rain-fed smallholders in South Africa, Nigeria, and Angola. Combining Sentinel-2/Sentinel-1 remote sensing, CHIRPS/ERA5 and probabilistic AI weather forecasts, on-device leaf-level crop protection diagnostics, and local-language delivery across voice IVR, SMS/USSD, WhatsApp, and extension agents, the programme specifies a cluster-randomized trial and strict farmer data-ownership governance aligned with the AU Kampala CAADP Strategy (2026–2035).`,
+    abstract: `Neuro AI Development proposes a modular, locally adapted advisory system that turns satellite, weather and farmer-generated data into timely recommendations on planting, irrigation, pest and disease management, fertilizer use and harvest planning for smallholder farmers. Existing evidence shows that digital advisory raises adoption of recommended practices and yields modestly, at very low cost per farmer, yet most services remain generic, weakly localized and poorly validated against objective outcomes. We describe a five-layer architecture that fuses Sentinel-class remote sensing, probabilistic weather forecasts and structured farmer reports; an advisory engine that couples agronomic rules with calibrated machine-learning models and explicit uncertainty; and a multilingual delivery layer spanning voice, SMS, USSD, WhatsApp and extension agents. We specify an evaluation protocol that combines offline model benchmarking with a cluster-randomized field trial, to be piloted in South Africa, Nigeria and Angola. This paper reports a design and research agenda, not field results: all performance targets are hypotheses to be tested. Its intended contribution is a reproducible, governance-aware blueprint aligned with the African Union's 2026-2035 agrifood agenda.`,
     methodology: `Five-layer modular agrifood advisory design pairing optical (Sentinel-2) and radar (Sentinel-1 SAR) gap-filled plot records, probabilistic rainfall-onset/dry-spell forecasts, soil-water balance rules, offline phone-based multi-leaf disease diagnosis, and multi-channel localization (voice, SMS/USSD, WhatsApp, extension intermediaries); evaluated across model, advisory comprehension, and village/cooperative cluster-randomized impact levels with crop-cut calibration.`,
     findings: [
       'Digital advisory shows modest absolute yield effects but high cost-effectiveness per dollar spent, provided generic regional bulletins are replaced by farmer-verified field records and decision-oriented probabilistic risk bands.',
@@ -9699,18 +9724,18 @@ Policy and legal sources
     bibtex: `@article{simao2026smallholdercropai,
   title={Smallholder Crop-Advisory AI: Localized Decision Support for Planting, Irrigation, Crop Protection, Fertilization and Harvest},
   author={Simao, Lusimadio Soki},
-  journal={NeuroGrowth Labs AI Research and Development Paper},
+  journal={Neuro AI Development AI Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.20}
 }`,
     fullArticleText: `Smallholder Crop-Advisory AI: Localized Decision Support for Planting, Irrigation, Crop Protection, Fertilization and Harvest
 
-NeuroGrowth Labs · AI Research and Development Paper · Nov 15, 2026 · @Lusimadio Soki Simao
+Neuro AI Development · AI Research and Development Paper · Nov 15, 2026 · @Lusimadio Soki Simao
 
 Abstract
 
-NeuroGrowth Labs proposes a modular, locally adapted advisory system that turns satellite, weather and farmer-generated data into timely recommendations on planting, irrigation, pest and disease management, fertilizer use and harvest planning for smallholder farmers. Existing evidence shows that digital advisory raises adoption of recommended practices and yields modestly, at very low cost per farmer, yet most services remain generic, weakly localized and poorly validated against objective outcomes. We describe a five-layer architecture that fuses Sentinel-class remote sensing, probabilistic weather forecasts and structured farmer reports; an advisory engine that couples agronomic rules with calibrated machine-learning models and explicit uncertainty; and a multilingual delivery layer spanning voice, SMS, USSD, WhatsApp and extension agents. We specify an evaluation protocol that combines offline model benchmarking with a cluster-randomized field trial, to be piloted in South Africa, Nigeria and Angola. This paper reports a design and research agenda, not field results: all performance targets are hypotheses to be tested. Its intended contribution is a reproducible, governance-aware blueprint aligned with the African Union's 2026-2035 agrifood agenda.
+Neuro AI Development proposes a modular, locally adapted advisory system that turns satellite, weather and farmer-generated data into timely recommendations on planting, irrigation, pest and disease management, fertilizer use and harvest planning for smallholder farmers. Existing evidence shows that digital advisory raises adoption of recommended practices and yields modestly, at very low cost per farmer, yet most services remain generic, weakly localized and poorly validated against objective outcomes. We describe a five-layer architecture that fuses Sentinel-class remote sensing, probabilistic weather forecasts and structured farmer reports; an advisory engine that couples agronomic rules with calibrated machine-learning models and explicit uncertainty; and a multilingual delivery layer spanning voice, SMS, USSD, WhatsApp and extension agents. We specify an evaluation protocol that combines offline model benchmarking with a cluster-randomized field trial, to be piloted in South Africa, Nigeria and Angola. This paper reports a design and research agenda, not field results: all performance targets are hypotheses to be tested. Its intended contribution is a reproducible, governance-aware blueprint aligned with the African Union's 2026-2035 agrifood agenda.
 
 Keywords: smallholder agriculture, decision support, remote sensing, probabilistic forecasting, plant disease detection, localization, digital extension, Africa
 
@@ -9720,7 +9745,7 @@ Agriculture is a core priority of the African Union, and the continent's next te
 
 Meeting such targets depends on millions of small, rain-fed farms making better daily decisions: when to plant, how much to irrigate or fertilize, what to spray and when to harvest. These decisions are made with little access to science-based advice. Reviews of the evidence conclude that digital advisory has modest absolute effects on practices and yields, but large effects relative to its delivery cost, while most smallholders still lack science-based advice.
 
-Three developments make a new generation of advisory systems feasible. Free, frequent satellite imagery now supports field-scale monitoring; AI weather models now produce skillful forecasts at low computational cost; and mobile channels reach farmers in their own languages. NeuroGrowth Labs, a pan-African venture studio operating in South Africa, Nigeria and Angola, proposes to integrate these capabilities into one governed, locally validated system. This paper sets out the problem, architecture, evaluation protocol and pilot design. It is a research and development plan; it does not report field results.
+Three developments make a new generation of advisory systems feasible. Free, frequent satellite imagery now supports field-scale monitoring; AI weather models now produce skillful forecasts at low computational cost; and mobile channels reach farmers in their own languages. Neuro AI Development, a pan-African venture studio operating in South Africa, Nigeria and Angola, proposes to integrate these capabilities into one governed, locally validated system. This paper sets out the problem, architecture, evaluation protocol and pilot design. It is a research and development plan; it does not report field results.
 
 2. Problem Statement and Research Questions
 
@@ -9798,7 +9823,7 @@ Each module turns shared plot data into one decision, and each issues advice as 
 
 Advice only creates value if farmers understand it, trust it and can act on it, so localization is treated as a research variable rather than a translation step. Language misalignment is one of the barriers named in the Sub-Saharan Africa adoption review, and messages written by ministries are often difficult for farmers to understand and use.
 
-Language and content. Pilot languages follow each country's farming communities: Portuguese and major national languages in Angola; Hausa, Yoruba, Igbo, Nigerian Pidgin and English in Nigeria; and English, isiZulu, isiXhosa, Sesotho and Afrikaans in South Africa, with final selection set by the pilot-district profile. Crop, input and measurement terms are co-developed with farmers and extension agents instead of machine-translated, and a glossary is validated by speakers before release. NeuroGrowth Labs' work on African-language translation can supply base models, with human review for agronomic terms.
+Language and content. Pilot languages follow each country's farming communities: Portuguese and major national languages in Angola; Hausa, Yoruba, Igbo, Nigerian Pidgin and English in Nigeria; and English, isiZulu, isiXhosa, Sesotho and Afrikaans in South Africa, with final selection set by the pilot-district profile. Crop, input and measurement terms are co-developed with farmers and extension agents instead of machine-translated, and a glossary is validated by speakers before release. Neuro AI Development' work on African-language translation can supply base models, with human review for agronomic terms.
 
 Channels. The system is channel-agnostic and degrades gracefully, so that a farmer with a basic phone is not excluded:
 
@@ -9890,7 +9915,7 @@ Gate criteria are deliberately stated as pre-registered conditions, not calendar
 
 13. Conclusion
 
-Smallholder crop advisory is a high-leverage application of AI for the AU's 2026-2035 agrifood agenda, provided it is built around decisions, local validation and farmer ownership rather than around technology alone. The evidence base shows that digital advice is cheap to deliver and can change practices, that open satellite and AI weather data are now good enough to support field-level and forecast-based guidance, and that diagnosis models can work offline in real fields. What is missing is an integrated, governed system tested against objective outcomes in African conditions. NeuroGrowth Labs proposes to build and evaluate one, starting with pilots in South Africa, Nigeria and Angola, to publish methods and results openly, including null findings, and to work with national institutions so that what is learned feeds directly into national agricultural investment planning.
+Smallholder crop advisory is a high-leverage application of AI for the AU's 2026-2035 agrifood agenda, provided it is built around decisions, local validation and farmer ownership rather than around technology alone. The evidence base shows that digital advice is cheap to deliver and can change practices, that open satellite and AI weather data are now good enough to support field-level and forecast-based guidance, and that diagnosis models can work offline in real fields. What is missing is an integrated, governed system tested against objective outcomes in African conditions. Neuro AI Development proposes to build and evaluate one, starting with pilots in South Africa, Nigeria and Angola, to publish methods and results openly, including null findings, and to work with national institutions so that what is learned feeds directly into national agricultural investment planning.
 
 Next steps are to confirm pilot partners and districts, complete legal and ethics review, begin the silent-season data collection, and pre-register the trial design.
 
@@ -9939,7 +9964,7 @@ Pest and disease detection
     title: 'AI-Supported Water Management: A Local-First Research and Development Framework for Groundwater Monitoring, Irrigation Optimisation, Leakage Detection, and Water-Quality Surveillance',
     subtitle: 'Research and Development White Paper | Local-First Satellite, IoT & Hydrological Intelligence',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Water & Climate AI',
@@ -9947,8 +9972,8 @@ Pest and disease detection
     downloadCount: 1180,
     citationCount: 19,
     readingTime: 'about 15 minutes',
-    executiveSummary: `Water insecurity, aquifer depletion, irrigation inefficiency, non-revenue water losses, and contamination events suffer from fragmented monitoring and delayed response. NeuroGrowth Labs proposes a local-first AI-supported water-management framework integrating satellite imagery (GRACE, Sentinel-1/2, thermal), IoT field telemetry (soil moisture, borehole level, pressure, flow, pH, turbidity), and physics-informed hydrological models across four priorities: groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance—built for offline-capable edge inference and African institutional ownership under the AU Continental AI Strategy.`,
-    abstract: `Water insecurity, aquifer depletion, irrigation inefficiency, distribution losses, and declining water quality are increasingly constrained by fragmented monitoring systems and delayed decision-making. This paper presents a local-first AI-supported water-management framework developed by NeuroGrowth Labs to integrate satellite imagery, Internet of Things (IoT) sensor networks, and hydrological models into a unified decision-support architecture. The framework addresses four operational priorities: groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance. It combines remote-sensing features, real-time field telemetry, physics-informed hydrological simulation, and machine-learning models to produce spatially explicit, actionable water intelligence. The proposed system is designed for African operating conditions, with offline-capable edge inference, low-bandwidth communication, local data governance, and transparent uncertainty reporting. The approach aligns directly with the African Union Continental Artificial Intelligence Strategy, which identifies water management as a local-first AI priority and calls for African-owned, people-centred, development-oriented AI solutions.`,
+    executiveSummary: `Water insecurity, aquifer depletion, irrigation inefficiency, non-revenue water losses, and contamination events suffer from fragmented monitoring and delayed response. Neuro AI Development proposes a local-first AI-supported water-management framework integrating satellite imagery (GRACE, Sentinel-1/2, thermal), IoT field telemetry (soil moisture, borehole level, pressure, flow, pH, turbidity), and physics-informed hydrological models across four priorities: groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance—built for offline-capable edge inference and African institutional ownership under the AU Continental AI Strategy.`,
+    abstract: `Water insecurity, aquifer depletion, irrigation inefficiency, distribution losses, and declining water quality are increasingly constrained by fragmented monitoring systems and delayed decision-making. This paper presents a local-first AI-supported water-management framework developed by Neuro AI Development to integrate satellite imagery, Internet of Things (IoT) sensor networks, and hydrological models into a unified decision-support architecture. The framework addresses four operational priorities: groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance. It combines remote-sensing features, real-time field telemetry, physics-informed hydrological simulation, and machine-learning models to produce spatially explicit, actionable water intelligence. The proposed system is designed for African operating conditions, with offline-capable edge inference, low-bandwidth communication, local data governance, and transparent uncertainty reporting. The approach aligns directly with the African Union Continental Artificial Intelligence Strategy, which identifies water management as a local-first AI priority and calls for African-owned, people-centred, development-oriented AI solutions.`,
     methodology: `Tiered edge-to-regional-cloud architecture fusing remote sensing (optical, Sentinel-1 radar, thermal, GRACE gravity storage), LoRaWAN/NB-IoT/radio field sensors with store-and-forward sync, administrative asset registers, and community observations; combining computer vision, time-series forecasting, hydraulic anomaly detection, physics-informed water-balance ML, and constrained pump/irrigation optimisation validated on spatially and temporally independent test sets.`,
     findings: [
       'Integrating GRACE gravity-storage products, Sentinel-1 radar deformation, numerical soil models, and borehole telemetry distinguishes seasonal water shifts from permanent aquifer depletion and flags unsustainable drawdown early.',
@@ -9963,15 +9988,15 @@ Pest and disease detection
     ],
     bibtex: `@article{ngl2026watermanagement,
   title={AI-Supported Water Management: A Local-First Research and Development Framework for Groundwater Monitoring, Irrigation Optimisation, Leakage Detection, and Water-Quality Surveillance},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development White Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development White Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.21}
 }`,
     fullArticleText: `AI-Supported Water Management: A Local-First Research and Development Framework for Groundwater Monitoring, Irrigation Optimisation, Leakage Detection, and Water-Quality Surveillance
 
-NeuroGrowth Labs
+Neuro AI Development
 
 Research and Development White Paper
 
@@ -9979,7 +10004,7 @@ Date: November 2026
 
 Abstract
 
-Water insecurity, aquifer depletion, irrigation inefficiency, distribution losses, and declining water quality are increasingly constrained by fragmented monitoring systems and delayed decision-making. This paper presents a local-first AI-supported water-management framework developed by NeuroGrowth Labs to integrate satellite imagery, Internet of Things (IoT) sensor networks, and hydrological models into a unified decision-support architecture. The framework addresses four operational priorities: groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance. It combines remote-sensing features, real-time field telemetry, physics-informed hydrological simulation, and machine-learning models to produce spatially explicit, actionable water intelligence. The proposed system is designed for African operating conditions, with offline-capable edge inference, low-bandwidth communication, local data governance, and transparent uncertainty reporting. The approach aligns directly with the African Union Continental Artificial Intelligence Strategy, which identifies water management as a local-first AI priority and calls for African-owned, people-centred, development-oriented AI solutions.
+Water insecurity, aquifer depletion, irrigation inefficiency, distribution losses, and declining water quality are increasingly constrained by fragmented monitoring systems and delayed decision-making. This paper presents a local-first AI-supported water-management framework developed by Neuro AI Development to integrate satellite imagery, Internet of Things (IoT) sensor networks, and hydrological models into a unified decision-support architecture. The framework addresses four operational priorities: groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance. It combines remote-sensing features, real-time field telemetry, physics-informed hydrological simulation, and machine-learning models to produce spatially explicit, actionable water intelligence. The proposed system is designed for African operating conditions, with offline-capable edge inference, low-bandwidth communication, local data governance, and transparent uncertainty reporting. The approach aligns directly with the African Union Continental Artificial Intelligence Strategy, which identifies water management as a local-first AI priority and calls for African-owned, people-centred, development-oriented AI solutions.
 
 Keywords: artificial intelligence; water management; groundwater; remote sensing; IoT; hydrological modelling; irrigation; leakage detection; water quality; local-first AI; African Union
 
@@ -9989,13 +10014,13 @@ Reliable water management requires timely knowledge of where water is available,
 
 Artificial intelligence can improve water management by fusing heterogeneous data streams and converting them into early warnings, operational recommendations, and measurable interventions. Satellite imagery provides broad spatial coverage; IoT sensors provide high-frequency local observations; and hydrological models encode physical relationships among rainfall, evapotranspiration, soil moisture, runoff, recharge, abstraction, and storage. Machine learning can then identify patterns, forecast risks, detect anomalies, and support decisions that would be difficult to derive from isolated datasets. Research on AI and machine learning in water resources identifies remote sensing, IoT telemetry, and hybrid hydrological-AI approaches as central mechanisms for groundwater prediction, irrigation optimisation, and real-time resource management.
 
-This paper sets out NeuroGrowth Labs’ proposed research, development, and deployment programme for an integrated AI-supported water-management platform. The objective is not to replace hydrologists, utilities, farmers, or regulators, but to provide them with trustworthy, locally adaptable decision-support tools.
+This paper sets out Neuro AI Development’ proposed research, development, and deployment programme for an integrated AI-supported water-management platform. The objective is not to replace hydrologists, utilities, farmers, or regulators, but to provide them with trustworthy, locally adaptable decision-support tools.
 
 2. Strategic Alignment
 
 The African Union’s Continental Artificial Intelligence Strategy, endorsed by the AU Executive Council in July 2024, establishes a people-centric, development-oriented, and inclusive approach to AI. It explicitly identifies water management among African challenges that local AI development should address and defines “Local First” as the principle that AI production, development, use, and assessment should prioritise African challenges and African solutions.
 
-The strategy also emphasises African talent, local ecosystems, infrastructure, datasets, computing capacity, ethical safeguards, and protection from AI bias and misuse. NeuroGrowth Labs’ framework therefore adopts a local-first design philosophy: African institutions retain ownership of data and model configurations; models are trained and validated using local hydrological, agronomic, climatic, and infrastructure conditions; and deployment is designed to function under connectivity, energy, cost, and skills constraints common across the continent.
+The strategy also emphasises African talent, local ecosystems, infrastructure, datasets, computing capacity, ethical safeguards, and protection from AI bias and misuse. Neuro AI Development’ framework therefore adopts a local-first design philosophy: African institutions retain ownership of data and model configurations; models are trained and validated using local hydrological, agronomic, climatic, and infrastructure conditions; and deployment is designed to function under connectivity, energy, cost, and skills constraints common across the continent.
 
 3. Problem Statement
 
@@ -10028,7 +10053,7 @@ Satellite imagery and IoT sensors can jointly support monitoring of soil moistur
 
 4.2 AI and modelling layer
 
-NeuroGrowth Labs proposes a hybrid intelligence layer comprising:
+Neuro AI Development proposes a hybrid intelligence layer comprising:
 
 Computer-vision models for satellite-image classification, water-body delineation, irrigated-area mapping, crop-stress detection, and change detection.
 
@@ -10150,7 +10175,7 @@ Stakeholder engagement framework involving utilities, farmers, regulators, resea
 
 6.2 Phase 2: Model development and validation
 
-The second phase develops and validates AI models using local historical and real-time data. NeuroGrowth Labs will evaluate multiple model families, including gradient-boosted tree models, random forests, recurrent neural networks, convolutional neural networks, graph neural networks, and physics-informed hybrid models.
+The second phase develops and validates AI models using local historical and real-time data. Neuro AI Development will evaluate multiple model families, including gradient-boosted tree models, random forests, recurrent neural networks, convolutional neural networks, graph neural networks, and physics-informed hybrid models.
 
 Validation must use spatially and temporally independent test sets to reduce data leakage. This is particularly important for satellite-based water-quality models, where random validation can allow information from the same river or monitoring location to appear in both training and testing data.
 
@@ -10186,7 +10211,7 @@ Continuous monitoring of model performance, sensor health, and user adoption.
 
 The final phase supports replication across agro-ecological zones, aquifer systems, and utility contexts. It includes local hardware assembly, regional data-platform hosting, open interoperability standards, and capacity transfer to African universities, public agencies, and small and medium-sized enterprises.
 
-The AU has highlighted the need to develop domestic AI capacity, homegrown solutions, digital infrastructure, high-quality datasets, compute capability, skills, and research capacity. NeuroGrowth Labs’ scaling model therefore prioritises local talent development, regional partnerships, and African institutional ownership.
+The AU has highlighted the need to develop domestic AI capacity, homegrown solutions, digital infrastructure, high-quality datasets, compute capability, skills, and research capacity. Neuro AI Development’ scaling model therefore prioritises local talent development, regional partnerships, and African institutional ownership.
 
 7. Evaluation Framework
 
@@ -10203,7 +10228,7 @@ Evaluation should distinguish technical performance from real-world impact. A mo
 
 8. Responsible AI and Governance
 
-Water-management AI can affect access to a essential public good. NeuroGrowth Labs therefore proposes the following safeguards:
+Water-management AI can affect access to a essential public good. Neuro AI Development therefore proposes the following safeguards:
 
 Human oversight: AI outputs are decision support, not autonomous directives; qualified water managers retain final authority.
 
@@ -10254,7 +10279,7 @@ The potential value lies in converting dispersed water data into timely, explain
 
 11. Conclusion
 
-AI-supported water management offers a practical pathway to more resilient, efficient, and equitable water systems. By integrating satellite imagery, IoT sensors, and hydrological models, NeuroGrowth Labs proposes a local-first platform that addresses groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance within one coherent architecture.
+AI-supported water management offers a practical pathway to more resilient, efficient, and equitable water systems. By integrating satellite imagery, IoT sensors, and hydrological models, Neuro AI Development proposes a local-first platform that addresses groundwater monitoring, irrigation optimisation, leakage detection, and water-quality surveillance within one coherent architecture.
 
 The framework is designed for African realities: limited connectivity, constrained compute, heterogeneous data quality, diverse farming systems, and the need for local institutional ownership. Its success will depend not only on model accuracy, but also on trustworthy data governance, field validation, human oversight, community participation, and sustained investment in African AI capacity. This approach operationalises the AU Continental AI Strategy’s vision of African-led, people-centred AI for sustainable development.`
   },
@@ -10264,7 +10289,7 @@ The framework is designed for African realities: limited connectivity, constrain
     title: 'AI for Livestock Health and Traceability: Low-Cost Digital Tools for Pastoral and Smallholder Systems',
     subtitle: 'Research and Development Paper | Herdsight Low-Bandwidth Livestock Intelligence',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Agriculture & Applied AI',
@@ -10272,7 +10297,7 @@ The framework is designed for African realities: limited connectivity, constrain
     downloadCount: 1215,
     citationCount: 20,
     readingTime: 'about 15 minutes',
-    executiveSummary: `Pastoralist and smallholder livestock systems face late disease detection, uneven vaccination logistics, seasonal feed shortages, and weak animal traceability, while conventional precision-livestock hardware remains prohibitively expensive. NeuroGrowth Labs proposes Herdsight, an offline-first, Android- and voice/SMS-compatible toolkit combining QR-coded ear tags, quantized edge-AI clinical screening, risk-based vaccination planning, tiered local-feed optimization, and interoperable veterinary traceability evaluated across two production cycles.`,
+    executiveSummary: `Pastoralist and smallholder livestock systems face late disease detection, uneven vaccination logistics, seasonal feed shortages, and weak animal traceability, while conventional precision-livestock hardware remains prohibitively expensive. Neuro AI Development proposes Herdsight, an offline-first, Android- and voice/SMS-compatible toolkit combining QR-coded ear tags, quantized edge-AI clinical screening, risk-based vaccination planning, tiered local-feed optimization, and interoperable veterinary traceability evaluated across two production cycles.`,
     abstract: `Livestock underpin food security, nutrition, income, and resilience for millions of pastoralist and smallholder households, yet disease outbreaks, inadequate vaccination coverage, poor feed planning, and weak animal-identity systems continue to limit productivity and market access. This paper presents a research and development agenda for an integrated, low-cost artificial intelligence (AI) platform that supports early disease detection, vaccination planning, feed optimization, and animal traceability in resource-constrained livestock systems. The proposed solution combines smartphone-based data capture, lightweight edge AI, affordable visual ear tags or QR-code identification, offline-first mobile applications, and interoperable veterinary information systems. Rather than assuming high-cost sensors or continuous connectivity, the design prioritizes field-deployable tools that work with intermittent networks, basic smartphones, community animal-health workers, and existing veterinary services. The paper outlines the technical architecture, implementation pathways, evaluation metrics, ethical safeguards, and policy implications required to translate AI research into practical tools that improve animal welfare, reduce losses, strengthen rural livelihoods, and support safer livestock value chains.`,
     methodology: `Three-layer offline-first architecture (Android/QR/IVR field layer, quantized edge computer-vision and confidence-thresholding layer, and permissioned veterinary cloud dashboard) paired with a community-based rollout via cooperatives and community animal-health workers and a mixed-methods, quasi-experimental evaluation over at least two production cycles.`,
     findings: [
@@ -10288,15 +10313,15 @@ The framework is designed for African realities: limited connectivity, constrain
     ],
     bibtex: `@article{ngl2026livestocktraceability,
   title={AI for Livestock Health and Traceability: Low-Cost Digital Tools for Pastoral and Smallholder Systems},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.22}
 }`,
     fullArticleText: `AI for Livestock Health and Traceability: Low-Cost Digital Tools for Pastoral and Smallholder Systems
 
-NeuroGrowth Labs — Research and Development Paper
+Neuro AI Development — Research and Development Paper
 
 Abstract
 
@@ -10326,7 +10351,7 @@ Technology exclusion: Advanced AI systems may require expensive hardware, stable
 
 3. Research Objectives
 
-NeuroGrowth Labs proposes to develop and validate an integrated AI-enabled livestock management toolkit with the following objectives:
+Neuro AI Development proposes to develop and validate an integrated AI-enabled livestock management toolkit with the following objectives:
 
 Detect likely disease events early using low-cost clinical, behavioral, environmental, and smartphone-based data.
 
@@ -10578,11 +10603,11 @@ Reduced livestock losses, protecting household assets and rural livelihoods.
 
 Better evidence for policy, through real-time, geospatially referenced livestock-health data.
 
-Livestock vaccination campaigns can protect millions of animals and livestock-owning households, particularly in crisis-affected settings where livestock are a critical source of nutrition and income. By making these capabilities more affordable and locally adaptable, NeuroGrowth Labs aims to ensure that AI strengthens, rather than bypasses, pastoral and smallholder livestock systems.
+Livestock vaccination campaigns can protect millions of animals and livestock-owning households, particularly in crisis-affected settings where livestock are a critical source of nutrition and income. By making these capabilities more affordable and locally adaptable, Neuro AI Development aims to ensure that AI strengthens, rather than bypasses, pastoral and smallholder livestock systems.
 
 11. Conclusion
 
-AI has substantial potential to improve livestock health and traceability, but its value in pastoral and smallholder systems depends on affordability, usability, trust, and integration with existing veterinary and market institutions. NeuroGrowth Labs proposes a practical, modular platform that combines offline mobile data capture, lightweight edge AI, low-cost identification, vaccination planning, feed optimization, and interoperable traceability.
+AI has substantial potential to improve livestock health and traceability, but its value in pastoral and smallholder systems depends on affordability, usability, trust, and integration with existing veterinary and market institutions. Neuro AI Development proposes a practical, modular platform that combines offline mobile data capture, lightweight edge AI, low-cost identification, vaccination planning, feed optimization, and interoperable traceability.
 
 The central principle is appropriate intelligence: AI should augment the knowledge of farmers, community animal-health workers, and veterinarians rather than impose complex technologies that rural producers cannot sustain. With participatory design, rigorous field validation, strong data governance, and public-private partnership, AI-enabled livestock tools can become a scalable contribution to food security, animal welfare, and resilient rural livelihoods.`
   },
@@ -10592,7 +10617,7 @@ The central principle is appropriate intelligence: AI should augment the knowled
     title: 'Climate-Smart Energy-Grid Optimization: An AI-Enabled Framework for Renewable Forecasting, Mini-Grid Management, Demand Response, and Predictive Maintenance',
     subtitle: 'Research and Development Paper | ClimateGrid AI for Utilities, Mini-Grids & Public-Sector Energy Agencies',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Energy & Microgrids',
@@ -10600,8 +10625,8 @@ The central principle is appropriate intelligence: AI should augment the knowled
     downloadCount: 1395,
     citationCount: 25,
     readingTime: 'about 16 minutes',
-    executiveSummary: `NeuroGrowth Labs introduces ClimateGrid AI, a four-layer decision-support and optimization framework spanning multi-horizon probabilistic renewable forecasting, battery-solar-diesel mini-grid dispatch, equitable demand response, and asset predictive maintenance. Grounded in stochastic constrained optimization and aligned with the AU Continental Power System Master Plan (263 GW to >1,200 GW by 2040), AfSEM, and the African Energy Efficiency Strategy, the framework outlines a 36-month phased rollout from data readiness to regional utility scale.`,
-    abstract: `Climate-smart energy-grid optimization applies artificial intelligence (AI) to make electricity systems cleaner, more reliable, affordable, and resilient under increasing climate variability. This paper presents NeuroGrowth Labs’ integrated research and development framework for renewable-energy forecasting, mini-grid management, demand response, and maintenance prediction. The framework combines satellite and weather data, smart-meter telemetry, asset sensors, and operational records with machine-learning, probabilistic forecasting, and constrained optimization models. Its objective is to reduce renewable curtailment, improve supply reliability, lower diesel dependence and technical losses, extend asset life, and enable flexible demand-side participation. The approach is aligned with the African Union’s clean-energy and energy-efficiency agenda, including the African Single Electricity Market, the Continental Power System Master Plan, and the African Energy Efficiency Strategy.`,
+    executiveSummary: `Neuro AI Development introduces ClimateGrid AI, a four-layer decision-support and optimization framework spanning multi-horizon probabilistic renewable forecasting, battery-solar-diesel mini-grid dispatch, equitable demand response, and asset predictive maintenance. Grounded in stochastic constrained optimization and aligned with the AU Continental Power System Master Plan (263 GW to >1,200 GW by 2040), AfSEM, and the African Energy Efficiency Strategy, the framework outlines a 36-month phased rollout from data readiness to regional utility scale.`,
+    abstract: `Climate-smart energy-grid optimization applies artificial intelligence (AI) to make electricity systems cleaner, more reliable, affordable, and resilient under increasing climate variability. This paper presents Neuro AI Development’ integrated research and development framework for renewable-energy forecasting, mini-grid management, demand response, and maintenance prediction. The framework combines satellite and weather data, smart-meter telemetry, asset sensors, and operational records with machine-learning, probabilistic forecasting, and constrained optimization models. Its objective is to reduce renewable curtailment, improve supply reliability, lower diesel dependence and technical losses, extend asset life, and enable flexible demand-side participation. The approach is aligned with the African Union’s clean-energy and energy-efficiency agenda, including the African Single Electricity Market, the Continental Power System Master Plan, and the African Energy Efficiency Strategy.`,
     methodology: `Four-layer grid architecture (sensing/geospatial ingestion, probabilistic time-series/computer-vision/survival intelligence, stochastic constrained dispatch and model-predictive optimization, and cybersecurity/human-in-the-loop governance) minimizing expected system cost subject to power balance, battery state-of-charge, thermal network limits, EENS reliability, and emissions ceilings across four phased deployment stages (0–36 months).`,
     findings: [
       'Probabilistic multi-horizon renewable forecasts (nowcasting to planning) outperform point estimates by enabling operators to size spinning reserves, pre-charge storage, and avoid renewable curtailment.',
@@ -10616,21 +10641,21 @@ The central principle is appropriate intelligence: AI should augment the knowled
     ],
     bibtex: `@article{ngl2026climategridai,
   title={Climate-Smart Energy-Grid Optimization: An AI-Enabled Framework for Renewable Forecasting, Mini-Grid Management, Demand Response, and Predictive Maintenance},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.23}
 }`,
     fullArticleText: `Climate-Smart Energy-Grid Optimization: An AI-Enabled Framework for Renewable Forecasting, Mini-Grid Management, Demand Response, and Predictive Maintenance
 
-NeuroGrowth Labs Research and Development Paper
+Neuro AI Development Research and Development Paper
 
 Prepared for energy utilities, regulators, mini-grid developers, climate-finance partners, and public-sector energy agencies
 
 Abstract
 
-Climate-smart energy-grid optimization applies artificial intelligence (AI) to make electricity systems cleaner, more reliable, affordable, and resilient under increasing climate variability. This paper presents NeuroGrowth Labs’ integrated research and development framework for renewable-energy forecasting, mini-grid management, demand response, and maintenance prediction. The framework combines satellite and weather data, smart-meter telemetry, asset sensors, and operational records with machine-learning, probabilistic forecasting, and constrained optimization models. Its objective is to reduce renewable curtailment, improve supply reliability, lower diesel dependence and technical losses, extend asset life, and enable flexible demand-side participation. The approach is aligned with the African Union’s clean-energy and energy-efficiency agenda, including the African Single Electricity Market, the Continental Power System Master Plan, and the African Energy Efficiency Strategy.
+Climate-smart energy-grid optimization applies artificial intelligence (AI) to make electricity systems cleaner, more reliable, affordable, and resilient under increasing climate variability. This paper presents Neuro AI Development’ integrated research and development framework for renewable-energy forecasting, mini-grid management, demand response, and maintenance prediction. The framework combines satellite and weather data, smart-meter telemetry, asset sensors, and operational records with machine-learning, probabilistic forecasting, and constrained optimization models. Its objective is to reduce renewable curtailment, improve supply reliability, lower diesel dependence and technical losses, extend asset life, and enable flexible demand-side participation. The approach is aligned with the African Union’s clean-energy and energy-efficiency agenda, including the African Single Electricity Market, the Continental Power System Master Plan, and the African Energy Efficiency Strategy.
 
 1. Introduction
 
@@ -10638,7 +10663,7 @@ Electricity systems are undergoing a structural transition from centralized, fos
 
 For African energy systems, the opportunity is particularly consequential. The African Union has identified energy security, market integration, sustainability, universal access, industrialization, and climate resilience as central priorities under Agenda 2063. Its Continental Power System Master Plan targets an increase in installed capacity from 263 GW in 2023 to more than 1,200 GW by 2040, while the African Energy Efficiency Strategy seeks to raise energy productivity by 50% by 2050 and 70% by 2063.
 
-NeuroGrowth Labs proposes a modular, deployment-ready AI platform—ClimateGrid AI—that can operate across national utilities, distribution companies, renewable independent power producers, mini-grid operators, and industrial consumers. The platform is designed to support both centralized grid operations and decentralized, off-grid renewable systems.
+Neuro AI Development proposes a modular, deployment-ready AI platform—ClimateGrid AI—that can operate across national utilities, distribution companies, renewable independent power producers, mini-grid operators, and industrial consumers. The platform is designed to support both centralized grid operations and decentralized, off-grid renewable systems.
 
 2. Problem Statement
 
@@ -10880,7 +10905,7 @@ Stronger climate resilience: Weather-aware forecasting, asset-risk screening, an
 
 13. Conclusion
 
-Climate-smart energy-grid optimization is a high-impact application of AI for the clean-energy transition. By integrating renewable forecasting, mini-grid management, demand response, and predictive maintenance into a unified decision-support architecture, NeuroGrowth Labs’ ClimateGrid AI framework can help electricity systems deliver more reliable, affordable, efficient, and low-carbon power.
+Climate-smart energy-grid optimization is a high-impact application of AI for the clean-energy transition. By integrating renewable forecasting, mini-grid management, demand response, and predictive maintenance into a unified decision-support architecture, Neuro AI Development’ ClimateGrid AI framework can help electricity systems deliver more reliable, affordable, efficient, and low-carbon power.
 
 The central recommendation is to pursue phased, evidence-based deployment: begin with data readiness and controlled pilots; validate performance against transparent reliability, cost, emissions, and equity metrics; then scale through utility partnerships, regulatory alignment, workforce development, and secure data infrastructure. This approach positions AI not as a standalone technology, but as an operational capability for building resilient, climate-smart electricity systems.`
   },
@@ -10890,7 +10915,7 @@ The central recommendation is to pursue phased, evidence-based deployment: begin
     title: 'AI Tutors for African Classrooms',
     subtitle: 'Research and Development Paper | Local-Language, Offline-First Adaptive Tutoring & Learning-Integrity Architecture',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Education & African-Language AI',
@@ -10898,7 +10923,7 @@ The central recommendation is to pursue phased, evidence-based deployment: begin
     downloadCount: 1460,
     citationCount: 28,
     readingTime: 'about 16 minutes',
-    executiveSummary: `NeuroGrowth Labs sets out an Africa-first adaptive tutoring R&D agenda aligned with the AU Continental AI Strategy, AU Digital Education Strategy, and UNESCO generative-AI education guidance. Built around local-language instruction, teacher-facing instructional heat maps, offline-first school-server and low-end Android delivery, and product-level safeguards against cognitive offloading and plagiarism—using answer-gating, Socratic prompting, process-based evidence, and human adjudication rather than brittle AI detectors—the framework spans co-design to 36-month ministry-controlled scale.`,
+    executiveSummary: `Neuro AI Development sets out an Africa-first adaptive tutoring R&D agenda aligned with the AU Continental AI Strategy, AU Digital Education Strategy, and UNESCO generative-AI education guidance. Built around local-language instruction, teacher-facing instructional heat maps, offline-first school-server and low-end Android delivery, and product-level safeguards against cognitive offloading and plagiarism—using answer-gating, Socratic prompting, process-based evidence, and human adjudication rather than brittle AI detectors—the framework spans co-design to 36-month ministry-controlled scale.`,
     abstract: `Artificial intelligence (AI) tutors can expand access to personalised, curriculum-aligned learning in African classrooms, particularly where teacher shortages, large class sizes, linguistic diversity, and limited connectivity constrain conventional instruction. This paper proposes a research and development agenda for adaptive AI tutoring systems designed for African education systems, centred on local-language instruction, teacher-facing intelligence, offline capability, and robust safeguards against learner over-reliance and plagiarism. The proposed approach treats AI as a human-centred instructional assistant, not a replacement for teachers: it scaffolds reasoning, provides formative feedback, surfaces learning gaps, and gives educators actionable classroom insights. The paper outlines a system architecture, research priorities, evaluation design, governance framework, and implementation pathway for pilot deployment across African school systems. It argues that African-owned datasets, multilingual models, low-bandwidth deployment, and teacher agency are prerequisites for equitable and sustainable adoption.`,
     methodology: `Scaffolded human-centred adaptive tutoring architecture combining offline-first device/school-server execution, community-curated African-language curricula and speech layers, teacher intelligence dashboards, built-in productive-struggle and process-evidence controls, child-safety data minimization, and mixed-methods multi-country school/classroom randomized pilots disaggregated by gender, disability, home language, and infrastructure access.`,
     findings: [
@@ -10914,17 +10939,17 @@ The central recommendation is to pursue phased, evidence-based deployment: begin
     ],
     bibtex: `@article{ngl2026aitutorsafrica,
   title={AI Tutors for African Classrooms},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.24}
 }`,
     fullArticleText: `AI Tutors for African Classrooms
 
-A Research and Development Paper by NeuroGrowth Labs
+A Research and Development Paper by Neuro AI Development
 
-Prepared by: NeuroGrowth Labs
+Prepared by: Neuro AI Development
 
 Date: November 2026
 
@@ -10940,7 +10965,7 @@ Education and skills are central priorities of the African Union Continental Art
 
 AI tutors offer a promising response to these priorities. Adaptive systems can diagnose misconceptions, adjust difficulty, deliver practice in local languages, and provide immediate feedback at scale. Evidence from African and comparable low-resource settings suggests that well-designed adaptive tutoring can improve engagement, personalised pacing, formative feedback, and learning outcomes, although results vary substantially across contexts. However, the same evidence identifies persistent implementation barriers: connectivity, electricity, devices, teacher preparation, funding, privacy concerns, algorithmic bias, and cultural-linguistic localisation.
 
-NeuroGrowth Labs therefore proposes an Africa-first AI tutoring platform built around four design commitments:
+Neuro AI Development therefore proposes an Africa-first AI tutoring platform built around four design commitments:
 
 Local-language and culturally grounded learning, rather than English-only interfaces.
 
@@ -10960,7 +10985,7 @@ The central research problem is therefore not simply whether AI tutoring can wor
 
 3. Research Objectives
 
-NeuroGrowth Labs proposes the following objectives:
+Neuro AI Development proposes the following objectives:
 
 Develop adaptive AI tutoring models for foundational literacy, numeracy, science, and digital skills in selected African languages.
 
@@ -11064,7 +11089,7 @@ The African Union has specifically highlighted the need for AI solutions that re
 
 Over-reliance occurs when learners delegate reasoning, writing, or problem-solving to the system rather than developing independent competence. This can reduce critical thinking, weaken metacognitive monitoring, and undermine learner agency.
 
-NeuroGrowth Labs proposes the following safeguards:
+Neuro AI Development proposes the following safeguards:
 
 Answer-gating: The tutor requires an initial attempt, a plan, or an explanation before providing a full solution.
 
@@ -11086,7 +11111,7 @@ These safeguards should be built into the product, not treated solely as policy 
 
 7. Safeguards Against Plagiarism
 
-Generative AI complicates traditional plagiarism detection because it can produce original-sounding text that is difficult to attribute reliably. NeuroGrowth Labs therefore does not propose relying on AI-detection tools as the primary control mechanism. Instead, the platform will combine technical controls, assessment redesign, and clear institutional norms.
+Generative AI complicates traditional plagiarism detection because it can produce original-sounding text that is difficult to attribute reliably. Neuro AI Development therefore does not propose relying on AI-detection tools as the primary control mechanism. Instead, the platform will combine technical controls, assessment redesign, and clear institutional norms.
 
 Safeguard | Mechanism
 Process-based evidence | The system retains drafts, revisions, prompts, timestamps, and learner explanations.
@@ -11125,7 +11150,7 @@ UNESCO also recommends that AI deployment in schools be preceded by independent 
 
 9. Evaluation and Research Design
 
-NeuroGrowth Labs proposes a multi-country, mixed-methods evaluation programme.
+Neuro AI Development proposes a multi-country, mixed-methods evaluation programme.
 
 9.1 Pilot design
 
@@ -11228,7 +11253,7 @@ Treat education data as a public good, governed in the interest of learners, tea
 
 13. Conclusion
 
-AI tutors can become a powerful instrument for expanding personalised learning across African classrooms, but only if they are designed for African linguistic, infrastructural, pedagogical, and governance realities. NeuroGrowth Labs proposes an adaptive tutoring platform that combines local-language capability, teacher-facing intelligence, offline resilience, and strong safeguards against over-reliance and plagiarism.
+AI tutors can become a powerful instrument for expanding personalised learning across African classrooms, but only if they are designed for African linguistic, infrastructural, pedagogical, and governance realities. Neuro AI Development proposes an adaptive tutoring platform that combines local-language capability, teacher-facing intelligence, offline resilience, and strong safeguards against over-reliance and plagiarism.
 
 The strategic objective is not to automate teaching. It is to strengthen the conditions under which teachers can teach well and learners can think independently: timely feedback, actionable insight, culturally relevant materials, and safe use of AI. This approach directly advances the African Union’s priorities of education, skills development, African-language AI, responsible governance, and homegrown innovation.
 
@@ -11264,7 +11289,7 @@ AI and African Languages. Johannesburg Institute for Advanced Study / related ed
     title: 'AI Literacy and Workforce Reskilling: A Continent-Wide Micro-Credential Architecture for Africa',
     subtitle: 'Research and Development Paper | Pan-African AI Talent Compact & Stackable Micro-Credential Standard',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Education & Workforce AI',
@@ -11272,7 +11297,7 @@ AI and African Languages. Johannesburg Institute for Advanced Study / related ed
     downloadCount: 1540,
     citationCount: 31,
     readingTime: 'about 17 minutes',
-    executiveSummary: `NeuroGrowth Labs proposes a Pan-African AI Talent Compact grounded in a continent-wide stackable micro-credential standard spanning three pillars: universal AI literacy (20–40 hours), Certified AI-Educator teacher training (60–100 hours), and practical Applied AI Practitioner (120–180 hours) and Certified Mid-Career ML Engineer (300–500 hours) pathways backed by production capstones, regional MLOps labs, an Employer Recognition Registry, and an independent Pan-African AI Credential Quality Council—aligned with AfDB targets of one million micro-credentials, 30,000 trained ML engineers, and 15,000 certified mid-career engineers by 2028.`,
+    executiveSummary: `Neuro AI Development proposes a Pan-African AI Talent Compact grounded in a continent-wide stackable micro-credential standard spanning three pillars: universal AI literacy (20–40 hours), Certified AI-Educator teacher training (60–100 hours), and practical Applied AI Practitioner (120–180 hours) and Certified Mid-Career ML Engineer (300–500 hours) pathways backed by production capstones, regional MLOps labs, an Employer Recognition Registry, and an independent Pan-African AI Credential Quality Council—aligned with AfDB targets of one million micro-credentials, 30,000 trained ML engineers, and 15,000 certified mid-career engineers by 2028.`,
     abstract: `Africa’s AI transformation will depend less on isolated training courses than on a coordinated, interoperable system that develops AI literacy at scale, equips teachers to teach and govern AI, and certifies job-ready specialists in data and machine-learning engineering. The African Development Bank’s proposed continent-wide micro-credential standard offers the institutional foundation for this system: it can make learning portable, employer-recognised, stackable, and aligned with Africa’s development priorities. This paper proposes a Pan-African AI Talent Compact built around three mutually reinforcing pillars: (1) universal AI literacy and responsible-use competencies; (2) teacher training and practical curriculum implementation; and (3) advanced, work-based reskilling pathways that certify mid-career machine-learning engineers. The proposed targets are ambitious but aligned with AfDB’s stated pathway of issuing one million micro-credentials, training 30,000 ML engineers, and certifying 15,000 mid-career engineers, including 5,000 by 2026 and 15,000 by 2028.`,
     methodology: `Continental coordination and competency-standard architecture linking stackable micro-credentials (African Continental Qualifications Framework compatible), an independent Pan-African AI Credential Quality Council, an Employer Recognition Registry for portfolio/capstone validation, blended mobile-first teacher CPD, regional REC MLOps labs and guilds, and an independent results framework tracking both learning quality and labour-market outcomes.`,
     findings: [
@@ -11288,15 +11313,15 @@ AI and African Languages. Johannesburg Institute for Advanced Study / related ed
     ],
     bibtex: `@article{ngl2026ailiteracycompact,
   title={AI Literacy and Workforce Reskilling: A Continent-Wide Micro-Credential Architecture for Africa},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.25}
 }`,
     fullArticleText: `AI Literacy and Workforce Reskilling: A Continent-Wide Micro-Credential Architecture for Africa
 
-NeuroGrowth Labs | Research and Development Paper
+Neuro AI Development | Research and Development Paper
 
 Prepared for: African Development Bank, African Union, Regional Economic Communities, universities, vocational institutions, employers, and development partners
 
@@ -11638,7 +11663,7 @@ Conclusion
 
 Africa does not need another fragmented set of AI courses. It needs a durable talent infrastructure: a shared credential language, capable teachers, practical curricula, employer-validated assessment, and advanced engineering pathways that produce professionals able to build and govern AI systems in African conditions.
 
-A continent-wide micro-credential standard can convert AI literacy from a policy aspiration into a measurable workforce capability. By combining foundational literacy, teacher capacity, applied data skills, and certified mid-career ML engineering, NeuroGrowth Labs proposes a system that can expand opportunity, strengthen African institutions, and position the continent to shape—not merely consume—the global AI economy.`
+A continent-wide micro-credential standard can convert AI literacy from a policy aspiration into a measurable workforce capability. By combining foundational literacy, teacher capacity, applied data skills, and certified mid-career ML engineering, Neuro AI Development proposes a system that can expand opportunity, strengthen African institutions, and position the continent to shape—not merely consume—the global AI economy.`
   },
   {
     id: 'paper-26-ai-informal-economy-productivity',
@@ -11646,7 +11671,7 @@ A continent-wide micro-credential standard can convert AI literacy from a policy
     title: 'AI for Informal-Economy Productivity',
     subtitle: 'Research and Development Paper | Mobile-First Business Growth Companion for Micro-Enterprises, Artisans & Traders',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Economic Inclusion & Applied AI',
@@ -11654,8 +11679,8 @@ A continent-wide micro-credential standard can convert AI literacy from a policy
     downloadCount: 1375,
     citationCount: 24,
     readingTime: 'about 14 minutes',
-    executiveSummary: `Africa’s informal sector accounts for roughly 85.8% of employment continent-wide (89.2% in Sub-Saharan Africa), yet micro-enterprises suffer from substantial productivity and credit gaps due to fragmented records and market friction. NeuroGrowth Labs proposes a mobile-first, low-bandwidth Business Growth Companion accessible via WhatsApp, USSD, SMS, and voice that converts everyday stock photos, receipts, voice notes, and sales logs into smart inventory alerts, viable pricing guidance, consent-based Credit Readiness Profiles, multilingual customer service, and buyer-supplier matching.`,
-    abstract: `NeuroGrowth Labs proposes an AI-enabled productivity platform for micro-enterprises, artisans, traders, and smallholder businesses operating in Africa’s informal economy. The platform will combine lightweight inventory management, dynamic pricing support, credit-readiness assessment, multilingual customer service, and market matching to raise enterprise productivity, expand access to financial services, and support job creation. This aligns directly with the African Union’s Continental AI Strategy, which prioritizes people-centred development, financial services, agriculture, employment creation, and inclusive digital transformation.`,
+    executiveSummary: `Africa’s informal sector accounts for roughly 85.8% of employment continent-wide (89.2% in Sub-Saharan Africa), yet micro-enterprises suffer from substantial productivity and credit gaps due to fragmented records and market friction. Neuro AI Development proposes a mobile-first, low-bandwidth Business Growth Companion accessible via WhatsApp, USSD, SMS, and voice that converts everyday stock photos, receipts, voice notes, and sales logs into smart inventory alerts, viable pricing guidance, consent-based Credit Readiness Profiles, multilingual customer service, and buyer-supplier matching.`,
+    abstract: `Neuro AI Development proposes an AI-enabled productivity platform for micro-enterprises, artisans, traders, and smallholder businesses operating in Africa’s informal economy. The platform will combine lightweight inventory management, dynamic pricing support, credit-readiness assessment, multilingual customer service, and market matching to raise enterprise productivity, expand access to financial services, and support job creation. This aligns directly with the African Union’s Continental AI Strategy, which prioritizes people-centred development, financial services, agriculture, employment creation, and inclusive digital transformation.`,
     methodology: `Consent-governed mobile-first architecture combining WhatsApp/USSD/SMS/voice interfaces with offline capture and sync, hybrid forecasting/CV/NLP/recommendation/explainable-risk models, human-in-the-loop escalation for credit and disputes, and a four-phase rollout culminating in randomized or matched controlled pilots across urban markets, rural agricultural clusters, and artisan communities.`,
     findings: [
       'Treating informal micro-enterprises as productive commercial actors—translating stock photos, voice notes, and mobile-money confirmations into actionable records—raises margins and reduces spoilage without demanding formal accounting literacy.',
@@ -11670,23 +11695,23 @@ A continent-wide micro-credential standard can convert AI literacy from a policy
     ],
     bibtex: `@article{ngl2026informaleconomy,
   title={AI for Informal-Economy Productivity},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.26}
 }`,
     fullArticleText: `AI for Informal-Economy Productivity
 
-A NeuroGrowth Labs Research and Development Paper
+A Neuro AI Development Research and Development Paper
 
-NeuroGrowth Labs proposes an AI-enabled productivity platform for micro-enterprises, artisans, traders, and smallholder businesses operating in Africa’s informal economy. The platform will combine lightweight inventory management, dynamic pricing support, credit-readiness assessment, multilingual customer service, and market matching to raise enterprise productivity, expand access to financial services, and support job creation. This aligns directly with the African Union’s Continental AI Strategy, which prioritizes people-centred development, financial services, agriculture, employment creation, and inclusive digital transformation.
+Neuro AI Development proposes an AI-enabled productivity platform for micro-enterprises, artisans, traders, and smallholder businesses operating in Africa’s informal economy. The platform will combine lightweight inventory management, dynamic pricing support, credit-readiness assessment, multilingual customer service, and market matching to raise enterprise productivity, expand access to financial services, and support job creation. This aligns directly with the African Union’s Continental AI Strategy, which prioritizes people-centred development, financial services, agriculture, employment creation, and inclusive digital transformation.
 
 Executive Summary
 
 Africa has the world’s highest informal-employment rate, with informal work accounting for approximately 85.8 percent of total employment; in Sub-Saharan Africa, the share is approximately 89.2 percent. Informal enterprises are therefore not marginal economic actors: they are a central source of livelihoods, employment, trade, food production, and local value creation. Yet they commonly face low productivity, weak access to finance, limited market information, fragmented customer relationships, and high exposure to shocks.
 
-NeuroGrowth Labs will develop an AI-powered “Business Growth Companion” designed for low-bandwidth, mobile-first environments. The system will help informal businesses record stock and sales, set viable prices, prepare credible credit profiles, respond to customers, and discover buyers and suppliers. Its central hypothesis is that practical, context-aware AI can convert everyday business activity—sales, purchases, payments, customer messages, and market signals—into actionable productivity and financing opportunities.
+Neuro AI Development will develop an AI-powered “Business Growth Companion” designed for low-bandwidth, mobile-first environments. The system will help informal businesses record stock and sales, set viable prices, prepare credible credit profiles, respond to customers, and discover buyers and suppliers. Its central hypothesis is that practical, context-aware AI can convert everyday business activity—sales, purchases, payments, customer messages, and market signals—into actionable productivity and financing opportunities.
 
 The initiative responds to two priority areas in the AU strategy: financial services and job creation. The Continental AI Strategy explicitly identifies AI’s potential to create employment, generate new businesses, and support development in finance and agriculture, while calling for African-owned, inclusive, and ethically governed AI systems.
 
@@ -11702,7 +11727,7 @@ Strategic Rationale
 
 The proposed programme is strategically aligned with Africa’s development priorities because it treats informal businesses as productive enterprises rather than merely beneficiaries of welfare or formalization campaigns. It focuses on improving day-to-day decision-making while creating a voluntary pathway toward stronger financial identity, market participation, and formalization.
 
-AU priority | NeuroGrowth Labs contribution
+AU priority | Neuro AI Development contribution
 Financial services | Builds consent-based business records, cash-flow insights, and credit-readiness profiles that can support responsible lending, savings, insurance, and payments.
 Job creation | Helps micro-enterprises increase sales, manage inventory, fulfil orders, and expand employment; small economic units already account for more than 90 percent of employment in many African subregions.
 Agriculture and smallholder productivity | Provides demand signals, pricing guidance, inventory planning, and buyer matching for smallholder and agro-trader businesses.
@@ -11763,7 +11788,7 @@ Optional supplier, cooperative, or financial-institution data shared under expli
 
 AI Layer
 
-NeuroGrowth Labs will use a hybrid AI approach rather than relying on a single model.
+Neuro AI Development will use a hybrid AI approach rather than relying on a single model.
 
 Forecasting models will estimate demand, seasonal variation, stock depletion, and cash-flow needs.
 
@@ -11799,7 +11824,7 @@ Credit Readiness and Financial Inclusion
 
 Financial inclusion is a central opportunity because informal firms often lack the documentation and formal credit history required by conventional lenders. The World Bank finds that many informal firms finance operations and investment outside formal financial institutions, while registration, firm size, owner education, and formal-sector employment are associated with higher financial inclusion.
 
-NeuroGrowth Labs will therefore develop a Credit Readiness Profile, not an automatic lending decision. The profile will summarize business activity, revenue consistency, inventory turnover, customer retention, cash-flow patterns, supplier relationships, and repayment capacity. Financial institutions may use this profile as one input among several, alongside their own due-diligence processes.
+Neuro AI Development will therefore develop a Credit Readiness Profile, not an automatic lending decision. The profile will summarize business activity, revenue consistency, inventory turnover, customer retention, cash-flow patterns, supplier relationships, and repayment capacity. Financial institutions may use this profile as one input among several, alongside their own due-diligence processes.
 
 The model will be designed to avoid digital discrimination. It will not penalize users for being informal, female, rural, young, or new to digital tools. Instead, it will emphasize business performance, consented transaction evidence, and verifiable operational capacity.
 
@@ -11809,7 +11834,7 @@ Informal cross-border trade provides employment for at least one-fifth of Africa
 
 The market-matching module will address these gaps by connecting producers, artisans, retailers, wholesalers, cooperatives, and logistics providers. For example, a smallholder vegetable producer could receive a demand alert from a nearby market vendor, while an artisan could be matched with a retailer seeking consistent supply of handmade goods.
 
-Improved productivity in small economic units can generate employment spillovers where adequate market conditions and supportive policies exist. NeuroGrowth Labs will therefore measure not only enterprise revenue but also employment outcomes, including new jobs, increased working hours, improved income stability, and participation by women and youth.
+Improved productivity in small economic units can generate employment spillovers where adequate market conditions and supportive policies exist. Neuro AI Development will therefore measure not only enterprise revenue but also employment outcomes, including new jobs, increased working hours, improved income stability, and participation by women and youth.
 
 Responsible AI and Governance
 
@@ -11837,7 +11862,7 @@ Implementation Plan
 
 Phase 1: Discovery and Co-Design
 
-NeuroGrowth Labs will conduct field research with micro-enterprises, artisans, traders, smallholders, cooperatives, financial-service providers, and market associations. The phase will identify language needs, device constraints, data practices, trust barriers, and priority workflows.
+Neuro AI Development will conduct field research with micro-enterprises, artisans, traders, smallholders, cooperatives, financial-service providers, and market associations. The phase will identify language needs, device constraints, data practices, trust barriers, and priority workflows.
 
 Phase 2: Minimum Viable Product
 
@@ -11887,7 +11912,7 @@ The most important impact will not be technological sophistication alone. It wil
 
 Conclusion
 
-AI can become a practical productivity infrastructure for Africa’s informal economy when it is designed around real constraints: limited connectivity, low digital literacy, irregular income, language diversity, and limited access to finance. NeuroGrowth Labs proposes to build that infrastructure through a mobile-first, consent-based AI platform that turns everyday business activity into inventory intelligence, pricing guidance, credit readiness, customer service, and market opportunity.
+AI can become a practical productivity infrastructure for Africa’s informal economy when it is designed around real constraints: limited connectivity, low digital literacy, irregular income, language diversity, and limited access to finance. Neuro AI Development proposes to build that infrastructure through a mobile-first, consent-based AI platform that turns everyday business activity into inventory intelligence, pricing guidance, credit readiness, customer service, and market opportunity.
 
 By prioritizing financial services and job creation, the initiative offers a scalable pathway to strengthen micro-enterprises, artisans, traders, and smallholder businesses while advancing the African Union’s vision of inclusive, African-owned, and development-oriented AI.`
   },
@@ -11897,7 +11922,7 @@ By prioritizing financial services and job creation, the initiative offers a sca
     title: 'Inclusive AI for Disability and Accessibility',
     subtitle: 'Research and Development Paper | Multilingual Speech, Sign Language, Vision & Navigation Accessibility for African Public Services',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'Inclusive AI & Accessibility',
@@ -11905,8 +11930,8 @@ By prioritizing financial services and job creation, the initiative offers a sca
     downloadCount: 1495,
     citationCount: 29,
     readingTime: 'about 18 minutes',
-    executiveSummary: `In the WHO African Region, disability prevalence reaches 15.6% while only 15–25% of the over 200 million people needing assistive products have access. NeuroGrowth Labs proposes an open, modular Inclusive AI Accessibility Platform combining African-language speech-to-text, natural text-to-speech, bidirectional African sign-language AI, context-aware vision assistance, and step-free accessible navigation—embedded into clinics, schools, transit, courts, and government service centres through disability-led co-design, offline edge inference, and CRPD-aligned evaluation.`,
-    abstract: `Inclusive digital transformation requires AI systems that recognise African languages, accommodate diverse disabilities, and function reliably in public-service environments. NeuroGrowth Labs proposes an integrated research and development programme to build speech-to-text, text-to-speech, sign-language recognition and generation, vision-based assistance, and AI-enabled navigation systems tailored to African languages and public-sector contexts. The programme combines low-resource language modelling, multimodal AI, human-centred design, privacy-preserving deployment, and rigorous accessibility evaluation. Its goal is to move beyond generic assistive technology by producing affordable, interoperable, and locally co-designed tools that support independent living, education, employment, healthcare, transport, and government-service access for persons with disabilities. The need is substantial: the WHO African Region estimates disability prevalence at 15.6%, with more than 200 million people requiring at least one assistive product, while only 15–25% of those needing assistive products currently have access. African-language automatic speech recognition also remains constrained by limited datasets, dialectal variation, tonal complexity, code-switching, and scarce reproducible resources. This paper outlines the technical architecture, research agenda, implementation model, evaluation framework, risks, and policy alignment for an inclusive-AI platform designed for African public services.`,
+    executiveSummary: `In the WHO African Region, disability prevalence reaches 15.6% while only 15–25% of the over 200 million people needing assistive products have access. Neuro AI Development proposes an open, modular Inclusive AI Accessibility Platform combining African-language speech-to-text, natural text-to-speech, bidirectional African sign-language AI, context-aware vision assistance, and step-free accessible navigation—embedded into clinics, schools, transit, courts, and government service centres through disability-led co-design, offline edge inference, and CRPD-aligned evaluation.`,
+    abstract: `Inclusive digital transformation requires AI systems that recognise African languages, accommodate diverse disabilities, and function reliably in public-service environments. Neuro AI Development proposes an integrated research and development programme to build speech-to-text, text-to-speech, sign-language recognition and generation, vision-based assistance, and AI-enabled navigation systems tailored to African languages and public-sector contexts. The programme combines low-resource language modelling, multimodal AI, human-centred design, privacy-preserving deployment, and rigorous accessibility evaluation. Its goal is to move beyond generic assistive technology by producing affordable, interoperable, and locally co-designed tools that support independent living, education, employment, healthcare, transport, and government-service access for persons with disabilities. The need is substantial: the WHO African Region estimates disability prevalence at 15.6%, with more than 200 million people requiring at least one assistive product, while only 15–25% of those needing assistive products currently have access. African-language automatic speech recognition also remains constrained by limited datasets, dialectal variation, tonal complexity, code-switching, and scarce reproducible resources. This paper outlines the technical architecture, research agenda, implementation model, evaluation framework, risks, and policy alignment for an inclusive-AI platform designed for African public services.`,
     methodology: `Five-layer modular accessibility platform (user interface, central portable accessibility orchestration profile, multimodal AI services for ASR/TTS/sign/vision/navigation, responsible-AI safeguards with human escalation, and public-service connectors) co-designed with disability-led advisory councils and evaluated across technical, accessibility task-completion, equity-parity, and governance metrics in four phased rollout stages.`,
     findings: [
       'Sign-language AI must be engineered as full linguistic technology capturing regional variation, facial grammar, and non-manual markers rather than generic gesture classification, and must supplement rather than replace qualified human interpreters in high-stakes clinical or legal settings.',
@@ -11921,17 +11946,17 @@ By prioritizing financial services and job creation, the initiative offers a sca
     ],
     bibtex: `@article{ngl2026inclusiveai,
   title={Inclusive AI for Disability and Accessibility},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.27}
 }`,
     fullArticleText: `Inclusive AI for Disability and Accessibility
 
-A NeuroGrowth Labs Research and Development Paper
+A Neuro AI Development Research and Development Paper
 
-Prepared by: NeuroGrowth Labs
+Prepared by: Neuro AI Development
 
 Research theme: Inclusive AI for disability and accessibility
 
@@ -11939,7 +11964,7 @@ Strategic objective: Develop multilingual, culturally grounded AI systems that e
 
 Abstract
 
-Inclusive digital transformation requires AI systems that recognise African languages, accommodate diverse disabilities, and function reliably in public-service environments. NeuroGrowth Labs proposes an integrated research and development programme to build speech-to-text, text-to-speech, sign-language recognition and generation, vision-based assistance, and AI-enabled navigation systems tailored to African languages and public-sector contexts. The programme combines low-resource language modelling, multimodal AI, human-centred design, privacy-preserving deployment, and rigorous accessibility evaluation. Its goal is to move beyond generic assistive technology by producing affordable, interoperable, and locally co-designed tools that support independent living, education, employment, healthcare, transport, and government-service access for persons with disabilities.
+Inclusive digital transformation requires AI systems that recognise African languages, accommodate diverse disabilities, and function reliably in public-service environments. Neuro AI Development proposes an integrated research and development programme to build speech-to-text, text-to-speech, sign-language recognition and generation, vision-based assistance, and AI-enabled navigation systems tailored to African languages and public-sector contexts. The programme combines low-resource language modelling, multimodal AI, human-centred design, privacy-preserving deployment, and rigorous accessibility evaluation. Its goal is to move beyond generic assistive technology by producing affordable, interoperable, and locally co-designed tools that support independent living, education, employment, healthcare, transport, and government-service access for persons with disabilities.
 
 The need is substantial: the WHO African Region estimates disability prevalence at 15.6%, with more than 200 million people requiring at least one assistive product, while only 15–25% of those needing assistive products currently have access. African-language automatic speech recognition also remains constrained by limited datasets, dialectal variation, tonal complexity, code-switching, and scarce reproducible resources. This paper outlines the technical architecture, research agenda, implementation model, evaluation framework, risks, and policy alignment for an inclusive-AI platform designed for African public services.
 
@@ -11949,7 +11974,7 @@ Artificial intelligence can expand access to information, communication, educati
 
 The United Nations Convention on the Rights of Persons with Disabilities establishes accessibility as both a general principle and a binding obligation, requiring States to promote research, development, availability, and affordable use of information and communication technologies and assistive technologies. The Convention specifically calls for accessible ICT and public services in both urban and rural settings, reinforcing the importance of locally relevant, low-cost AI systems.
 
-NeuroGrowth Labs’ proposed programme responds to this gap through an African-first, disability-led approach. Rather than adapting global products after deployment, the programme embeds accessibility, African-language coverage, universal design, and public-service requirements from the outset.
+Neuro AI Development’ proposed programme responds to this gap through an African-first, disability-led approach. Rather than adapting global products after deployment, the programme embeds accessibility, African-language coverage, universal design, and public-service requirements from the outset.
 
 2. Problem Statement
 
@@ -11987,7 +12012,7 @@ What governance, procurement, and capacity-building models enable sustainable ad
 
 4. Programme Vision
 
-NeuroGrowth Labs will develop an Inclusive AI Accessibility Platform composed of modular, interoperable services that public institutions can deploy across web, mobile, kiosk, call-centre, and embedded-device environments.
+Neuro AI Development will develop an Inclusive AI Accessibility Platform composed of modular, interoperable services that public institutions can deploy across web, mobile, kiosk, call-centre, and embedded-device environments.
 
 The platform will provide:
 
@@ -12021,7 +12046,7 @@ Real-time captioning with low latency and configurable text size, contrast, lang
 
 Human-in-the-loop correction for high-stakes contexts such as healthcare, legal proceedings, and emergency communication.
 
-A recent systematic review of African-language ASR found 74 datasets covering 111 languages and approximately 11,206 hours of speech, but also identified limited reproducibility, unclear licensing, insufficient dialect coverage, and constrained evaluation practices. NeuroGrowth Labs will therefore prioritise open documentation, ethical data governance, dialectal representation, and transparent benchmarking.
+A recent systematic review of African-language ASR found 74 datasets covering 111 languages and approximately 11,206 hours of speech, but also identified limited reproducibility, unclear licensing, insufficient dialect coverage, and constrained evaluation practices. Neuro AI Development will therefore prioritise open documentation, ethical data governance, dialectal representation, and transparent benchmarking.
 
 5.2 Natural text-to-speech
 
@@ -12136,7 +12161,7 @@ AI will augment, not replace, public-service staff and disability-support profes
 
 7. Responsible AI and Ethics
 
-Inclusive AI must be safe, accountable, and rights-respecting. NeuroGrowth Labs will adopt a responsible-AI framework across the full system lifecycle.
+Inclusive AI must be safe, accountable, and rights-respecting. Neuro AI Development will adopt a responsible-AI framework across the full system lifecycle.
 
 7.1 Disability-led design
 
@@ -12174,7 +12199,7 @@ Deployment will follow a phased model: co-design, controlled pilot, independent 
 
 9. Evaluation Framework
 
-NeuroGrowth Labs will use a mixed-methods evaluation framework combining technical benchmarks, usability testing, and real-world impact assessment.
+Neuro AI Development will use a mixed-methods evaluation framework combining technical benchmarks, usability testing, and real-world impact assessment.
 
 9.1 Technical metrics
 
@@ -12301,13 +12326,13 @@ Overreliance on AI | Reduced human support or unsafe decisions | Human-in-the-lo
 
 The programme aligns with international and regional commitments to disability-inclusive digital transformation. Article 9 of the CRPD requires measures to ensure equal access to the physical environment, transport, information, communications, ICT, and public facilities, while promoting affordable accessible technologies.
 
-The UN has also highlighted that AI-based voice recognition, automatic captioning, image description, AAC, and smart assistive devices can improve independence and participation, but warns that inaccessible platforms, algorithmic bias, cost barriers, digital-skills gaps, and data-protection risks can create new exclusion. NeuroGrowth Labs’ programme is therefore designed to address both the opportunity and the risk.
+The UN has also highlighted that AI-based voice recognition, automatic captioning, image description, AAC, and smart assistive devices can improve independence and participation, but warns that inaccessible platforms, algorithmic bias, cost barriers, digital-skills gaps, and data-protection risks can create new exclusion. Neuro AI Development’ programme is therefore designed to address both the opportunity and the risk.
 
 14. Conclusion
 
 Inclusive AI for disability and accessibility is not simply a matter of adding captions or voice interfaces to existing systems. It requires African-language intelligence, multimodal communication, disability-led design, public-service integration, privacy protection, and rigorous equity evaluation.
 
-NeuroGrowth Labs proposes a practical research and development pathway to build speech-to-text, text-to-speech, sign-language, vision, and navigation systems that reflect African linguistic diversity and public-service realities. By embedding accessibility from the outset, the programme can help transform digital public services into systems that are usable, affordable, trustworthy, and genuinely inclusive for persons with disabilities across the continent.`
+Neuro AI Development proposes a practical research and development pathway to build speech-to-text, text-to-speech, sign-language, vision, and navigation systems that reflect African linguistic diversity and public-service realities. By embedding accessibility from the outset, the programme can help transform digital public services into systems that are usable, affordable, trustworthy, and genuinely inclusive for persons with disabilities across the continent.`
   },
   {
     id: 'paper-28-regulatory-sandboxes-ai',
@@ -12315,7 +12340,7 @@ NeuroGrowth Labs proposes a practical research and development pathway to build 
     title: 'Regulatory Sandboxes for Artificial Intelligence',
     subtitle: 'A Cross-Sector Framework for Health, Education, Agritech, and Financial AI',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'AI Governance & Policy',
@@ -12323,8 +12348,8 @@ NeuroGrowth Labs proposes a practical research and development pathway to build 
     downloadCount: 1620,
     citationCount: 31,
     readingTime: 'about 16 minutes',
-    executiveSummary: `Regulatory sandboxes allow AI systems in health, education, agritech, and financial services to be tested with real users under time-bound, risk-controlled regulatory supervision before full market deployment. NeuroGrowth Labs proposes the Cross-Sector AI Regulatory Sandbox Framework (CSARSF), pairing sector-specific clinical, pedagogical, smallholder-agricultural, and financial testing protocols with common consumer-protection baselines, pre-registered evaluation metrics, multi-stakeholder oversight boards, and transparent scaling or termination rules.`,
-    abstract: `Regulatory sandboxes offer a practical mechanism for testing artificial intelligence (AI) systems under supervised, time-bound, and risk-controlled conditions before broad market deployment. While sandboxes originated largely in financial technology, their value extends to AI applications in health, education, agritech, and financial services—sectors where algorithmic decisions can directly affect welfare, rights, livelihoods, and access to essential services. The African Development Bank (AfDB) has recommended expanding sandboxes beyond fintech into education, health, and agritech, alongside shared test environments, compliance support for small and medium-sized enterprises (SMEs), and harmonised AI risk frameworks. This paper proposes a Cross-Sector AI Regulatory Sandbox Framework (CSARSF) designed by NeuroGrowth Labs. It combines sector-specific testing protocols with common consumer-protection safeguards, evaluation metrics, governance structures, and exit criteria. The framework aims to accelerate responsible AI innovation while preventing consumer harm, discrimination, privacy violations, unsafe medical recommendations, educational inequity, and exclusionary financial outcomes.`,
+    executiveSummary: `Regulatory sandboxes allow AI systems in health, education, agritech, and financial services to be tested with real users under time-bound, risk-controlled regulatory supervision before full market deployment. Neuro AI Development proposes the Cross-Sector AI Regulatory Sandbox Framework (CSARSF), pairing sector-specific clinical, pedagogical, smallholder-agricultural, and financial testing protocols with common consumer-protection baselines, pre-registered evaluation metrics, multi-stakeholder oversight boards, and transparent scaling or termination rules.`,
+    abstract: `Regulatory sandboxes offer a practical mechanism for testing artificial intelligence (AI) systems under supervised, time-bound, and risk-controlled conditions before broad market deployment. While sandboxes originated largely in financial technology, their value extends to AI applications in health, education, agritech, and financial services—sectors where algorithmic decisions can directly affect welfare, rights, livelihoods, and access to essential services. The African Development Bank (AfDB) has recommended expanding sandboxes beyond fintech into education, health, and agritech, alongside shared test environments, compliance support for small and medium-sized enterprises (SMEs), and harmonised AI risk frameworks. This paper proposes a Cross-Sector AI Regulatory Sandbox Framework (CSARSF) designed by Neuro AI Development. It combines sector-specific testing protocols with common consumer-protection safeguards, evaluation metrics, governance structures, and exit criteria. The framework aims to accelerate responsible AI innovation while preventing consumer harm, discrimination, privacy violations, unsafe medical recommendations, educational inequity, and exclusionary financial outcomes.`,
     methodology: `Cross-sector regulatory-sandbox architecture built on five pillars (risk-proportionate supervision, human-centred protection, evidence-based evaluation, regulatory learning, and interoperability), governed by a multi-stakeholder AI Sandbox Oversight Board across a six-stage participation lifecycle, with domain-specific safeguards and ten pre-registered evaluation dimensions.`,
     findings: [
       'Expanding regulatory sandboxes beyond fintech into health, education, and agritech prevents irreversible harm from premature AI deployment while preserving pathways for SMEs and public institutions.',
@@ -12338,8 +12363,8 @@ NeuroGrowth Labs proposes a practical research and development pathway to build 
     ],
     bibtex: `@article{ngl2026regulatorysandboxes,
   title={Regulatory Sandboxes for Artificial Intelligence: A Cross-Sector Framework for Health, Education, Agritech, and Financial AI},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs AI Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development AI Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.28}
@@ -12348,7 +12373,7 @@ NeuroGrowth Labs proposes a practical research and development pathway to build 
 
 A Cross-Sector Framework for Health, Education, Agritech, and Financial AI
 
-NeuroGrowth Labs — AI Research and Development Paper
+Neuro AI Development — AI Research and Development Paper
 
 Prepared for policymakers, regulators, innovators, development partners, and consumer-protection institutions.
 
@@ -12356,7 +12381,7 @@ Abstract
 
 Regulatory sandboxes offer a practical mechanism for testing artificial intelligence (AI) systems under supervised, time-bound, and risk-controlled conditions before broad market deployment. While sandboxes originated largely in financial technology, their value extends to AI applications in health, education, agritech, and financial services—sectors where algorithmic decisions can directly affect welfare, rights, livelihoods, and access to essential services. The African Development Bank (AfDB) has recommended expanding sandboxes beyond fintech into education, health, and agritech, alongside shared test environments, compliance support for small and medium-sized enterprises (SMEs), and harmonised AI risk frameworks.
 
-This paper proposes a Cross-Sector AI Regulatory Sandbox Framework (CSARSF) designed by NeuroGrowth Labs. It combines sector-specific testing protocols with common consumer-protection safeguards, evaluation metrics, governance structures, and exit criteria. The framework aims to accelerate responsible AI innovation while preventing consumer harm, discrimination, privacy violations, unsafe medical recommendations, educational inequity, and exclusionary financial outcomes.
+This paper proposes a Cross-Sector AI Regulatory Sandbox Framework (CSARSF) designed by Neuro AI Development. It combines sector-specific testing protocols with common consumer-protection safeguards, evaluation metrics, governance structures, and exit criteria. The framework aims to accelerate responsible AI innovation while preventing consumer harm, discrimination, privacy violations, unsafe medical recommendations, educational inequity, and exclusionary financial outcomes.
 
 Keywords: artificial intelligence; regulatory sandbox; responsible AI; consumer protection; health AI; education technology; agritech; financial inclusion; evaluation metrics; Africa.
 
@@ -12655,7 +12680,7 @@ Use sandbox evidence to reform regulation, rather than treating sandbox particip
 
 Regulatory sandboxes can bridge the gap between AI innovation and public protection, but only when they are designed around measurable safety, fairness, privacy, accountability, and consumer-welfare outcomes. A cross-sector approach is especially important for health, education, agritech, and financial AI, where algorithmic decisions can shape access to essential services and economic opportunity.
 
-NeuroGrowth Labs’ proposed CSARSF provides a practical foundation for regulators to test AI responsibly: common consumer protections, sector-specific safeguards, rigorous evaluation metrics, transparent governance, and clear pathways from controlled experimentation to safe deployment. By expanding sandboxes beyond fintech, policymakers can support inclusive AI innovation while ensuring that technological progress does not come at the expense of the people it is intended to serve.
+Neuro AI Development’ proposed CSARSF provides a practical foundation for regulators to test AI responsibly: common consumer protections, sector-specific safeguards, rigorous evaluation metrics, transparent governance, and clear pathways from controlled experimentation to safe deployment. By expanding sandboxes beyond fintech, policymakers can support inclusive AI innovation while ensuring that technological progress does not come at the expense of the people it is intended to serve.
 
 References
 
@@ -12685,7 +12710,7 @@ Organisation for Economic Co-operation and Development. The State of Implementat
     title: 'AI Risk Auditing for Public Services',
     subtitle: 'A Practical Framework for Credit Scoring, Welfare Allocation, Policing, Health, and Education Systems',
     authors: [
-      { name: 'NeuroGrowth Labs Research and Development Division', affiliation: 'NeuroGrowth Labs' }
+      { name: 'Neuro AI Development Research and Development Division', affiliation: 'Neuro AI Development' }
     ],
     publishDate: 'November 2026',
     category: 'AI Governance & Public Sector',
@@ -12708,8 +12733,8 @@ Organisation for Economic Co-operation and Development. The State of Implementat
     ],
     bibtex: `@article{ngl2026airiskauditing,
   title={AI Risk Auditing for Public Services: A Practical Framework for Credit Scoring, Welfare Allocation, Policing, Health, and Education Systems},
-  author={{NeuroGrowth Labs Research and Development Division}},
-  journal={NeuroGrowth Labs Research and Development Paper},
+  author={{Neuro AI Development Research and Development Division}},
+  journal={Neuro AI Development Research and Development Paper},
   year={2026},
   month={November},
   doi={10.5281/ngl.afr.2026.29}
@@ -12718,7 +12743,7 @@ Organisation for Economic Co-operation and Development. The State of Implementat
 
 A Practical Framework for Credit Scoring, Welfare Allocation, Policing, Health, and Education Systems
 
-NeuroGrowth Labs — Research and Development Paper
+Neuro AI Development — Research and Development Paper
 
 Prepared for public-sector agencies, regulators, development-finance institutions, and AI assurance practitioners
 

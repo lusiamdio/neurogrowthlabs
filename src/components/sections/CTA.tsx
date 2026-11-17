@@ -26,7 +26,7 @@ export default function CTASection() {
             Ready to Build the Future?
           </h2>
           <p className="text-lg text-quantum-silver mb-10 max-w-2xl mx-auto">
-            Join the organizations accelerating their digital transformation with NeuroGrowth Labs. 
+            Join the organizations accelerating their digital transformation with Neuro AI Development. 
             Deploy sovereign AI, intelligent infrastructure, and world-class enterprise systems today.
           </p>
 

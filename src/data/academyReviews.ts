@@ -1,11 +1,13 @@
 /**
- * Course Reviews and Star-Rating System for Neurogrowth Labs Sovereign Academy
+ * Course Reviews and Star-Rating System for Neuro AI Development Sovereign Academy
  * Stores learner feedback, star ratings (1-5), peer reviews, and verified badges.
  * Supports Firestore persistence with fallback to local storage for offline resilience.
  */
 
 import { db, isFirebaseConfigured } from '../firebase';
 import { collection, doc, setDoc, getDocs, query, where } from 'firebase/firestore';
+import { safeFetchJson } from '../utils/safeFetchJson';
+import { getActiveAccessToken } from '../services/sqlApiClient';
 
 export interface CourseReview {
   id: string;
@@ -242,12 +244,43 @@ function getLocalReviews(): CourseReview[] {
   }
 }
 
-// Fetch all reviews for a specific course (combining Firestore + seed/local)
+// Fetch all reviews for a specific course (combining PostgreSQL SQL API + Firestore + seed/local)
 export async function getReviewsForCourse(courseId: string): Promise<CourseReview[]> {
   const localList = getLocalReviews();
   let courseReviews = localList.filter(r => r.courseId === courseId);
 
-  // Try fetching any cloud-persisted reviews from Firestore when configured
+  // 1. Fetch live PostgreSQL reviews via Express SQL Backend
+  try {
+    const sqlRes = await safeFetchJson<{ data?: any[] }>(
+      `/api/v1/sql/academy/reviews?courseId=${encodeURIComponent(courseId)}`
+    );
+    if (sqlRes.ok && Array.isArray(sqlRes.data?.data) && sqlRes.data.data.length > 0) {
+      const sqlMapped: CourseReview[] = sqlRes.data.data.map((row: any) => ({
+        id: String(row.id),
+        courseId: row.course_id,
+        userId: row.user_id || 'scholar',
+        userName: row.user_name,
+        rating: Number(row.rating),
+        headline: row.headline,
+        reviewText: row.review_text,
+        roleTag: row.role_tag || 'Verified Scholar',
+        organization: row.organization || 'Neuro AI Development Academy',
+        createdAt: row.created_at,
+        verifiedLearner: Boolean(row.verified_learner ?? true),
+        helpfulCount: Number(row.helpful_count || 0),
+        recommendation: Boolean(row.recommendation ?? true),
+      }));
+
+      const map = new Map<string, CourseReview>();
+      courseReviews.forEach(r => map.set(r.id, r));
+      sqlMapped.forEach(r => map.set(r.id, r));
+      courseReviews = Array.from(map.values());
+    }
+  } catch (err) {
+    console.info('SQL review fetch using cached store:', err);
+  }
+
+  // 2. Try fetching any cloud-persisted reviews from Firestore when configured
   try {
     if (isFirebaseConfigured && db) {
       const colRef = collection(db, 'course_reviews');
@@ -357,7 +390,36 @@ export async function submitCourseReview(payload: {
     console.warn('Failed saving review to localStorage:', e);
   }
 
-  // 2. Persist to Firestore if configured
+  // 2. Persist to PostgreSQL SQL backend when Supabase Auth JWT is active
+  try {
+    const token = await getActiveAccessToken();
+    if (token) {
+      const sqlRes = await safeFetchJson<{ review?: { id?: string } }>('/api/v1/sql/academy/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          courseId: newReview.courseId,
+          userName: newReview.userName,
+          rating: newReview.rating,
+          headline: newReview.headline,
+          reviewText: newReview.reviewText,
+          roleTag: newReview.roleTag,
+          organization: newReview.organization,
+          recommendation: newReview.recommendation,
+        }),
+      });
+      if (sqlRes.ok && sqlRes.data?.review?.id) {
+        newReview.id = String(sqlRes.data.review.id);
+      }
+    }
+  } catch (err) {
+    console.info('SQL review persistence skipped or offline:', err);
+  }
+
+  // 3. Persist to Firestore if configured
   try {
     if (isFirebaseConfigured && db) {
       const docRef = doc(collection(db, 'course_reviews'), newReview.id);

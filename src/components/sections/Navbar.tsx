@@ -45,7 +45,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2 group">
               <Hexagon className="w-8 h-8 text-electric-blue group-hover:text-violet-glow transition-all duration-300" />
-              <span className="text-xl font-bold tracking-tight text-white hidden sm:block">Neurogrowth Labs</span>
+              <span className="text-xl font-bold tracking-tight text-white hidden sm:block">Neuro AI Development</span>
             </Link>
 
             {isSubPage && (
@@ -72,14 +72,14 @@ export default function Navbar() {
             <button onClick={() => { navigate('/contact'); window.scrollTo(0,0); }} className="text-sm font-medium text-quantum-silver hover:text-white transition-colors">Contact</button>
             <button onClick={() => { navigate('/portal'); window.scrollTo(0,0); }} className="text-sm font-semibold text-ai-cyan hover:text-white transition-colors border border-ai-cyan/30 px-4 py-1.5 rounded-full bg-ai-cyan/5 hover:bg-ai-cyan/15">Portal</button>
             
-            <button onClick={toggleTheme} className="w-8 h-8 rounded-full border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:bg-white/5 transition-colors">
+            <button onClick={toggleTheme} aria-label="Toggle color theme" className="w-8 h-8 rounded-full border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:bg-white/5 transition-colors">
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
 
           {/* Mobile Navigation controls */}
           <div className="flex md:hidden items-center gap-3">
-            <button onClick={toggleTheme} className="w-8 h-8 rounded-full border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:bg-white/5 transition-colors">
+            <button onClick={toggleTheme} aria-label="Toggle color theme" className="w-8 h-8 rounded-full border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:bg-white/5 transition-colors">
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
             <button 

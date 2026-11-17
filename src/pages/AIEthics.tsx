@@ -31,7 +31,7 @@ export default function AIEthics() {
           
           <div className="prose prose-invert prose-lg max-w-none text-quantum-silver">
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Introduction</h2>
-            <p>Neurogrowth Labs is committed to developing artificial intelligence technologies responsibly, ethically, and in a way that benefits society.</p>
+            <p>Neuro AI Development is committed to developing artificial intelligence technologies responsibly, ethically, and in a way that benefits society.</p>
             <p>Our Responsible AI Policy establishes principles guiding the design, deployment, and governance of AI systems.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Core Ethical Principles</h2>
@@ -54,14 +54,14 @@ export default function AIEthics() {
             </ul>
 
             <h3 className="text-xl font-medium text-white mt-8 mb-4">4. Fairness and Non-Discrimination</h3>
-            <p>Neurogrowth Labs actively works to reduce bias in AI systems.</p>
+            <p>Neuro AI Development actively works to reduce bias in AI systems.</p>
             <p>We evaluate models for fairness across demographics.</p>
 
             <h3 className="text-xl font-medium text-white mt-8 mb-4">5. Privacy Protection</h3>
             <p>AI systems must respect privacy and comply with global data protection standards.</p>
 
             <h3 className="text-xl font-medium text-white mt-8 mb-4">6. Accountability</h3>
-            <p>Neurogrowth Labs maintains internal governance mechanisms for responsible AI oversight.</p>
+            <p>Neuro AI Development maintains internal governance mechanisms for responsible AI oversight.</p>
             <p>Teams regularly review AI technologies for ethical compliance.</p>
 
             <h3 className="text-xl font-medium text-white mt-8 mb-4">7. Security</h3>

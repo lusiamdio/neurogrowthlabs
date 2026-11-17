@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/sections/Navbar';
@@ -39,16 +39,25 @@ export default function CourseReviewsPage() {
   const [upvotedMap, setUpvotedMap] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
   };
 
   useEffect(() => {
+    let isMounted = true;
     getReviewsForCourse(course.id).then(list => {
+      if (!isMounted) return;
       setReviews(list);
       setStats(calculateCourseRatingStats(list));
     });
+    return () => {
+      isMounted = false;
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
   }, [course.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,7 +75,7 @@ export default function CourseReviewsPage() {
         courseId: course.id,
         userId: user.uid || 'scholar-user',
         userName: user.displayName || user.email?.split('@')[0] || 'Verified Scholar',
-        userEmail: user.email || 'scholar@neurogrowthlabs.co.za',
+        userEmail: user.email || 'scholar@neuroaidevelopment.co.za',
         rating: formRating,
         headline: headline.trim(),
         reviewText: reviewText.trim(),
@@ -123,7 +132,7 @@ export default function CourseReviewsPage() {
         {/* Navigation Breadcrumbs & Back Link */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
-            <Link to="/" className="hover:text-white transition-colors">NeuroGrowth Labs</Link>
+            <Link to="/" className="hover:text-white transition-colors">Neuro AI Development</Link>
             <span aria-hidden="true">/</span>
             <Link to="/academy" className="hover:text-white transition-colors">Academy</Link>
             <span aria-hidden="true">/</span>
@@ -237,6 +246,7 @@ export default function CourseReviewsPage() {
                       <button
                         key={star}
                         type="button"
+                        aria-label={`Rate ${star} out of 5 stars`}
                         onClick={() => setFormRating(star)}
                         className="p-1 text-slate-600 hover:text-amber-400 transition-colors"
                       >

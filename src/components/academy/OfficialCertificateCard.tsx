@@ -32,7 +32,7 @@ export default function OfficialCertificateCard({
       <div className="space-y-2 relative z-10">
         <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#c5a059] tracking-widest uppercase">
           <ShieldCheck className="w-4 h-4" />
-          <span>NeuroGrowth Labs · Sovereign Intelligence Academy</span>
+          <span>Neuro AI Development · Sovereign Intelligence Academy</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-wider text-white uppercase font-serif">
           Certificate of Completion

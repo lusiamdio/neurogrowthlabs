@@ -67,7 +67,7 @@ export default function AILabSection() {
               </div>
             </div>
             <div className="p-6 font-mono text-xs text-ai-cyan/80 min-h-[300px] flex flex-col gap-2">
-               <p className="text-green-400">root@neurogrowth-cluster-01:~# tail -f /var/log/neural.sys</p>
+               <p className="text-green-400">root@neuroai-cluster-01:~# tail -f /var/log/neural.sys</p>
                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="text-quantum-silver">[2026.05.25] INFO: Initializing tensor parallelization...</motion.p>
                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="text-quantum-silver">[2026.05.25] SUCCESS: Memory allocated across 4096 nodes</motion.p>
                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} className="text-violet-glow glow-text">[2026.05.25] SYNC: Quantum state preservation active.</motion.p>

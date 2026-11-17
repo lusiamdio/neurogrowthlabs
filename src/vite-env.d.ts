@@ -24,3 +24,8 @@ declare module '*.webp' {
   const src: string;
   export default src;
 }
+
+declare module '*.sql?raw' {
+  const content: string;
+  export default content;
+}

@@ -1,5 +1,5 @@
 /**
- * Neurogrowth Labs Academy - Transactional Email Notification Service
+ * Neuro AI Development Academy - Transactional Email Notification Service
  * Integrates with SendGrid v3 Mail Send API for real-time alerts on:
  * 1. Course Enrollment Confirmations
  * 2. Certificate of Completion Issuance & Verification
@@ -39,8 +39,8 @@ export interface EmailNotificationRecord {
 }
 
 const STORAGE_KEY = 'ngl_email_notifications';
-const SENDER_EMAIL = 'academy@neurogrowthlabs.co.za';
-const SENDER_NAME = 'Neurogrowth Labs Sovereign Academy';
+const SENDER_EMAIL = 'academy@neuroaidevelopment.co.za';
+const SENDER_NAME = 'Neuro AI Development Sovereign Academy';
 
 // Read all stored notifications from localStorage
 export function getStoredEmailNotifications(userId?: string): EmailNotificationRecord[] {
@@ -127,7 +127,7 @@ export function buildEnrollmentEmailHtml(params: {
                 <tr>
                   <td>
                     <div style="font-family:monospace;font-size:11px;letter-spacing:2px;color:#00e5ff;text-transform:uppercase;font-weight:700;">
-                      NEUROGROWTH LABS · SOVEREIGN ACADEMY
+                      NEURO AI DEVELOPMENT · SOVEREIGN ACADEMY
                     </div>
                     <h1 style="margin:8px 0 0;font-size:22px;color:#ffffff;font-weight:700;letter-spacing:-0.5px;">
                       🎓 Course Enrollment Confirmed
@@ -210,8 +210,8 @@ export function buildEnrollmentEmailHtml(params: {
               </table>
 
               <p style="margin:28px 0 0;font-size:12px;line-height:18px;color:#64748b;border-top:1px solid rgba(255,255,255,0.08);padding-top:20px;">
-                Neurogrowth Labs · Cyber-Physical Intelligence & AI Systems Directorate<br>
-                For questions or verification support, contact academy@neurogrowthlabs.co.za
+                Neuro AI Development · Cyber-Physical Intelligence & AI Systems Directorate<br>
+                For questions or verification support, contact academy@neuroaidevelopment.co.za
               </p>
             </td>
           </tr>
@@ -265,7 +265,7 @@ export function buildCertificateReadyEmailHtml(params: {
                 <tr>
                   <td>
                     <div style="font-family:monospace;font-size:11px;letter-spacing:2px;color:#c5a059;text-transform:uppercase;font-weight:700;">
-                      OFFICIAL ACCREDITATION · NEUROGROWTH LABS
+                      OFFICIAL ACCREDITATION · NEURO AI DEVELOPMENT
                     </div>
                     <h1 style="margin:8px 0 0;font-size:24px;color:#ffffff;font-weight:700;letter-spacing:-0.5px;">
                       🏆 Certificate of Completion Ready
@@ -288,7 +288,7 @@ export function buildCertificateReadyEmailHtml(params: {
                 Congratulations, <strong style="color:#ffffff;">${userName}</strong>!
               </p>
               <p style="margin:0 0 24px;font-size:14px;line-height:22px;color:#94a3b8;">
-                You have successfully met all curriculum requirements and achieved a passing score on the rigorous Capstone Assessment. Your official Sovereign Credential has been issued and cryptographically verified on the Neurogrowth Labs Academic Registry.
+                You have successfully met all curriculum requirements and achieved a passing score on the rigorous Capstone Assessment. Your official Sovereign Credential has been issued and cryptographically verified on the Neuro AI Development Academic Registry.
               </p>
 
               <!-- Certificate Credential Box -->
@@ -338,7 +338,7 @@ export function buildCertificateReadyEmailHtml(params: {
                   <td align="right">
                     <div style="font-style:italic;font-size:16px;color:#c5a059;font-family:'Georgia',serif;">Academic Directorate</div>
                     <strong style="color:#ffffff;">Cyber-Physical Systems Review Board</strong><br>
-                    <span>Neurogrowth Labs</span>
+                    <span>Neuro AI Development</span>
                   </td>
                 </tr>
               </table>
@@ -437,6 +437,23 @@ export async function dispatchSendGridEmail(payload: {
   };
 
   saveNotification(notificationRecord);
+
+  // Persist email delivery audit record in PostgreSQL when user session token exists
+  import('./sqlApiClient')
+    .then(({ logEmailNotificationToSql }) =>
+      logEmailNotificationToSql({
+        type,
+        subject,
+        userName: toName,
+        courseId,
+        courseCode,
+        courseTitle,
+        status: deliveryStatus,
+        provider: 'SendGrid v3',
+      })
+    )
+    .catch(() => {});
+
   return notificationRecord;
 }
 
@@ -448,14 +465,14 @@ export async function sendCourseEnrollmentNotification(params: {
   course: { id: string; code: string; title: string; track: string; difficultyLevel: string; duration: string };
 }): Promise<EmailNotificationRecord> {
   const { user, course } = params;
-  const toEmail = user.email || 'scholar@neurogrowthlabs.co.za';
+  const toEmail = user.email || 'scholar@neuroaidevelopment.co.za';
   const toName = user.displayName || toEmail.split('@')[0];
   const userId = user.uid || user.id || 'anonymous-learner';
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://neurogrowthlabs.com';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://neuroaidevelopment.com';
   const courseUrl = `${origin}/course/${encodeURIComponent(course.id)}`;
 
   const subject = `🎓 Enrollment Confirmed: ${course.code} - ${course.title}`;
-  const textContent = `Hello ${toName},\n\nYou have been successfully enrolled in ${course.code}: ${course.title}.\n\nAccess the course workspace and masterclasses here: ${courseUrl}\n\nFaculty Lead: Mr. Lusimanadio Soki Simao, MBA\nNeurogrowth Labs Sovereign Academy`;
+  const textContent = `Hello ${toName},\n\nYou have been successfully enrolled in ${course.code}: ${course.title}.\n\nAccess the course workspace and masterclasses here: ${courseUrl}\n\nFaculty Lead: Mr. Lusimanadio Soki Simao, MBA\nNeuro AI Development Sovereign Academy`;
 
   const htmlContent = buildEnrollmentEmailHtml({
     userName: toName,
@@ -494,14 +511,14 @@ export async function sendCertificateReadyNotification(params: {
   grade?: string;
 }): Promise<EmailNotificationRecord> {
   const { user, course, certificateId, verificationCode, issuedDate, grade = 'Pass with Honors (70%+)' } = params;
-  const toEmail = user.email || 'scholar@neurogrowthlabs.co.za';
+  const toEmail = user.email || 'scholar@neuroaidevelopment.co.za';
   const toName = user.displayName || toEmail.split('@')[0];
   const userId = user.uid || user.id || 'anonymous-learner';
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://neurogrowthlabs.com';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://neuroaidevelopment.com';
   const certificateUrl = `${origin}/verify/${encodeURIComponent(certificateId)}`;
 
   const subject = `🏆 Certificate Ready: ${course.code} - ${course.title} (Accredited)`;
-  const textContent = `Congratulations ${toName}!\n\nYour Certificate of Completion for ${course.code}: ${course.title} is now ready and cryptographically verified.\n\nCertificate ID: ${certificateId}\nVerification Code: ${verificationCode}\nDate: ${issuedDate}\nGrade: ${grade}\n\nView and download your official credential: ${certificateUrl}\n\nInstructor: Mr. Lusimanadio Soki Simao, MBA\nNeurogrowth Labs Sovereign Academy`;
+  const textContent = `Congratulations ${toName}!\n\nYour Certificate of Completion for ${course.code}: ${course.title} is now ready and cryptographically verified.\n\nCertificate ID: ${certificateId}\nVerification Code: ${verificationCode}\nDate: ${issuedDate}\nGrade: ${grade}\n\nView and download your official credential: ${certificateUrl}\n\nInstructor: Mr. Lusimanadio Soki Simao, MBA\nNeuro AI Development Sovereign Academy`;
 
   const htmlContent = buildCertificateReadyEmailHtml({
     userName: toName,

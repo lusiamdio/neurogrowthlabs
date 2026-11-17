@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/sections/Navbar';
@@ -14,6 +14,10 @@ import {
   getReviewsForCourse, calculateCourseRatingStats 
 } from '../data/academyReviews';
 import { downloadAcademicPaper } from '../utils/paperDownloadHelper';
+import {
+  fetchUserEnrollmentsFromSql,
+  syncCourseEnrollmentToSql,
+} from '../services/sqlApiClient';
 import heroDatacenterImg from '../assets/images/academy_hero_datacenter_1794212199298.jpg';
 import { 
   ShieldCheck, BookOpen, Download, Award, CheckCircle, 
@@ -126,16 +130,24 @@ export default function Academy() {
     localStorage.setItem('ngl_downloaded_papers', JSON.stringify(downloadedPaperIds));
   }, [downloadedPaperIds]);
 
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Load reviews stats for all courses
   useEffect(() => {
+    let isMounted = true;
     ACADEMY_COURSES.forEach(async (c) => {
       const list = await getReviewsForCourse(c.id);
+      if (!isMounted) return;
       const s = calculateCourseRatingStats(list);
       setCourseStatsMap(prev => ({
         ...prev,
         [c.id]: { averageRating: s.averageRating, totalCount: s.totalCount }
       }));
     });
+    return () => {
+      isMounted = false;
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
   }, []);
 
   // Listen for real-time reviews submitted
@@ -158,9 +170,41 @@ export default function Academy() {
     };
   }, []);
 
+  // Hydrate enrollments & completed modules from PostgreSQL when authenticated
+  useEffect(() => {
+    if (!user) return;
+    let isMounted = true;
+    fetchUserEnrollmentsFromSql()
+      .then((rows) => {
+        if (!isMounted || !rows.length) return;
+        setEnrolledCourseIds((prev) => {
+          const merged = new Set(prev);
+          rows.forEach((r) => {
+            if (r?.course_id) merged.add(r.course_id);
+          });
+          return Array.from(merged);
+        });
+        setCompletedModulesByCourse((prev) => {
+          const next = { ...prev };
+          rows.forEach((r) => {
+            if (r?.course_id && Array.isArray(r.completed_lectures)) {
+              const existing = next[r.course_id] || [];
+              next[r.course_id] = Array.from(new Set([...existing, ...r.completed_lectures]));
+            }
+          });
+          return next;
+        });
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
   };
 
   // Toggle Difficulty Filter Checkbox
@@ -196,6 +240,15 @@ export default function Academy() {
     if (!enrolledCourseIds.includes(course.id)) {
       setEnrolledCourseIds(prev => [...prev, course.id]);
       showToast(`Enrolled in ${course.code}: ${course.title}`);
+
+      syncCourseEnrollmentToSql({
+        courseId: course.id,
+        courseTitle: course.title,
+        userName: user.displayName || user.email?.split('@')[0] || 'Learner',
+        progress: 0,
+        completed: false,
+        completedLectures: completedModulesByCourse[course.id] || [],
+      }).catch(() => {});
       
       // Dispatch SendGrid email notification
       sendCourseEnrollmentNotification({ user, course }).then(() => {
@@ -286,7 +339,7 @@ export default function Academy() {
           
           {/* Breadcrumb & Brand Category */}
           <div className="flex items-center gap-2 text-xs text-slate-400 w-full md:w-auto">
-            <span className="hover:text-white cursor-pointer" onClick={() => navigate('/')}>Neurogrowth Labs</span>
+            <button type="button" className="hover:text-white cursor-pointer" onClick={() => navigate('/')}>Neuro AI Development</button>
             <span aria-hidden="true">/</span>
             <span className="text-white font-medium">Academy</span>
             <span aria-hidden="true">/</span>
@@ -366,7 +419,7 @@ export default function Academy() {
             <div className="relative rounded-xl overflow-hidden shadow-2xl bg-[#0b0f17] group">
               <img 
                 src={heroDatacenterImg}
-                alt="Neurogrowth Labs Sovereign Cloud Operations & Cybersecurity Academy"
+                alt="Neuro AI Development Sovereign Cloud Operations & Cybersecurity Academy"
                 referrerPolicy="no-referrer"
                 className="w-full h-[260px] sm:h-[300px] object-cover transition-transform duration-700 group-hover:scale-105"
               />

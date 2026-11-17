@@ -17,6 +17,7 @@ import {
   type TableLens,
   type VoiceName,
 } from './server/geminiRotator.ts';
+import { sqlBackendRouter } from './server/routes/sqlBackend.ts';
 
 function normalizeSupabaseUrl(raw?: string): string {
   const fallback = 'https://jyvwrdibocdiicaurfrj.supabase.co';
@@ -166,10 +167,12 @@ async function startServer() {
 
   app.use(express.json({ limit: '1mb' }));
 
+  app.use('/api/v1/sql', sqlBackendRouter);
+
   app.get('/api/health', (_req, res) => {
     res.json({
       status: 'ok',
-      service: 'neurogrowth-labs',
+      service: 'neuro-ai-development',
       timestamp: new Date().toISOString(),
     });
   });
@@ -206,8 +209,8 @@ async function startServer() {
             },
           ],
           from: {
-            email: process.env.SENDGRID_SENDER_EMAIL || 'academy@neurogrowthlabs.co.za',
-            name: 'Neurogrowth Labs Sovereign Academy',
+            email: process.env.SENDGRID_SENDER_EMAIL || 'academy@neuroaidevelopment.co.za',
+            name: 'Neuro AI Development Sovereign Academy',
           },
           content: [
             { type: 'text/plain', value: typeof textContent === 'string' ? textContent : subject.trim() },
@@ -433,7 +436,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`NeuroGrowth Labs full-stack server running at http://0.0.0.0:${PORT}`);
+    console.log(`Neuro AI Development full-stack server running at http://0.0.0.0:${PORT}`);
   });
 }
 

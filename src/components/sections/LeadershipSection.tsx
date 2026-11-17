@@ -52,8 +52,8 @@ const leadershipData = [
     longBio: [
       "Nguyen Van Hoang is a Software Engineer with over 5 years of hands-on experience in Artificial Intelligence, IoT systems, cloud-native architecture, and full-stack development. His work centers on taking cutting-edge AI research in Large Language Models, Computer Vision, and distributed computing and shipping it as production-grade software.",
       "Hoang's engineering philosophy is rooted in building systems that scale. From designing event-driven microservices to orchestrating containerized deployments on Kubernetes, he treats infrastructure as a first-class citizen of any AI product. His portfolio spans enterprise-grade platforms, real-time data pipelines, and embedded IoT solutions that run reliably under load.",
-      "Before joining NeuroGrowth Labs, Hoang contributed to multiple high-impact projects across Southeast Asia, including intelligent document processing systems, automated quality inspection pipelines using computer vision, and conversational AI platforms powered by LLMs. Each project reinforced his approach: solve real problems, measure the outcomes, and iterate fast.",
-      "At NeuroGrowth Labs, Hoang leads the AI and ML engineering vertical architecting model inference pipelines, integrating vector databases for semantic search, and building the tooling that enables the team to ship AI features with confidence. He is responsible for ensuring that every AI capability the company delivers is not just technically sound but also maintainable, observable, and ready for production traffic.",
+      "Before joining Neuro AI Development, Hoang contributed to multiple high-impact projects across Southeast Asia, including intelligent document processing systems, automated quality inspection pipelines using computer vision, and conversational AI platforms powered by LLMs. Each project reinforced his approach: solve real problems, measure the outcomes, and iterate fast.",
+      "At Neuro AI Development, Hoang leads the AI and ML engineering vertical architecting model inference pipelines, integrating vector databases for semantic search, and building the tooling that enables the team to ship AI features with confidence. He is responsible for ensuring that every AI capability the company delivers is not just technically sound but also maintainable, observable, and ready for production traffic.",
       "Outside of work, Hoang actively contributes to open-source projects, shares technical insights with the developer community, and continuously explores emerging technologies in the AI/ML space. He believes that the best engineers are perpetual learners who stay close to the craft."
     ],
     expertise: [
@@ -80,7 +80,7 @@ const leadershipData = [
     keyPillars: [
       { title: "Self-taught engineer", description: "From first lines of code to production AI systems." },
       { title: "AI & agentic builder", description: "Multi-agent orchestration, LLM apps, computer vision." },
-      { title: "Founder", description: "Linfy Tech Solutions and NeuroGrowth Labs." },
+      { title: "Founder", description: "Linfy Tech Solutions and Neuro AI Development." },
       { title: "Christian", description: "Purpose-led work, grounded in faith." },
       { title: "Africa-first", description: "Solving problems where he lives, for people he knows." }
     ],
@@ -131,7 +131,7 @@ const leadershipData = [
     twitter: "#",
     longBio: [
       "Francis Matsoso is a premier cybersecurity researcher and developer specializing in advanced penetration testing, threat intelligence, and AI-powered security automation systems. He leads security architecture across an 18+ application AI infrastructure portfolio.",
-      "Recognized as a hackathon champion and former cybersecurity lead, Francis bridges offensive security research with full-stack development to build systems that are secure by design. By integrating advanced threat mitigation directly into software pipelines, he ensures that all NeuroGrowth Labs systems and autonomous computing environments remain highly secure and resilient against sophisticated cyber threats."
+      "Recognized as a hackathon champion and former cybersecurity lead, Francis bridges offensive security research with full-stack development to build systems that are secure by design. By integrating advanced threat mitigation directly into software pipelines, he ensures that all Neuro AI Development systems and autonomous computing environments remain highly secure and resilient against sophisticated cyber threats."
     ],
     expertise: [
       { field: "Security Architecture & DevSecOps", tech: "Security automation, secure container deployments, CI/CD security integration, IAM" },
@@ -180,7 +180,7 @@ const LeadershipCard = ({ member, isExpanded, onExpand, onClose }: any) => {
                 <p className="text-ai-cyan font-mono text-xs uppercase tracking-wider">{member.role}</p>
               </div>
             </div>
-            <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-red-400 hover:border-red-400 transition-all flex-shrink-0">
+            <button type="button" onClick={onClose} aria-label="Close executive bio" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-red-400 hover:border-red-400 transition-all flex-shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -278,12 +278,20 @@ const LeadershipCard = ({ member, isExpanded, onExpand, onClose }: any) => {
   return (
     <motion.div
       ref={cardRef}
+      role="button"
+      tabIndex={0}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       layout
       whileHover={{ scale: 1.02 }}
       onClick={onExpand}
-      className="relative p-8 h-[340px] max-w-[340px] shrink-0 cursor-pointer rounded-2xl bg-midnight-black/60 border border-glass-border overflow-hidden group transition-all duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.5)]"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onExpand();
+        }
+      }}
+      className="relative p-8 h-[340px] max-w-[340px] shrink-0 cursor-pointer rounded-2xl bg-midnight-black/60 border border-glass-border overflow-hidden group transition-all duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.5)] focus:outline-none focus:ring-2 focus:ring-ai-cyan/50"
     >
       {member.image && (
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none rounded-2xl">
@@ -302,6 +310,8 @@ const LeadershipCard = ({ member, isExpanded, onExpand, onClose }: any) => {
       <div className="relative z-10 h-full flex flex-col justify-between">
         <div className="flex justify-end">
           <button
+            type="button"
+            aria-label={`Expand profile for ${member.name}`}
             onClick={(e) => { e.stopPropagation(); onExpand(); }}
             className="w-10 h-10 rounded-full bg-midnight-black/60 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-ai-cyan transition-all opacity-0 group-hover:opacity-100 shadow-lg backdrop-blur-sm"
           >
@@ -356,6 +366,15 @@ export default function LeadershipSection() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
+  useEffect(() => {
+    if (expandedIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setExpandedIndex(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [expandedIndex]);
+
   const scroll = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
       const scrollAmount = 350;
@@ -380,10 +399,10 @@ export default function LeadershipSection() {
           </div>
           
           <div className="flex gap-4">
-            <button onClick={() => scroll('left')} className="w-12 h-12 rounded-full border border-glass-border flex items-center justify-center text-white hover:bg-white/5 transition-colors">
+            <button type="button" aria-label="Scroll executives left" onClick={() => scroll('left')} className="w-12 h-12 rounded-full border border-glass-border flex items-center justify-center text-white hover:bg-white/5 transition-colors">
                <ChevronLeft className="w-5 h-5" />
             </button>
-            <button onClick={() => scroll('right')} className="w-12 h-12 rounded-full border border-glass-border flex items-center justify-center text-white hover:bg-white/5 transition-colors bg-white/5">
+            <button type="button" aria-label="Scroll executives right" onClick={() => scroll('right')} className="w-12 h-12 rounded-full border border-glass-border flex items-center justify-center text-white hover:bg-white/5 transition-colors bg-white/5">
                <ChevronRight className="w-5 h-5" />
             </button>
           </div>

@@ -31,13 +31,13 @@ export default function DPA() {
           
           <div className="prose prose-invert prose-lg max-w-none text-quantum-silver">
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Introduction</h2>
-            <p>This Data Processing Agreement ("DPA") governs the processing of personal data by Neurogrowth Labs on behalf of customers using our Services.</p>
+            <p>This Data Processing Agreement ("DPA") governs the processing of personal data by Neuro AI Development on behalf of customers using our Services.</p>
             <p>This agreement is designed to comply with international privacy regulations including GDPR.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Roles</h2>
             <p>Customer: Data Controller<br/>
-            Neurogrowth Labs: Data Processor</p>
-            <p>Neurogrowth Labs processes personal data only according to documented instructions from the customer.</p>
+            Neuro AI Development: Data Processor</p>
+            <p>Neuro AI Development processes personal data only according to documented instructions from the customer.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Data Processing Activities</h2>
             <p>Processing may include:</p>
@@ -49,7 +49,7 @@ export default function DPA() {
             </ul>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Security Measures</h2>
-            <p>Neurogrowth Labs implements technical and organizational measures including:</p>
+            <p>Neuro AI Development implements technical and organizational measures including:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>encryption</li>
               <li>access control</li>
@@ -58,14 +58,14 @@ export default function DPA() {
             </ul>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Sub-Processors</h2>
-            <p>Neurogrowth Labs may engage trusted sub-processors for infrastructure and operational support.</p>
+            <p>Neuro AI Development may engage trusted sub-processors for infrastructure and operational support.</p>
             <p>All sub-processors are required to maintain equivalent data protection standards.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Data Subject Rights</h2>
-            <p>Neurogrowth Labs supports customers in responding to requests from individuals exercising their data rights.</p>
+            <p>Neuro AI Development supports customers in responding to requests from individuals exercising their data rights.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Data Breach Notification</h2>
-            <p>In the event of a data breach affecting customer data, Neurogrowth Labs will notify customers without undue delay.</p>
+            <p>In the event of a data breach affecting customer data, Neuro AI Development will notify customers without undue delay.</p>
           </div>
         </motion.div>
       </main>

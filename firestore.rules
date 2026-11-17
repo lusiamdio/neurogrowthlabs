@@ -159,6 +159,47 @@ service cloud.firestore {
       allow update: if isAuthenticated() && request.auth.uid == resource.data.userId;
       allow delete: if isAdmin();
     }
+
+    match /subscriptions/{subscriptionId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if hasRequiredFields(['email', 'status']) &&
+                    isValidEmail(request.resource.data.email) &&
+                    request.resource.data.status == 'active';
+    }
+
+    match /partner_applications/{applicationId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if hasRequiredFields(['company', 'email', 'status']) &&
+                    request.resource.data.company is string &&
+                    request.resource.data.company.size() >= 2 &&
+                    isValidEmail(request.resource.data.email) &&
+                    request.resource.data.status == 'pending';
+    }
+
+    match /contact_submissions/{submissionId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if hasRequiredFields(['fullName', 'email', 'message', 'status']) &&
+                    request.resource.data.fullName is string &&
+                    request.resource.data.fullName.size() >= 2 &&
+                    isValidEmail(request.resource.data.email) &&
+                    request.resource.data.message is string &&
+                    request.resource.data.message.size() >= 1 &&
+                    request.resource.data.status == 'unread';
+    }
+
+    match /webinars/{webinarId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /webinar_registrations/{registrationId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if hasRequiredFields(['fullName', 'email', 'track', 'status']) &&
+                    request.resource.data.fullName is string &&
+                    request.resource.data.fullName.size() >= 2 &&
+                    isValidEmail(request.resource.data.email) &&
+                    request.resource.data.status == 'registered';
+    }
   }
 }
 

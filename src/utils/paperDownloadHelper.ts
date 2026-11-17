@@ -5,7 +5,7 @@ import { db } from '../firebase';
 export async function downloadAcademicPaper(paper: ResearchPaper, user: { uid?: string; email?: string; displayName?: string }) {
   // 1. Generate formatted academic text/markdown document
   const content = `================================================================================
-NEUROGROWTH LABS SOVEREIGN AI & CYBERSECURITY RESEARCH SERIES
+NEURO AI DEVELOPMENT SOVEREIGN AI & CYBERSECURITY RESEARCH SERIES
 PEER-REVIEWED ACADEMIC WORKING PAPER | ISSN 2959-8812
 ================================================================================
 
@@ -25,7 +25,7 @@ AUTHORS & AFFILIATIONS:
 ${paper.authors.map(a => `• ${a.name} (${a.affiliation})`).join('\n')}
 
 CORRESPONDING REPOSITORY:
-Neurogrowth Labs Intelligence Archive (Cape Town, South Africa)
+Neuro AI Development Intelligence Archive (Cape Town, South Africa)
 
 --------------------------------------------------------------------------------
 1. EXECUTIVE SUMMARY
@@ -68,7 +68,7 @@ This document is licensed under Creative Commons BY-NC 4.0 for pan-African acade
 governmental, and enterprise advancement.
 Issued to verified scholar: ${user.displayName || user.email || 'Verified Researcher'}
 Date of Retrieval: ${new Date().toUTCString()}
-Neurogrowth Labs (Pty) Ltd. | Cape Town, ZA.
+Neuro AI Development (Pty) Ltd. | Cape Town, ZA.
 ================================================================================
 `;
 
@@ -93,7 +93,15 @@ Neurogrowth Labs (Pty) Ltd. | Cape Town, ZA.
     URL.revokeObjectURL(url);
   }
 
-  // 3. Log to Firebase Firestore only when Firebase is configured
+  // 3. Log to PostgreSQL SQL backend when authenticated (non-blocking)
+  try {
+    const { logPaperDownloadToSql } = await import('../services/sqlApiClient');
+    await logPaperDownloadToSql(paper.id, paper.title);
+  } catch (err) {
+    console.warn("Could not log paper download to SQL backend (non-blocking):", err);
+  }
+
+  // 4. Log to Firebase Firestore only when Firebase is configured
   try {
     const { isFirebaseConfigured } = await import('../firebase');
     if (isFirebaseConfigured && user.uid) {
@@ -110,7 +118,7 @@ Neurogrowth Labs (Pty) Ltd. | Cape Town, ZA.
     console.warn("Could not log paper download to Firestore (this is non-blocking):", err);
   }
 
-  // 4. Update local downloaded papers tracker
+  // 5. Update local downloaded papers tracker
   try {
     const key = `ngl_downloads_${user.uid || 'guest'}`;
     const existing = JSON.parse(localStorage.getItem(key) || '[]');

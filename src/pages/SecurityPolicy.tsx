@@ -31,7 +31,7 @@ export default function SecurityPolicy() {
           
           <div className="prose prose-invert prose-lg max-w-none text-quantum-silver">
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Overview</h2>
-            <p>Neurogrowth Labs maintains a comprehensive security framework designed to protect AI infrastructure, data systems, and enterprise platforms.</p>
+            <p>Neuro AI Development maintains a comprehensive security framework designed to protect AI infrastructure, data systems, and enterprise platforms.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Security Principles</h2>
             <p>Our security strategy is based on:</p>
@@ -75,7 +75,7 @@ export default function SecurityPolicy() {
             </ul>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Security Testing</h2>
-            <p>Neurogrowth Labs conducts regular:</p>
+            <p>Neuro AI Development conducts regular:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>vulnerability assessments</li>
               <li>penetration testing</li>

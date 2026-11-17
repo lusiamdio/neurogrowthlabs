@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/sections/Navbar';
@@ -9,6 +9,7 @@ import { ACADEMY_COURSES } from '../data/academyData';
 import { downloadCertificatePdf, type CertificateRenderData } from '../utils/certificatePdf';
 import { copyToClipboard } from '../utils/clipboard';
 import { buildStableVerificationId, resolveCourseFromParams } from '../utils/certificateId';
+import { verifyCertificateInRegistry } from '../services/sqlApiClient';
 import {
   Award,
   ArrowLeft,
@@ -109,6 +110,47 @@ export default function CertificateVerification() {
     }
   }, [course.id, registeredProfile.email]);
 
+  const [registryStatus, setRegistryStatus] = useState<'checking' | 'verified' | 'local'>('checking');
+  const [registryIssuedAt, setRegistryIssuedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const lookupCode = (code || verificationId).trim();
+    if (!lookupCode) {
+      setRegistryStatus('local');
+      return;
+    }
+    setRegistryStatus('checking');
+    verifyCertificateInRegistry(lookupCode)
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.verified && res.credential) {
+          setRegistryStatus('verified');
+          if (res.credential.recipient_name && code) {
+            setStudentName(res.credential.recipient_name);
+            setNameInput(res.credential.recipient_name);
+          }
+          if (res.credential.issued_at) {
+            setRegistryIssuedAt(
+              new Date(res.credential.issued_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            );
+          }
+        } else {
+          setRegistryStatus('local');
+        }
+      })
+      .catch(() => {
+        if (isMounted) setRegistryStatus('local');
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [code, verificationId]);
+
   const certificateData: CertificateRenderData = useMemo(
     () => ({
       verificationId,
@@ -126,15 +168,26 @@ export default function CertificateVerification() {
       courseTitle: course.title,
       courseTrack: course.track,
       difficultyLevel: course.difficultyLevel,
-      issuedDate,
+      issuedDate: registryIssuedAt || issuedDate,
       examScore,
     }),
-    [verificationId, studentName, registeredProfile, course, issuedDate, examScore]
+    [verificationId, studentName, registeredProfile, course, registryIssuedAt, issuedDate, examScore]
   );
+
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
   };
 
   const handleSaveName = () => {
@@ -152,7 +205,8 @@ export default function CertificateVerification() {
     const ok = await copyToClipboard(url);
     if (ok) {
       setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedLink(false), 2500);
       showToast('Verification URL copied to clipboard.');
     } else {
       showToast('Unable to copy link automatically.');
@@ -211,7 +265,7 @@ export default function CertificateVerification() {
         <div className="no-print flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
             <Link to="/" className="hover:text-white transition-colors">
-              NeuroGrowth Labs
+              Neuro AI Development
             </Link>
             <span aria-hidden="true">/</span>
             <Link to="/academy" className="hover:text-white transition-colors">
@@ -243,7 +297,23 @@ export default function CertificateVerification() {
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Official Credential Verification</h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-sm font-bold text-white">Official Credential Verification</h2>
+                {registryStatus === 'verified' ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-mono">
+                    <ShieldCheck className="w-3 h-3" />
+                    PostgreSQL Registry Verified
+                  </span>
+                ) : registryStatus === 'checking' ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-white/10 text-slate-300 text-[10px] font-mono">
+                    Checking Registry...
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-white/10 text-slate-300 text-[10px] font-mono">
+                    Local Scholar Credential
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-400 font-mono">ID: {verificationId}</p>
             </div>
           </div>

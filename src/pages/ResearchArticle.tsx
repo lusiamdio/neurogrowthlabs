@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/sections/Navbar';
@@ -72,16 +72,28 @@ export default function ResearchArticle() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
   };
 
   const handleCopyBibtex = async () => {
     const ok = await copyToClipboard(paper.bibtex);
     if (ok) {
       setCopiedBibtex(true);
-      setTimeout(() => setCopiedBibtex(false), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedBibtex(false), 2000);
     }
   };
 
@@ -232,7 +244,7 @@ export default function ResearchArticle() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-slate-400 light:text-stone-500">
             <Link to="/" className="hover:text-white light:hover:text-stone-900 transition-colors">
-              NeuroGrowth Labs
+              Neuro AI Development
             </Link>
             <span aria-hidden="true">/</span>
             <Link to="/research" className="hover:text-white light:hover:text-stone-900 transition-colors">

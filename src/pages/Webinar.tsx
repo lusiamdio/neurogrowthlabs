@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../firebase';
-import { supabase } from '../supabase';
+import { fetchPublishedWebinars, postWebinarRegistration } from '../services/sqlApiClient';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
 import webinarHeroBg from '../assets/images/iStock-2183335357.jpg';
@@ -154,18 +154,14 @@ export default function Webinar() {
     const fetchDynamicWebinars = async () => {
       let dbWebinars: any[] = [];
       try {
-        // 1. Try fetching from Supabase first
+        // 1. Try fetching from SQL Backend API (/api/v1/sql/webinars) + Supabase fallback
         try {
-          const { data, error } = await supabase
-            .from('webinars')
-            .select('*')
-            .order('created_at', { ascending: false });
-          if (error) throw error;
+          const data = await fetchPublishedWebinars();
           if (data && data.length > 0) {
             dbWebinars = data;
           }
         } catch (sErr) {
-          console.warn("Supabase fetch webinars failed, falling back to Firebase:", sErr);
+          console.warn("SQL/Supabase fetch webinars failed, falling back to Firebase:", sErr);
         }
 
         // 2. Fallback to Firebase Firestore if Supabase empty and configured
@@ -206,6 +202,7 @@ export default function Webinar() {
   
   // Registration form states
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -218,7 +215,9 @@ export default function Webinar() {
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.email) return;
+    if (isSubmitting || !formData.fullName.trim() || !formData.email.trim()) return;
+    setIsSubmitting(true);
+    try {
     
     // 1. Dual-write to Firebase when configured
     if (isFirebaseConfigured) {
@@ -234,23 +233,20 @@ export default function Webinar() {
       }
     }
 
-    // 2. Write to Supabase using exact SQL schema columns
+    // 2. Write via SQL Backend API (/api/v1/sql/webinar-registrations) + Supabase fallback
     try {
-      const { error: sErr } = await supabase.from('webinar_registrations').insert({
-        full_name: formData.fullName,
+      await postWebinarRegistration({
+        fullName: formData.fullName,
         email: formData.email,
         organization: formData.organization,
         title: formData.title,
         country: formData.country,
-        interest_sector: formData.interestSector,
+        interestSector: formData.interestSector,
         comments: formData.comments,
         track: registrationTrack === 'free' ? 'Free Webinar' : 'Paid Program',
-        status: 'registered',
-        created_at: new Date().toISOString()
       });
-      if (sErr) throw sErr;
     } catch (err) {
-      console.error("Error saving webinar registration in Supabase:", err);
+      console.error("Error saving webinar registration in SQL/Supabase:", err);
     }
 
     // 3. Fallback to localStorage list for immediate admin portal viewing
@@ -275,7 +271,10 @@ export default function Webinar() {
       console.warn("localStorage webinar registration save failed:", lErr);
     }
     
-    setSubmitted(true);
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetForm = () => {
@@ -359,7 +358,7 @@ export default function Webinar() {
                 <div className="flex flex-wrap items-center gap-6 mb-8 p-4 rounded-2xl bg-white/5 border border-glass-border">
                   <div className="text-xs uppercase tracking-wider font-mono text-quantum-silver">Co-Convened By:</div>
                   <div className="flex flex-wrap gap-4 items-center">
-                    <span className="text-sm font-semibold text-white tracking-wide border-r border-white/10 pr-4">NeuroGrowth Labs</span>
+                    <span className="text-sm font-semibold text-white tracking-wide border-r border-white/10 pr-4">Neuro AI Development</span>
                     <span className="text-sm font-semibold text-ai-cyan tracking-wide">Elmwood Field Leadership Alliance</span>
                   </div>
                 </div>
@@ -465,7 +464,7 @@ export default function Webinar() {
               <h2 className="text-xs font-mono uppercase tracking-widest text-ai-cyan mb-4">01. Strategic Initiative</h2>
               <h3 className="text-3xl md:text-5xl font-bold text-white mb-6">Program Overview</h3>
               <p className="text-quantum-silver leading-relaxed mb-6 text-lg font-light">
-                NeuroGrowth Labs, in strategic partnership with <span className="text-white font-medium">Elmwood Field Leadership Alliance</span>, is pleased to introduce the <span className="text-white font-medium">Africa AI Infrastructure Capacity Building Program</span> — a structured, twice-monthly learning initiative designed to strengthen technological capacity across government, national institutions, and enterprise leadership on the continent.
+                Neuro AI Development, in strategic partnership with <span className="text-white font-medium">Elmwood Field Leadership Alliance</span>, is pleased to introduce the <span className="text-white font-medium">Africa AI Infrastructure Capacity Building Program</span> — a structured, twice-monthly learning initiative designed to strengthen technological capacity across government, national institutions, and enterprise leadership on the continent.
               </p>
               <p className="text-quantum-silver leading-relaxed mb-8">
                 The program is delivered through two complementary tracks: a <span className="text-white font-medium">Free Capacity Building Webinar Series</span> for broad ecosystem access, and a <span className="text-white font-medium">Paid Executive Capacity Building Program</span> for deeper, applied technical and advisory development. Both tracks run twice per month, two weeks apart, entirely via Microsoft Teams.
@@ -966,7 +965,7 @@ export default function Webinar() {
                         <input 
                           type="email" 
                           required
-                          placeholder="linford@neurogrowth.co.za" 
+                          placeholder="linford@neuroaidevelopment.co.za" 
                           className="bg-transparent border-none outline-none text-white w-full placeholder:text-gray-700 text-sm" 
                           value={formData.email} 
                           onChange={e => setFormData({...formData, email: e.target.value})} 
@@ -983,7 +982,7 @@ export default function Webinar() {
                         <input 
                           type="text" 
                           required
-                          placeholder="NeuroGrowth Labs" 
+                          placeholder="Neuro AI Development" 
                           className="bg-transparent border-none outline-none text-white w-full placeholder:text-gray-700 text-sm" 
                           value={formData.organization} 
                           onChange={e => setFormData({...formData, organization: e.target.value})} 
@@ -1062,13 +1061,14 @@ export default function Webinar() {
                   <div className="pt-6 border-t border-glass-border flex justify-end">
                     <button 
                       type="submit" 
-                      className={`px-8 py-3.5 rounded-full font-bold text-sm transition-all flex items-center gap-2 text-midnight-black bg-white hover:bg-ai-cyan hover:text-white ${
+                      disabled={isSubmitting}
+                      className={`px-8 py-3.5 rounded-full font-bold text-sm transition-all flex items-center gap-2 text-midnight-black bg-white hover:bg-ai-cyan hover:text-white disabled:opacity-50 disabled:cursor-not-allowed ${
                         registrationTrack === 'free' 
                           ? 'hover:shadow-[0_0_20px_rgba(245,158,11,0.4)]' 
                           : 'hover:shadow-[0_0_20px_rgba(0,229,255,0.4)]'
                       }`}
                     >
-                      {registrationTrack === 'free' ? 'Secure My Complimentary Seat' : 'Submit Executive Application'} <ArrowRight className="w-4 h-4" />
+                      {isSubmitting ? 'Submitting...' : registrationTrack === 'free' ? 'Secure My Complimentary Seat' : 'Submit Executive Application'} <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 </motion.form>

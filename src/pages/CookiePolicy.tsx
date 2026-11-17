@@ -31,7 +31,7 @@ export default function CookiePolicy() {
           
           <div className="prose prose-invert prose-lg max-w-none text-quantum-silver">
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">Introduction</h2>
-            <p>This Cookie Policy explains how Neurogrowth Labs uses cookies and similar technologies when you visit our website.</p>
+            <p>This Cookie Policy explains how Neuro AI Development uses cookies and similar technologies when you visit our website.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">What Are Cookies</h2>
             <p>Cookies are small text files stored on your device that help websites function and improve user experience.</p>

@@ -83,7 +83,7 @@ export default function AuthGateModal({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const demoEmail = 'learner.africa@neurogrowthlabs.co.za';
+      const demoEmail = 'learner.africa@neuroaidevelopment.co.za';
       const demoName = 'African Intelligence Scholar';
       await registerWithEmail(demoEmail, 'LearnerPass2026@', demoName, 'South Africa');
       setSuccessMsg('Signed in with Verified Scholar credentials.');
@@ -134,7 +134,7 @@ export default function AuthGateModal({
             <div className="flex items-center gap-2 mb-4">
               <Hexagon className="w-6 h-6 text-ai-cyan" />
               <span className="text-sm font-bold tracking-tight text-white font-sans">
-                Neurogrowth Labs
+                Neuro AI Development
               </span>
               <span className="text-xs text-slate-400">/ Sovereign ID</span>
             </div>

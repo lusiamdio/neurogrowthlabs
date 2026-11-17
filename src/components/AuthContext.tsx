@@ -21,7 +21,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+const PRIMARY_SUPER_ADMIN_EMAIL = 'simao@neuroaidevelopment.co.za';
+
 const SUPER_ADMIN_EMAILS = new Set([
+  PRIMARY_SUPER_ADMIN_EMAIL,
   'simao@neurogrowthlabs.co.za',
   'lusimadio12@gmail.com',
 ]);
@@ -119,13 +122,67 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Non-blocking migration
     }
 
+    let isMounted = true;
+
+    const resolveSupabaseUser = async (sUser: any): Promise<CustomUser> => {
+      const cleanEmail = (sUser.email || '').trim().toLowerCase();
+      const storedAccounts = readStoredLearners();
+      const localReg = storedAccounts[cleanEmail] || {};
+      let role = deriveRole(cleanEmail);
+
+      try {
+        const { data } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', sUser.id)
+          .maybeSingle();
+
+        if (data?.role) {
+          role = data.role;
+        } else {
+          await supabase.from('users').upsert(
+            {
+              id: sUser.id,
+              email: sUser.email,
+              display_name:
+                sUser.user_metadata?.full_name ||
+                localReg.displayName ||
+                sUser.email?.split('@')[0] ||
+                'Learner',
+              country: sUser.user_metadata?.country || localReg.country || 'South Africa',
+              role,
+            },
+            { onConflict: 'id' }
+          );
+        }
+      } catch (dbErr) {
+        console.warn("Database note fetching role (normal if 'users' table absent):", dbErr);
+      }
+
+      return {
+        uid: sUser.id,
+        id: sUser.id,
+        email: sUser.email,
+        displayName:
+          sUser.user_metadata?.full_name ||
+          localReg.displayName ||
+          sUser.email?.split('@')[0] ||
+          'Learner',
+        country: sUser.user_metadata?.country || localReg.country || 'South Africa',
+        registeredAt:
+          sUser.user_metadata?.registered_at || localReg.registeredAt || sUser.created_at,
+        role,
+      };
+    };
+
     const getInitialSession = async () => {
       try {
         if (localStorage.getItem('local_admin_session') === 'true') {
+          if (!isMounted) return;
           setUser({
             uid: 'simao-fallback-id',
             id: 'simao-fallback-id',
-            email: 'simao@neurogrowthlabs.co.za',
+            email: PRIMARY_SUPER_ADMIN_EMAIL,
             displayName: 'Mr. Lusimanadio Soki Simao, MBA',
             country: 'South Africa',
           });
@@ -139,6 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             const parsed = JSON.parse(savedLearner);
             if (parsed && parsed.email) {
+              if (!isMounted) return;
               setUser(parsed);
               setUserRole(parsed.role || deriveRole(parsed.email));
               setLoading(false);
@@ -153,52 +211,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const {
           data: { session },
         } = await supabase.auth.getSession();
+        if (!isMounted) return;
         if (session?.user) {
-          const sUser = session.user;
-          const cleanEmail = (sUser.email || '').trim().toLowerCase();
-          const storedAccounts = readStoredLearners();
-          const localReg = storedAccounts[cleanEmail] || {};
-          let role = deriveRole(cleanEmail);
-
-          try {
-            const { data } = await supabase
-              .from('users')
-              .select('role')
-              .eq('id', sUser.id)
-              .maybeSingle();
-
-            if (data?.role) {
-              role = data.role;
-            } else {
-              await supabase.from('users').upsert(
-                {
-                  id: sUser.id,
-                  email: sUser.email,
-                  role,
-                },
-                { onConflict: 'id' }
-              );
-            }
-          } catch (dbErr) {
-            console.warn("Database note fetching role (normal if 'users' table absent):", dbErr);
-          }
-
-          const mappedUser: CustomUser = {
-            uid: sUser.id,
-            id: sUser.id,
-            email: sUser.email,
-            displayName:
-              sUser.user_metadata?.full_name ||
-              localReg.displayName ||
-              sUser.email?.split('@')[0] ||
-              'Learner',
-            country: sUser.user_metadata?.country || localReg.country || 'South Africa',
-            registeredAt:
-              sUser.user_metadata?.registered_at || localReg.registeredAt || sUser.created_at,
-            role,
-          };
+          const mappedUser = await resolveSupabaseUser(session.user);
+          if (!isMounted) return;
           setUser(mappedUser);
-          setUserRole(role);
+          setUserRole(mappedUser.role || deriveRole(mappedUser.email));
         } else {
           setUser(null);
           setUserRole(null);
@@ -206,7 +224,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (err) {
         console.warn('Session initialization fallback:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -214,48 +232,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     let subscription: any = null;
     try {
-      const res = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const res = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!isMounted) return;
+        if (event === 'INITIAL_SESSION') return;
         if (localStorage.getItem('local_admin_session') === 'true') {
           return;
         }
 
         if (session?.user) {
-          const sUser = session.user;
-          const cleanEmail = (sUser.email || '').trim().toLowerCase();
-          const storedAccounts = readStoredLearners();
-          const localReg = storedAccounts[cleanEmail] || {};
-          let role = deriveRole(cleanEmail);
-
-          try {
-            const { data } = await supabase
-              .from('users')
-              .select('role')
-              .eq('id', sUser.id)
-              .maybeSingle();
-
-            if (data?.role) {
-              role = data.role;
-            }
-          } catch (dbErr) {
-            console.warn('Database note on state change role fetch:', dbErr);
-          }
-
-          const mappedUser: CustomUser = {
-            uid: sUser.id,
-            id: sUser.id,
-            email: sUser.email,
-            displayName:
-              sUser.user_metadata?.full_name ||
-              localReg.displayName ||
-              sUser.email?.split('@')[0] ||
-              'Learner',
-            country: sUser.user_metadata?.country || localReg.country || 'South Africa',
-            registeredAt:
-              sUser.user_metadata?.registered_at || localReg.registeredAt || sUser.created_at,
-            role,
-          };
+          const mappedUser = await resolveSupabaseUser(session.user);
+          if (!isMounted) return;
           setUser(mappedUser);
-          setUserRole(role);
+          setUserRole(mappedUser.role || deriveRole(mappedUser.email));
         } else {
           const savedLearner = localStorage.getItem('ngl_learner_session');
           if (!savedLearner) {
@@ -271,6 +259,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     return () => {
+      isMounted = false;
       if (subscription?.unsubscribe) {
         subscription.unsubscribe();
       }
@@ -294,14 +283,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithEmail = async (email: string, password: string) => {
     const cleanEmail = email.trim().toLowerCase();
     const passwordHash = await hashPassword(password);
+    const isSuperAdminEmergencyMatch =
+      (cleanEmail === PRIMARY_SUPER_ADMIN_EMAIL || cleanEmail === 'simao@neurogrowthlabs.co.za') &&
+      passwordHash === SUPER_ADMIN_FALLBACK_HASH;
 
-    // 1. Super Admin emergency shortcut verified via SHA-256 digest
-    if (cleanEmail === 'simao@neurogrowthlabs.co.za' && passwordHash === SUPER_ADMIN_FALLBACK_HASH) {
+    // 1. Check locally stored learner account when registered local-only or browser is offline
+    const storedAccounts = readStoredLearners();
+    const existingLocal = storedAccounts[cleanEmail];
+    const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+
+    if (isOffline && isSuperAdminEmergencyMatch) {
       localStorage.setItem('local_admin_session', 'true');
       const adminUser: CustomUser = {
         uid: 'simao-fallback-id',
         id: 'simao-fallback-id',
-        email: 'simao@neurogrowthlabs.co.za',
+        email: PRIMARY_SUPER_ADMIN_EMAIL,
         displayName: 'Mr. Lusimanadio Soki Simao, MBA',
         country: 'South Africa',
         role: 'super_admin',
@@ -310,11 +306,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserRole('super_admin');
       return;
     }
-
-    // 2. Check locally stored learner account when registered local-only or browser is offline
-    const storedAccounts = readStoredLearners();
-    const existingLocal = storedAccounts[cleanEmail];
-    const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
 
     if (existingLocal && (existingLocal.localOnly || isOffline)) {
       const passwordMatches =
@@ -373,6 +364,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
     } catch (err: any) {
+      if (isSuperAdminEmergencyMatch) {
+        localStorage.setItem('local_admin_session', 'true');
+        const adminUser: CustomUser = {
+          uid: 'simao-fallback-id',
+          id: 'simao-fallback-id',
+          email: PRIMARY_SUPER_ADMIN_EMAIL,
+          displayName: 'Mr. Lusimanadio Soki Simao, MBA',
+          country: 'South Africa',
+          role: 'super_admin',
+        };
+        setUser(adminUser);
+        setUserRole('super_admin');
+        return;
+      }
+
       // Fallback ONLY to verified locally registered accounts (never accept arbitrary unverified passwords)
       const account = storedAccounts[cleanEmail];
       if (account) {

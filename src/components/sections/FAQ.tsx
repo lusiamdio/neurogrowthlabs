@@ -4,12 +4,12 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "What is NeuroGrowth Labs?",
+    question: "What is Neuro AI Development?",
     answer:
-      "NeuroGrowth Labs is a premier AI infrastructure and applied intelligence ecosystem. We specialize in developing sovereign AI platforms, enterprise machine learning solutions, and secure data infrastructures.",
+      "Neuro AI Development is a premier AI infrastructure and applied intelligence ecosystem. We specialize in developing sovereign AI platforms, enterprise machine learning solutions, and secure data infrastructures.",
   },
   {
-    question: "How can I partner with NeuroGrowth Labs?",
+    question: "How can I partner with Neuro AI Development?",
     answer:
       "We partner with governments, enterprises, and institutions globally. You can reach out to us via our Contact page or Partnership Portal to initiate discussions.",
   },

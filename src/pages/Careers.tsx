@@ -14,9 +14,9 @@ interface Message {
 }
 
 const assessmentQuestions = [
-  "Welcome to NeuroGrowth Labs. I am the AI Talent Assessment Agent. To begin, please state your full name and the role you are applying for.",
+  "Welcome to Neuro AI Development. I am the AI Talent Assessment Agent. To begin, please state your full name and the role you are applying for.",
   "Excellent. Could you describe your primary area of expertise and arguably your most significant technical or strategic achievement?",
-  "At NeuroGrowth, we value extreme innovation and resilience. Tell me about a time you had to pivot a major project due to unforeseen constraints. How did you adapt?",
+  "At Neuro AI Development, we value extreme innovation and resilience. Tell me about a time you had to pivot a major project due to unforeseen constraints. How did you adapt?",
   "How do you perceive the future of AI in the African digital economy, and what unique perspective do you bring to that vision?",
   "Thank you. This concludes the initial cognitive and cultural alignment scan."
 ];
@@ -69,7 +69,7 @@ function IntroPhase({ onStart }: { onStart: () => void }) {
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-electric-blue to-violet-glow">The Modern Economy</span>
       </h1>
       <p className="text-lg md:text-xl text-quantum-silver mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-        NeuroGrowth Labs does not use traditional application forms. Our AI Talent Assessment Agent will evaluate your alignment, skills, and potential through an interactive conversational protocol.
+        Neuro AI Development does not use traditional application forms. Our AI Talent Assessment Agent will evaluate your alignment, skills, and potential through an interactive conversational protocol.
       </p>
 
       <MagneticButton onClick={onStart} className="relative group mx-auto rounded-full p-[1px]">
@@ -173,6 +173,7 @@ function AssessmentPhase({ onComplete }: { onComplete: () => void }) {
                />
                <button 
                  type="submit" 
+                 aria-label="Send response"
                  disabled={isTyping || !input.trim()}
                  className="absolute right-2 w-10 h-10 bg-electric-blue rounded-lg flex items-center justify-center text-white disabled:opacity-50 disabled:bg-white/10 transition-colors"
                >
@@ -355,7 +356,7 @@ function SubmittingPhase({ onComplete }: { onComplete: () => void }) {
          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>[1/4] Compiling AI Assessment Notes...</motion.div>
          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>[2/4] Encrypting Document Vault...</motion.div>
          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>[3/4] Generating Priority Pipeline Tag...</motion.div>
-         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} className="text-electric-blue">[4/4] Transmitting to careers@neurogrowthlabs.co.za via SMTP...</motion.div>
+         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} className="text-electric-blue">[4/4] Transmitting to careers@neuroaidevelopment.co.za via SMTP...</motion.div>
       </div>
     </motion.div>
   );
@@ -371,11 +372,11 @@ function SuccessPhase() {
       
       <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Application Successfully Submitted</h2>
       <p className="text-xl text-quantum-silver mb-10 max-w-xl mx-auto font-light">
-        Your complete AI assessment package and documents have been securely routed to the NeuroGrowth executive recruitment team.
+        Your complete AI assessment package and documents have been securely routed to the Neuro AI Development executive recruitment team.
       </p>
 
       <div className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm text-quantum-silver font-mono">
-         <ShieldCheck className="w-4 h-4 text-ai-cyan" /> Securely Delivered to careers@neurogrowthlabs.co.za
+         <ShieldCheck className="w-4 h-4 text-ai-cyan" /> Securely Delivered to careers@neuroaidevelopment.co.za
       </div>
     </motion.div>
   );

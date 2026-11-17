@@ -34,7 +34,7 @@ export default function AboutSection() {
             Pioneering Pan-African Digital Transformation
           </h2>
           <p className="text-quantum-silver text-lg leading-relaxed">
-            NeuroGrowth Labs operates at the bleeding edge of AI development and infrastructure engineering. 
+            Neuro AI Development operates at the bleeding edge of AI development and infrastructure engineering. 
             From our headquarters in Cape Town, we orchestrate intelligence layers that empower nations, 
             accelerate enterprises, and redefine human potential across the continent and beyond.
           </p>

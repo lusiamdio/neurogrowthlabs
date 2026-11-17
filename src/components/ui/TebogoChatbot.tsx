@@ -8,7 +8,7 @@ import { supabase } from '../../supabase';
 const INITIAL_MESSAGE = {
   id: 'initial',
   role: 'ai',
-  text: 'Greetings. I am Tebogo, your Super Intelligent AI Assistant. How may I accelerate your journey within the NeuroGrowth Labs ecosystem today?',
+  text: 'Greetings. I am Tebogo, your Super Intelligent AI Assistant. How may I accelerate your journey within the Neuro AI Development ecosystem today?',
 };
 
 export default function TebogoChatbot() {
@@ -92,12 +92,13 @@ export default function TebogoChatbot() {
     }
 
     try {
-      await supabase.from('chat_messages').insert({
+      const { error: msgErr } = await supabase.from('chat_messages').insert({
         session_id: sessionId,
         role: 'user',
         text: userMessage,
         created_at: new Date().toISOString()
       });
+      if (msgErr) throw msgErr;
     } catch (sErr) {
       console.warn('Supabase save chatbot message failed:', sErr);
     }
@@ -127,13 +128,14 @@ export default function TebogoChatbot() {
       }
 
       try {
-        await supabase.from('chat_messages').insert({
+        const { error: aiErr } = await supabase.from('chat_messages').insert({
           session_id: sessionId,
           role: 'ai',
           text: aiResponse,
           system_prompt_context: `Current Page URL: ${window.location.href}`,
           created_at: new Date().toISOString()
         });
+        if (aiErr) throw aiErr;
       } catch (sErr) {
         console.warn('Supabase save chatbot AI message failed:', sErr);
       }
@@ -145,6 +147,8 @@ export default function TebogoChatbot() {
       <AnimatePresence>
         {!isOpen && (
           <motion.button
+            type="button"
+            aria-label="Open Tebogo AI Assistant"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -181,7 +185,7 @@ export default function TebogoChatbot() {
                  </div>
                </div>
                <div className="flex items-center gap-2 relative z-10">
-                 <button onClick={() => setIsOpen(false)} className="text-quantum-silver hover:text-white transition-colors p-1">
+                 <button type="button" aria-label="Minimize assistant" onClick={() => setIsOpen(false)} className="text-quantum-silver hover:text-white transition-colors p-1">
                    <Minimize2 className="w-4 h-4" />
                  </button>
                </div>
@@ -245,6 +249,7 @@ export default function TebogoChatbot() {
                 />
                 <button
                   type="submit"
+                  aria-label="Send message"
                   disabled={!input.trim()}
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-ai-cyan text-midnight-black flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors"
                 >

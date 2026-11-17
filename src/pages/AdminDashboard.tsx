@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
-import { Network, Search, Filter, Download, MoreHorizontal, CheckCircle2, XCircle, Clock, ShieldCheck, Activity, TrendingUp, Users, X, Sliders } from 'lucide-react';
+import { useAuth } from '../components/AuthContext';
+import { Network, Search, Filter, Download, MoreHorizontal, CheckCircle2, XCircle, Clock, ShieldCheck, Activity, TrendingUp, Users, X, Sliders, Lock } from 'lucide-react';
 import { MagneticButton } from '../components/ui/MagneticButton';
 
 type CandidateStatus = 'Interview' | 'Reviewing' | 'Archived';
@@ -30,6 +31,7 @@ const STATUS_CYCLE: Array<'All' | CandidateStatus> = ['All', 'Interview', 'Revie
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { user, userRole, loading } = useAuth();
   const [candidates, setCandidates] = useState<CandidateItem[]>(initialCandidates);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | CandidateStatus>('All');
@@ -75,12 +77,56 @@ export default function AdminDashboard() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'neurogrowth-recruitment-report.csv';
+    link.download = 'neuro-ai-development-recruitment-report.csv';
     document.body.appendChild(link);
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-midnight-black flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-2 border-ai-cyan/20 border-t-ai-cyan animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user || userRole !== 'super_admin') {
+    return (
+      <div className="bg-midnight-black text-slate-300 min-h-screen font-sans flex flex-col justify-between">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center px-6 py-32">
+          <div className="max-w-md w-full p-8 rounded-3xl bg-graphite-grey/50 border border-glass-border text-center shadow-2xl">
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center mx-auto mb-5 text-rose-400">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">Restricted Executive View</h1>
+            <p className="text-sm text-quantum-silver mb-6 leading-relaxed">
+              The Neuro AI Development Recruitment Intelligence Console requires Super Admin clearance.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => navigate('/portal')}
+                className="w-full py-3 rounded-xl bg-white text-midnight-black font-semibold text-sm hover:bg-ai-cyan transition-colors"
+              >
+                Authenticate in Command Portal
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="w-full py-3 rounded-xl bg-white/5 border border-glass-border text-quantum-silver hover:text-white text-sm"
+              >
+                Return Home
+              </button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-midnight-black text-slate-300 min-h-screen font-sans selection:bg-electric-blue/30 selection:text-white pb-20">

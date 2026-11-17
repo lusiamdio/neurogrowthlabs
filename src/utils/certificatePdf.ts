@@ -196,7 +196,7 @@ export async function renderCertificateCanvas(
   const cx = width / 2;
 
   // 1. Top Branding Header
-  const orgLabel = 'NEUROGROWTH LABS · SOVEREIGN INTELLIGENCE ACADEMY';
+  const orgLabel = 'NEURO AI DEVELOPMENT · SOVEREIGN INTELLIGENCE ACADEMY';
   ctx.font = '600 22px "JetBrains Mono", "Courier New", monospace';
   const orgWidth = ctx.measureText(orgLabel).width;
   const iconSpace = 36;

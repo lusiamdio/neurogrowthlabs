@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../firebase';
-import { supabase } from '../supabase';
+import { postPartnerApplication } from '../services/sqlApiClient';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
 import partnerHeroBg from '../assets/images/GettyImages-1172878142.jpg';
@@ -15,7 +15,7 @@ const partnershipModels = [
   { icon: Cpu, title: "AI Research Partnerships", desc: "Joint R&D ventures pushing the boundaries of LLMs and predictive networks." },
   { icon: Rocket, title: "Startup Ecosystem Alliances", desc: "Providing raw AI compute and foundational layers to accelerate early-stage teams." },
   { icon: LineChart, title: "Investment Partnerships", desc: "Capital and strategic alliances for large-scale digital infrastructure deployments." },
-  { icon: Zap, title: "Technology Distribution", desc: "Global distribution agreements bringing NeuroGrowth AI products to new regions." },
+  { icon: Zap, title: "Technology Distribution", desc: "Global distribution agreements bringing Neuro AI Development products to new regions." },
   { icon: Target, title: "Innovation Labs", desc: "Co-hosted laboratories designed to incubate next-generation AI-first companies." },
 ];
 
@@ -183,10 +183,6 @@ const renderCollabLogo = (name: string) => {
   }
 };
 
-function Device(props: any) {
-  return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
-}
-
 export default function Partner() {
   const [step, setStep] = useState(1);
   const [collabFilter, setCollabFilter] = useState<'all' | 'known' | 'unknown'>('all');
@@ -218,21 +214,18 @@ export default function Partner() {
         }
       }
 
-      // 2. Write to Supabase using exact SQL schema columns
+      // 2. Write via SQL Backend API (/api/v1/sql/partner-applications) + Supabase fallback
       try {
-        const { error: sErr } = await supabase.from('partner_applications').insert({
+        await postPartnerApplication({
           company: formData.company,
           type: formData.type,
           country: formData.country,
           interest: formData.interest,
           objectives: formData.objectives,
           email: formData.email,
-          status: 'pending',
-          created_at: new Date().toISOString()
         });
-        if (sErr) throw sErr;
       } catch (sErr) {
-        console.warn("Supabase partner application save failed:", sErr);
+        console.warn("SQL/Supabase partner application save failed:", sErr);
       }
 
       // 3. Fallback to localStorage list for immediate admin portal viewing
@@ -315,7 +308,7 @@ export default function Partner() {
              </div>
              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-white leading-tight">
                Build the Future With <br/>
-               <span className="text-transparent bg-clip-text bg-gradient-to-r from-ai-cyan to-violet-glow">NeuroGrowth Labs</span>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-ai-cyan to-violet-glow">Neuro AI Development</span>
              </h1>
              <p className="text-xl text-quantum-silver max-w-3xl mx-auto leading-relaxed font-light">
                Partner with a next-generation AI and digital infrastructure company shaping Africa’s intelligent economy.
@@ -484,7 +477,7 @@ export default function Partner() {
                    <h3 className="text-2xl font-bold text-white mb-3">Partnership Transmission Complete</h3>
                    <p className="text-quantum-silver max-w-lg mx-auto text-sm leading-relaxed mb-8">
                      We have securely registered your organization, <span className="text-white font-semibold">{formData.company}</span>. 
-                     An executive from NeuroGrowth Labs will contact you at <strong className="text-white">{formData.email}</strong> shortly to align on our global vector.
+                     An executive from Neuro AI Development will contact you at <strong className="text-white">{formData.email}</strong> shortly to align on our global vector.
                    </p>
                    <button onClick={handleResetForm} className="px-6 py-2.5 rounded-full border border-glass-border text-quantum-silver hover:text-white hover:bg-white/5 text-xs font-mono font-semibold uppercase tracking-wider transition-all">
                       Initialize Another Session

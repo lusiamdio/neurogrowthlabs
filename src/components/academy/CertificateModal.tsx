@@ -104,7 +104,7 @@ export default function CertificateModal({
                   <span>Official Certificate of Completion</span>
                 </h3>
                 <p className="text-xs text-quantum-silver">
-                  Official credential issued by Neurogrowth Labs Sovereign Intelligence Academy
+                  Official credential issued by Neuro AI Development Sovereign Intelligence Academy
                 </p>
               </div>
             </div>
@@ -137,6 +137,7 @@ export default function CertificateModal({
 
               <button
                 onClick={onClose}
+                aria-label="Close certificate preview"
                 className="w-8 h-8 rounded-xl bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />

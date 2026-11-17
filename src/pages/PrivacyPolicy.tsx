@@ -30,13 +30,13 @@ export default function PrivacyPolicy() {
           <h1 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">Privacy Policy</h1>
           
           <div className="prose prose-invert prose-lg max-w-none text-quantum-silver">
-            <p className="font-semibold text-white">Neurogrowth Labs</p>
+            <p className="font-semibold text-white">Neuro AI Development</p>
             <p><strong>Effective Date:</strong> 21st January 2024<br/>
             <strong>Last Updated:</strong> 15th March 2026</p>
 
-            <p>Neurogrowth Labs ("Neurogrowth Labs", "we", "us", or "our") is committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your information.</p>
+            <p>Neuro AI Development ("Neuro AI Development", "we", "us", or "our") is committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your information.</p>
 
-            <p>This Privacy Policy explains how Neurogrowth Labs collects, uses, processes, and protects personal information when you access or use our website, products, services, platforms, research technologies, and applications (collectively, the “Services”).</p>
+            <p>This Privacy Policy explains how Neuro AI Development collects, uses, processes, and protects personal information when you access or use our website, products, services, platforms, research technologies, and applications (collectively, the “Services”).</p>
 
             <p>By accessing or using our Services, you agree to the practices described in this Privacy Policy.</p>
 
@@ -65,7 +65,7 @@ export default function PrivacyPolicy() {
             </ul>
 
             <h3 className="text-xl font-medium text-white mt-8 mb-4">1.2 Information Collected Automatically</h3>
-            <p>When you visit the Neurogrowth Labs website, we may automatically collect technical information including:</p>
+            <p>When you visit the Neuro AI Development website, we may automatically collect technical information including:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>IP address</li>
               <li>Device type</li>
@@ -89,7 +89,7 @@ export default function PrivacyPolicy() {
             <p>This information helps us improve our Services and user experience.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">2. How We Use Your Information</h2>
-            <p>Neurogrowth Labs uses collected information to:</p>
+            <p>Neuro AI Development uses collected information to:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>Provide and operate our Services</li>
               <li>Improve and develop new technologies</li>
@@ -102,7 +102,7 @@ export default function PrivacyPolicy() {
             </ul>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">3. Artificial Intelligence & Research</h2>
-            <p>As an AI research and technology organization, Neurogrowth Labs may use certain data to:</p>
+            <p>As an AI research and technology organization, Neuro AI Development may use certain data to:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>train artificial intelligence models</li>
               <li>improve machine learning systems</li>
@@ -113,7 +113,7 @@ export default function PrivacyPolicy() {
             <p>We do not intentionally collect personal data for AI training unless permitted by law or user consent.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">4. Cookies and Tracking Technologies</h2>
-            <p>Neurogrowth Labs uses cookies and similar technologies to:</p>
+            <p>Neuro AI Development uses cookies and similar technologies to:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>enable core website functionality</li>
               <li>analyze website traffic</li>
@@ -130,7 +130,7 @@ export default function PrivacyPolicy() {
             <p>Users may control cookie preferences through their browser settings.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">5. How We Share Information</h2>
-            <p>Neurogrowth Labs does not sell personal data.</p>
+            <p>Neuro AI Development does not sell personal data.</p>
             <p>We may share information only in the following situations:</p>
             
             <h3 className="text-xl font-medium text-white mt-8 mb-4">Service Providers</h3>
@@ -153,10 +153,10 @@ export default function PrivacyPolicy() {
             </ul>
 
             <h3 className="text-xl font-medium text-white mt-8 mb-4">Business Transfers</h3>
-            <p>If Neurogrowth Labs undergoes a merger, acquisition, restructuring, or asset sale, user information may be transferred as part of the transaction.</p>
+            <p>If Neuro AI Development undergoes a merger, acquisition, restructuring, or asset sale, user information may be transferred as part of the transaction.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">6. Data Security</h2>
-            <p>Neurogrowth Labs uses industry-standard security measures to protect information.</p>
+            <p>Neuro AI Development uses industry-standard security measures to protect information.</p>
             <p>These include:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>encryption technologies</li>
@@ -178,7 +178,7 @@ export default function PrivacyPolicy() {
             <p>Retention periods vary depending on the nature of the data and legal requirements.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">8. International Data Transfers</h2>
-            <p>Neurogrowth Labs operates globally.</p>
+            <p>Neuro AI Development operates globally.</p>
             <p>Your information may be transferred to and processed in countries outside your jurisdiction.</p>
             <p>Where required, we implement appropriate safeguards to ensure data protection consistent with international privacy standards.</p>
 
@@ -195,17 +195,17 @@ export default function PrivacyPolicy() {
             <p>To exercise these rights, please contact us using the information provided below.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">10. Children's Privacy</h2>
-            <p>Neurogrowth Labs Services are not directed to children under the age of 13.</p>
+            <p>Neuro AI Development Services are not directed to children under the age of 13.</p>
             <p>We do not knowingly collect personal information from children.</p>
             <p>If we become aware that such information has been collected, we will take steps to delete it promptly.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">11. Third-Party Links</h2>
-            <p>Our Services may contain links to external websites or services not operated by Neurogrowth Labs.</p>
+            <p>Our Services may contain links to external websites or services not operated by Neuro AI Development.</p>
             <p>We are not responsible for the privacy practices of those third parties.</p>
             <p>Users are encouraged to review the privacy policies of external websites.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">12. Changes to This Privacy Policy</h2>
-            <p>Neurogrowth Labs may update this Privacy Policy periodically to reflect changes in:</p>
+            <p>Neuro AI Development may update this Privacy Policy periodically to reflect changes in:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>legal requirements</li>
               <li>technology practices</li>
@@ -217,9 +217,9 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">13. Contact Us</h2>
             <p>If you have questions, requests, or concerns about this Privacy Policy or how your information is handled, please contact us:</p>
             <p className="mt-4">
-              <strong>Neurogrowth Labs</strong><br/>
-              Email: privacy@neurogrowthlabs.com<br/>
-              Website: www.neurogrowthlabs.com
+              <strong>Neuro AI Development</strong><br/>
+              Email: privacy@neuroaidevelopment.com<br/>
+              Website: www.neuroaidevelopment.com
             </p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">14. Global Compliance</h2>
@@ -229,7 +229,7 @@ export default function PrivacyPolicy() {
               <li>California Consumer Privacy Act (CCPA)</li>
               <li>international data protection standards</li>
             </ul>
-            <p>Neurogrowth Labs is committed to responsible and ethical data practices.</p>
+            <p>Neuro AI Development is committed to responsible and ethical data practices.</p>
           </div>
         </motion.div>
       </main>

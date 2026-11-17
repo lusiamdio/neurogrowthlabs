@@ -6,13 +6,13 @@ export default function SEO() {
 
   useEffect(() => {
     // 1. Core Meta Definitions
-    let title = "NeuroGrowth Labs | Sovereign AI Infrastructure & Enterprise Solutions";
+    let title = "Neuro AI Development | Sovereign AI Infrastructure & Enterprise Solutions";
     let description = "Premier sovereign AI infrastructure and enterprise applied intelligence ecosystem in Africa. We build robust, secure, and customizable machine learning platforms.";
-    let keywords = "Sovereign AI, Africa AI, NeuroGrowth Labs, AI Infrastructure, Enterprise Machine Learning, Secure LLMs, National Data Infrastructure, Applied Intelligence";
+    let keywords = "Sovereign AI, Africa AI, Neuro AI Development, AI Infrastructure, Enterprise Machine Learning, Secure LLMs, National Data Infrastructure, Applied Intelligence";
     let type = "website";
-    const pageImage = "https://neurogrowthlabs.com/favicon.svg";
+    const pageImage = "https://neuroaidevelopment.com/favicon.svg";
 
-    const baseUrl = "https://neurogrowthlabs.com";
+    const baseUrl = "https://neuroaidevelopment.com";
     const canonicalUrl = `${baseUrl}${pathname === '/' ? '' : pathname}`;
 
     // Schema arrays
@@ -24,20 +24,20 @@ export default function SEO() {
       "@type": "GovernmentBenefitsService",
       "additionalType": "ProfessionalService",
       "@id": `${baseUrl}/#organization`,
-      "name": "NeuroGrowth Labs",
+      "name": "Neuro AI Development",
       "url": baseUrl,
       "logo": pageImage,
       "image": pageImage,
       "description": "Sovereign AI infrastructure and applied intelligence ecosystem powering digital transformation.",
       "sameAs": [
-        "https://www.linkedin.com/company/neurogrowthlabs/",
-        "https://x.com/neurogrowthlabs",
-        "https://www.youtube.com/@neurogrowthlabs"
+        "https://www.linkedin.com/company/neuro-ai-development/",
+        "https://x.com/neuroaidevelopment",
+        "https://www.youtube.com/@neuroaidevelopment"
       ],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer support",
-        "email": "partners@neurogrowthlabs.com",
+        "email": "partners@neuroaidevelopment.com",
         "availableLanguage": ["en"]
       }
     };
@@ -46,9 +46,9 @@ export default function SEO() {
     // Route-specific customizations for titles, metas, and schemas
     switch (pathname) {
       case '/':
-        title = "NeuroGrowth Labs | Sovereign AI Infrastructure & Enterprise Solutions";
+        title = "Neuro AI Development | Sovereign AI Infrastructure & Enterprise Solutions";
         description = "Premier sovereign AI infrastructure and enterprise applied intelligence ecosystem in Africa. We build robust, secure, and customizable machine learning platforms.";
-        keywords = "Sovereign AI Africa, NeuroGrowth Labs, Enterprise AI Platforms, Autonomous Agent Systems, National AI Strategy, Deep Learning Solutions";
+        keywords = "Sovereign AI Africa, Neuro AI Development, Enterprise AI Platforms, Autonomous Agent Systems, National AI Strategy, Deep Learning Solutions";
         
         // FAQ Schema aligned with actual FAQ section elements on Home screen
         const faqSchema = {
@@ -57,15 +57,15 @@ export default function SEO() {
           "mainEntity": [
             {
               "@type": "Question",
-              "name": "What is NeuroGrowth Labs?",
+              "name": "What is Neuro AI Development?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "NeuroGrowth Labs is a premier AI infrastructure and applied intelligence ecosystem. We specialize in developing sovereign AI platforms, enterprise machine learning solutions, and secure data infrastructures."
+                "text": "Neuro AI Development is a premier AI infrastructure and applied intelligence ecosystem. We specialize in developing sovereign AI platforms, enterprise machine learning solutions, and secure data infrastructures."
               }
             },
             {
               "@type": "Question",
-              "name": "How can I partner with NeuroGrowth Labs?",
+              "name": "How can I partner with Neuro AI Development?",
               "acceptedAnswer": {
                 "@type": "Answer",
                 "text": "We partner with governments, enterprises, and institutions globally. You can reach out to us via our Contact page or Partnership Portal to initiate discussions."
@@ -93,21 +93,21 @@ export default function SEO() {
         break;
 
       case '/about':
-        title = "About NeuroGrowth Labs | Our Mission & AI Leadership";
+        title = "About Neuro AI Development | Our Mission & AI Leadership";
         description = "Learn about our mission to democratize sovereign AI infrastructure in Africa. Meet our leadership team, explore our research, and discover our core technology principles.";
-        keywords = "NeuroGrowth Labs Team, AI Leadership Africa, Francis Matsoso, Sovereign Computing Mission, Applied Research Africa";
+        keywords = "Neuro AI Development Team, AI Leadership Africa, Francis Matsoso, Sovereign Computing Mission, Applied Research Africa";
         break;
 
       case '/platforms':
-        title = "Enterprise AI Platforms & Sovereign Solutions | NeuroGrowth Labs";
+        title = "Enterprise AI Platforms & Sovereign Solutions | Neuro AI Development";
         description = "Explore our state-of-the-art sovereign AI computing platforms, secure multi-tenant data storage, and scalable high-performance LLM deployment engines.";
-        keywords = "AI Compute Engines, Sovereign Data Storage, Custom LLM Deployments, Secure Multi-tenant cloud, NeuroGrowth Infrastructure";
+        keywords = "AI Compute Engines, Sovereign Data Storage, Custom LLM Deployments, Secure Multi-tenant cloud, Neuro AI Development Infrastructure";
         
         // Software application schema for better search placement
         const softwareSchema = {
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          "name": "NeuroGrowth Sovereign AI Platform",
+          "name": "Neuro AI Development Sovereign AI Platform",
           "operatingSystem": "Linux, Cloud, Edge",
           "applicationCategory": "BusinessApplication, AIPlatform",
           "offers": {
@@ -120,56 +120,56 @@ export default function SEO() {
         break;
 
       case '/partner':
-        title = "Partner with NeuroGrowth Labs | Join the Africa AI Ecosystem";
-        description = "Accelerate digital transformation by partnering with NeuroGrowth Labs. We collaborate with national governments, global enterprises, and elite research hubs.";
+        title = "Partner with Neuro AI Development | Join the Africa AI Ecosystem";
+        description = "Accelerate digital transformation by partnering with Neuro AI Development. We collaborate with national governments, global enterprises, and elite research hubs.";
         keywords = "AI Partnerships Africa, Joint Ventures AI, National Infrastructure Collaborations, Sovereign Tech Integration";
         break;
 
       case '/careers':
-        title = "Careers at NeuroGrowth Labs | Shape the Future of AI";
+        title = "Careers at Neuro AI Development | Shape the Future of AI";
         description = "Join a team of elite AI researchers, deep learning engineers, and software architects designing high-impact sovereign machine learning infrastructure.";
         keywords = "AI Jobs Africa, Deep Learning Careers, Neural Network Research Jobs, Machine Learning Infrastructure Engineering";
         break;
 
       case '/contact':
-        title = "Contact NeuroGrowth Labs | Secure AI Consultation";
+        title = "Contact Neuro AI Development | Secure AI Consultation";
         description = "Get in touch with our enterprise advisory team. Request a demo, discuss secure on-premises AI deployment, or schedule custom integration workshops.";
-        keywords = "Contact NeuroGrowth Labs, AI Advisory Consultation, Request Enterprise Demo, Secure AI Workshops";
+        keywords = "Contact Neuro AI Development, AI Advisory Consultation, Request Enterprise Demo, Secure AI Workshops";
         break;
 
       case '/privacy-policy':
-        title = "Privacy Policy | NeuroGrowth Labs";
+        title = "Privacy Policy | Neuro AI Development";
         description = "Our privacy commitments, user data protection protocols, and secure storage compliance details.";
         break;
 
       case '/terms-of-service':
-        title = "Terms of Service | NeuroGrowth Labs";
-        description = "Terms, conditions, and standard business governance guidelines for using NeuroGrowth Labs services.";
+        title = "Terms of Service | Neuro AI Development";
+        description = "Terms, conditions, and standard business governance guidelines for using Neuro AI Development services.";
         break;
 
       case '/ai-ethics':
-        title = "AI Ethics & Responsible Innovation | NeuroGrowth Labs";
+        title = "AI Ethics & Responsible Innovation | Neuro AI Development";
         description = "Our foundational principles on responsible artificial intelligence, model bias mitigation, data sovereignty, and secure deployment frameworks.";
         break;
 
       case '/cookie-policy':
-        title = "Cookie Policy | NeuroGrowth Labs";
+        title = "Cookie Policy | Neuro AI Development";
         description = "How we utilize browser storage, session cookies, and persistent cookies for securing and optimizing user experiences.";
         break;
 
       case '/dpa':
-        title = "Data Processing Addendum (DPA) | NeuroGrowth Labs";
+        title = "Data Processing Addendum (DPA) | Neuro AI Development";
         description = "Our enterprise-grade data processing specifications, compliance agreements, and security operations commitments.";
         break;
 
       case '/security-policy':
-        title = "Security Policy | NeuroGrowth Labs";
+        title = "Security Policy | Neuro AI Development";
         description = "Discover our multi-layered cybersecurity architectures, secure container deployments, and zero-trust data storage rules.";
         break;
 
       case '/webinar':
-        title = "Sovereign AI Infrastructure Webinars & Programs | NeuroGrowth Labs";
-        description = "Join NeuroGrowth Labs' exclusive live virtual webinars on high-performance sovereign AI compute, liquidity bridge protocols, and secure LLM distribution.";
+        title = "Sovereign AI Infrastructure Webinars & Programs | Neuro AI Development";
+        description = "Join Neuro AI Development's exclusive live virtual webinars on high-performance sovereign AI compute, liquidity bridge protocols, and secure LLM distribution.";
         keywords = "Sovereign AI Webinars, AI Infrastructure Seminars, Enterprise Machine Learning Programs, National Computing Stacks, Pan-African Tech Summit";
         
         // Structured JSON-LD Event Schema for search-discoverable webinars
@@ -177,21 +177,21 @@ export default function SEO() {
           "@context": "https://schema.org",
           "@type": "Event",
           "name": "Sovereign AI Infrastructure Masterclass Series",
-          "description": "Unlock high-fidelity national compute architectures and secure multi-tenant model distribution frameworks. Led by NeuroGrowth Labs systems architects.",
+          "description": "Unlock high-fidelity national compute architectures and secure multi-tenant model distribution frameworks. Led by Neuro AI Development systems architects.",
           "startDate": "2026-07-15T15:00:00+02:00",
           "endDate": "2026-07-15T16:30:00+02:00",
           "eventStatus": "https://schema.org/EventScheduled",
           "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
           "location": {
             "@type": "VirtualLocation",
-            "url": "https://neurogrowthlabs.com/webinar"
+            "url": "https://neuroaidevelopment.com/webinar"
           },
           "image": [
-            "https://neurogrowthlabs.com/favicon.svg"
+            "https://neuroaidevelopment.com/favicon.svg"
           ],
           "offers": {
             "@type": "Offer",
-            "url": "https://neurogrowthlabs.com/webinar",
+            "url": "https://neuroaidevelopment.com/webinar",
             "price": "0",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock",
@@ -199,12 +199,12 @@ export default function SEO() {
           },
           "performer": {
             "@type": "Organization",
-            "name": "NeuroGrowth Labs Research Division"
+            "name": "Neuro AI Development Research Division"
           },
           "organizer": {
             "@type": "Organization",
-            "name": "NeuroGrowth Labs",
-            "url": "https://neurogrowthlabs.com"
+            "name": "Neuro AI Development",
+            "url": "https://neuroaidevelopment.com"
           }
         };
         schemas.push(webinarEventSchema);
@@ -213,9 +213,9 @@ export default function SEO() {
       case '/academy':
       case '/courses':
       case '/research':
-        title = "Cybersecurity & AI Academy | 5 Free Courses & Research Papers | NeuroGrowth Labs";
+        title = "Cybersecurity & AI Academy | 5 Free Courses & Research Papers | Neuro AI Development";
         description = "Enroll in 5 tuition-free courses on Cybersecurity & Defensive AI with autogenerated Certificates of Completion, plus 5 downloadable peer-reviewed research papers on AI in Africa.";
-        keywords = "Cybersecurity Courses Africa, Free AI Courses, Certificate of Completion, Defensive AI, AI in Africa Research, Sovereign AI Academy, Neurogrowth Labs Academy";
+        keywords = "Cybersecurity Courses Africa, Free AI Courses, Certificate of Completion, Defensive AI, AI in Africa Research, Sovereign AI Academy, Neuro AI Development Academy";
         
         const academyCourseSchema = {
           "@context": "https://schema.org",
@@ -224,8 +224,8 @@ export default function SEO() {
           "description": "Tuition-free accredited courses on Defensive AI, Zero Trust Architecture, Adversarial Machine Learning, Cyber Threat Intelligence, and Ethical AI Governance in Africa.",
           "provider": {
             "@type": "Organization",
-            "name": "Neurogrowth Labs",
-            "sameAs": "https://neurogrowthlabs.com"
+            "name": "Neuro AI Development",
+            "sameAs": "https://neuroaidevelopment.com"
           },
           "offers": {
             "@type": "Offer",
@@ -270,7 +270,7 @@ export default function SEO() {
     setMetaTag('property', 'og:type', type);
     setMetaTag('property', 'og:url', canonicalUrl);
     setMetaTag('property', 'og:image', pageImage);
-    setMetaTag('property', 'og:site_name', 'NeuroGrowth Labs');
+    setMetaTag('property', 'og:site_name', 'Neuro AI Development');
 
     // Twitter Cards tags (Rich preview optimization on Twitter/X)
     setMetaTag('name', 'twitter:card', 'summary_large_image');

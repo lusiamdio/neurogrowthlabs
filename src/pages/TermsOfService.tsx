@@ -30,12 +30,12 @@ export default function TermsOfService() {
           <h1 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">Terms of Service</h1>
           
           <div className="prose prose-invert prose-lg max-w-none text-quantum-silver">
-            <p className="font-semibold text-white">Neurogrowth Labs</p>
+            <p className="font-semibold text-white">Neuro AI Development</p>
             <p><strong>Effective Date:</strong> 21st January 2026<br/>
             <strong>Last Updated:</strong> 15th March 2026</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">1. Introduction</h2>
-            <p>Welcome to Neurogrowth Labs. These Terms of Service ("Terms") govern your access to and use of the Neurogrowth Labs website, products, artificial intelligence systems, research tools, APIs, and services (collectively, the “Services”).</p>
+            <p>Welcome to Neuro AI Development. These Terms of Service ("Terms") govern your access to and use of the Neuro AI Development website, products, artificial intelligence systems, research tools, APIs, and services (collectively, the “Services”).</p>
             <p>By accessing or using our Services, you agree to be bound by these Terms.</p>
             <p>If you do not agree with these Terms, you must not use the Services.</p>
 
@@ -67,10 +67,10 @@ export default function TermsOfService() {
               <li>attempt unauthorized access to systems</li>
               <li>develop malicious software or automated attacks</li>
             </ul>
-            <p>Neurogrowth Labs reserves the right to suspend or terminate accounts that violate these rules.</p>
+            <p>Neuro AI Development reserves the right to suspend or terminate accounts that violate these rules.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">5. Artificial Intelligence Services</h2>
-            <p>Neurogrowth Labs provides AI technologies that may generate automated outputs.</p>
+            <p>Neuro AI Development provides AI technologies that may generate automated outputs.</p>
             <p>Users acknowledge that:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>AI outputs may not always be accurate</li>
@@ -80,7 +80,7 @@ export default function TermsOfService() {
             <p>Users remain responsible for how they use AI-generated content.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">6. Intellectual Property</h2>
-            <p>All content and technology associated with the Services are owned by Neurogrowth Labs or its licensors.</p>
+            <p>All content and technology associated with the Services are owned by Neuro AI Development or its licensors.</p>
             <p>This includes:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>software</li>
@@ -94,11 +94,11 @@ export default function TermsOfService() {
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">7. Third-Party Services</h2>
             <p>The Services may integrate or link to third-party platforms.</p>
-            <p>Neurogrowth Labs is not responsible for the availability, accuracy, or practices of third-party services.</p>
+            <p>Neuro AI Development is not responsible for the availability, accuracy, or practices of third-party services.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">8. Disclaimer of Warranties</h2>
             <p>The Services are provided “as is” and “as available.”</p>
-            <p>Neurogrowth Labs makes no warranties regarding:</p>
+            <p>Neuro AI Development makes no warranties regarding:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>accuracy of outputs</li>
               <li>uninterrupted service</li>
@@ -106,7 +106,7 @@ export default function TermsOfService() {
             </ul>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">9. Limitation of Liability</h2>
-            <p>To the maximum extent permitted by law, Neurogrowth Labs shall not be liable for:</p>
+            <p>To the maximum extent permitted by law, Neuro AI Development shall not be liable for:</p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>indirect damages</li>
               <li>lost profits</li>
@@ -116,7 +116,7 @@ export default function TermsOfService() {
             <p>arising from the use of our Services.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">10. Termination</h2>
-            <p>Neurogrowth Labs may suspend or terminate access to the Services at any time if users violate these Terms.</p>
+            <p>Neuro AI Development may suspend or terminate access to the Services at any time if users violate these Terms.</p>
             <p>Users may stop using the Services at any time.</p>
 
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">11. Changes to Terms</h2>
@@ -126,7 +126,7 @@ export default function TermsOfService() {
             <h2 className="text-2xl font-semibold text-white mt-12 mb-4">12. Contact</h2>
             <p>For questions regarding these Terms:</p>
             <p className="mt-4">
-              Email: legal@neurogrowthlabs.com
+              Email: legal@neuroaidevelopment.com
             </p>
           </div>
         </motion.div>

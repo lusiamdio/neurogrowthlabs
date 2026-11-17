@@ -21,6 +21,7 @@ import AIEthics from './pages/AIEthics';
 import CookiePolicy from './pages/CookiePolicy';
 import DPA from './pages/DPA';
 import SecurityPolicy from './pages/SecurityPolicy';
+import Platforms from './pages/Platforms';
 import { AuthProvider } from './components/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ThemeProvider } from './components/ThemeContext';
@@ -68,7 +69,7 @@ function NotFoundPage() {
           Endpoint Outside Ecosystem
         </h1>
         <p className="text-sm md:text-base text-quantum-silver max-w-md mb-8 leading-relaxed">
-          The page you requested does not exist or has been relocated within the NeuroGrowth Labs platform.
+          The page you requested does not exist or has been relocated within the Neuro AI Development platform.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link
@@ -112,6 +113,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
         <Route path="/portal" element={<PageTransition><Portal /></PageTransition>} />
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+        <Route path="/platforms" element={<PageTransition><Platforms /></PageTransition>} />
         <Route path="/partner" element={<PageTransition><Partner /></PageTransition>} />
         <Route path="/careers" element={<PageTransition><Careers /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />

@@ -9,7 +9,7 @@ import aboutHeroBg from '../assets/images/global_kenya_techstartup.webp';
 import { 
   ArrowRight, Globe, Brain, Zap, Cpu, Network, ShieldCheck, Server as LucideServer,
   Lightbulb, Rocket, Activity, Target, Layers, BarChart3, Database, Fingerprint, Linkedin, Twitter,
-  Building, GraduationCap, Users, Briefcase
+  Building, GraduationCap, Users, Briefcase, Hexagon
 } from 'lucide-react';
 
 const africaNodes = [
@@ -167,7 +167,7 @@ export default function About() {
           </h1>
           
           <p className="text-xl md:text-2xl text-quantum-silver mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-            NeuroGrowth Labs is building next-generation AI infrastructure, intelligent enterprise systems, fintech ecosystems, and digital transformation technologies shaping the future of Africa and beyond.
+            Neuro AI Development is building next-generation AI infrastructure, intelligent enterprise systems, fintech ecosystems, and digital transformation technologies shaping the future of Africa and beyond.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -199,7 +199,7 @@ export default function About() {
                </h2>
                <div className="space-y-6 text-lg text-quantum-silver leading-relaxed font-light">
                  <p>
-                   NeuroGrowth Labs is a future-focused African technology company developing AI-powered platforms, enterprise systems, fintech infrastructure, automation technologies, and intelligent digital ecosystems designed to accelerate Africa’s digital transformation.
+                   Neuro AI Development is a future-focused African technology company developing AI-powered platforms, enterprise systems, fintech infrastructure, automation technologies, and intelligent digital ecosystems designed to accelerate Africa’s digital transformation.
                  </p>
                  <p>
                    We combine artificial intelligence, enterprise engineering, strategic innovation, and deep data intelligence to create scalable digital systems for governments, enterprises, startups, and emerging economies globally.
@@ -403,7 +403,7 @@ export default function About() {
          <div className="relative z-10 max-w-4xl mx-auto">
             <h2 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter leading-[1.1]">Join the Future of <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-ai-cyan to-violet-glow glow-text">Intelligent Innovation</span></h2>
             <p className="text-xl md:text-2xl text-quantum-silver mb-14 font-light leading-relaxed max-w-3xl mx-auto">
-               NeuroGrowth Labs is building the next generation of AI-powered digital ecosystems transforming Africa and the world.
+               Neuro AI Development is building the next generation of AI-powered digital ecosystems transforming Africa and the world.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -421,7 +421,3 @@ export default function About() {
     </div>
   );
 }
-
-// Icon helper since lucide-react doesn't have Server and Hexagon directly imported in this file.
-function Server(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>; }
-function Hexagon(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>; }

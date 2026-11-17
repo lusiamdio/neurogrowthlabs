@@ -16,6 +16,7 @@ import {
 import { db, isFirebaseConfigured } from '../firebase';
 import { supabase } from '../supabase';
 import { copyToClipboard } from '../utils/clipboard';
+import productionSchemaSql from '../../server/db/production_schema.sql?raw';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
 import { 
@@ -23,6 +24,11 @@ import {
   Plus, Trash2, Check, X, Search, Clock, PlusCircle, AlertCircle, Sparkles, ArrowLeft, Copy, CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+function normalizeDbId(id: string | number): string | number {
+  const num = Number(id);
+  return Number.isInteger(num) && String(num) === String(id) ? num : id;
+}
 
 export default function Portal() {
   const { user, userRole, loading, loginWithEmail, registerWithEmail, logout } = useAuth();
@@ -130,7 +136,19 @@ export default function Portal() {
           .select('*')
           .order('created_at', { ascending: false });
         if (error) throw error;
-        regList = data || [];
+        regList = (data || []).map((r: any) => ({
+          id: r.id,
+          fullName: r.fullName || r.full_name,
+          email: r.email,
+          organization: r.organization,
+          title: r.title,
+          country: r.country,
+          interestSector: r.interestSector || r.interest_sector,
+          comments: r.comments,
+          track: r.track,
+          status: r.status,
+          created_at: r.created_at,
+        }));
       } catch (sErr) {
         console.warn("Supabase webinar registrations fetch failed, trying Firebase Firestore:", sErr);
         anyFailure = true;
@@ -339,7 +357,7 @@ export default function Portal() {
 
       // 2. Dual-write to Supabase
       try {
-        await supabase.from('webinars').insert({
+        const { error: sErr } = await supabase.from('webinars').insert({
           date: newWebinar.date,
           track: newWebinar.track,
           duration: newWebinar.duration,
@@ -347,6 +365,7 @@ export default function Portal() {
           team: newWebinar.team,
           created_at: new Date().toISOString()
         });
+        if (sErr) throw sErr;
       } catch (sErr) {
         console.warn("Supabase webinar create failed:", sErr);
       }
@@ -391,13 +410,13 @@ export default function Portal() {
           }
 
           try {
-            await supabase.from('webinars').delete().eq('id', id);
+            const { error: delErr } = await supabase
+              .from('webinars')
+              .delete()
+              .eq('id', normalizeDbId(id));
+            if (delErr) throw delErr;
           } catch (sErr) {
-            try {
-              await supabase.from('webinars').delete().eq('id', parseInt(id, 10));
-            } catch (innerErr) {
-              console.warn("Supabase webinar delete failed:", sErr, innerErr);
-            }
+            console.warn("Supabase webinar delete failed:", sErr);
           }
 
           try {
@@ -431,13 +450,13 @@ export default function Portal() {
 
       // 2. Supabase update
       try {
-        await supabase.from('partner_applications').update({ status: newStatus }).eq('id', id);
+        const { error: updErr } = await supabase
+          .from('partner_applications')
+          .update({ status: newStatus })
+          .eq('id', normalizeDbId(id));
+        if (updErr) throw updErr;
       } catch (sErr) {
-        try {
-          await supabase.from('partner_applications').update({ status: newStatus }).eq('id', parseInt(id, 10));
-        } catch (innerErr) {
-          console.warn("Supabase partner status update failed:", sErr, innerErr);
-        }
+        console.warn("Supabase partner status update failed:", sErr);
       }
 
       // 3. Sync to localStorage
@@ -478,13 +497,13 @@ export default function Portal() {
 
       // 2. Supabase delete
       try {
-        await supabase.from('partner_applications').delete().eq('id', id);
+        const { error: delErr } = await supabase
+          .from('partner_applications')
+          .delete()
+          .eq('id', normalizeDbId(id));
+        if (delErr) throw delErr;
       } catch (sErr) {
-        try {
-          await supabase.from('partner_applications').delete().eq('id', parseInt(id, 10));
-        } catch (innerErr) {
-          console.warn("Supabase partner delete failed:", sErr, innerErr);
-        }
+        console.warn("Supabase partner delete failed:", sErr);
       }
 
       // 3. Sync to localStorage
@@ -520,13 +539,13 @@ export default function Portal() {
 
       // 2. Supabase update
       try {
-        await supabase.from('contact_submissions').update({ status: nextStatus }).eq('id', id);
+        const { error: updErr } = await supabase
+          .from('contact_submissions')
+          .update({ status: nextStatus })
+          .eq('id', normalizeDbId(id));
+        if (updErr) throw updErr;
       } catch (sErr) {
-        try {
-          await supabase.from('contact_submissions').update({ status: nextStatus }).eq('id', parseInt(id, 10));
-        } catch (innerErr) {
-          console.warn("Supabase contact status update failed:", sErr, innerErr);
-        }
+        console.warn("Supabase contact status update failed:", sErr);
       }
 
       // 3. Sync to localStorage
@@ -566,13 +585,13 @@ export default function Portal() {
           }
 
           try {
-            await supabase.from('contact_submissions').delete().eq('id', id);
+            const { error: delErr } = await supabase
+              .from('contact_submissions')
+              .delete()
+              .eq('id', normalizeDbId(id));
+            if (delErr) throw delErr;
           } catch (sErr) {
-            try {
-              await supabase.from('contact_submissions').delete().eq('id', parseInt(id, 10));
-            } catch (innerErr) {
-              console.warn("Supabase contact delete failed:", sErr, innerErr);
-            }
+            console.warn("Supabase contact delete failed:", sErr);
           }
 
           try {
@@ -608,13 +627,13 @@ export default function Portal() {
           }
 
           try {
-            await supabase.from('subscriptions').delete().eq('id', id);
+            const { error: delErr } = await supabase
+              .from('subscriptions')
+              .delete()
+              .eq('id', normalizeDbId(id));
+            if (delErr) throw delErr;
           } catch (sErr) {
-            try {
-              await supabase.from('subscriptions').delete().eq('id', parseInt(id, 10));
-            } catch (innerErr) {
-              console.warn("Supabase subscription delete failed:", sErr, innerErr);
-            }
+            console.warn("Supabase subscription delete failed:", sErr);
           }
 
           try {
@@ -721,7 +740,7 @@ export default function Portal() {
                   <ShieldCheck className="w-8 h-8 text-ai-cyan" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-1">Super Admin Entry</h2>
-                <p className="text-quantum-silver text-sm mb-8">Access the NeuroGrowth Operational Command Gateway</p>
+                <p className="text-quantum-silver text-sm mb-8">Access the Neuro AI Development Operational Command Gateway</p>
 
                 {authError && (
                   <div className="p-4 mb-6 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-left flex gap-2 items-start">
@@ -738,7 +757,7 @@ export default function Portal() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="simao@neurogrowthlabs.co.za" 
+                      placeholder="simao@neuroaidevelopment.co.za" 
                       className="w-full bg-midnight-black/40 border border-glass-border rounded-xl px-4 py-3 text-white outline-none focus:border-ai-cyan/50 text-sm transition-colors"
                     />
                   </div>
@@ -1269,96 +1288,9 @@ export default function Portal() {
 
                   <div className="relative">
                     <button
+                      type="button"
                       onClick={async () => {
-                        const sqlText = `
--- 1. Create Subscriptions Table
-CREATE TABLE IF NOT EXISTS subscriptions (
-  id SERIAL PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  status TEXT DEFAULT 'active',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2. Create Chat Messages Table
-CREATE TABLE IF NOT EXISTS chat_messages (
-  id SERIAL PRIMARY KEY,
-  session_id TEXT NOT NULL,
-  role TEXT NOT NULL,
-  text TEXT NOT NULL,
-  system_prompt_context TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 3. Create Partner Applications Table
-CREATE TABLE IF NOT EXISTS partner_applications (
-  id SERIAL PRIMARY KEY,
-  company TEXT NOT NULL,
-  type TEXT,
-  country TEXT,
-  interest TEXT,
-  objectives TEXT,
-  email TEXT NOT NULL,
-  status TEXT DEFAULT 'pending',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 4. Create Contact Submissions Table
-CREATE TABLE IF NOT EXISTS contact_submissions (
-  id SERIAL PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  organization TEXT,
-  email TEXT NOT NULL,
-  team_scale TEXT,
-  goal TEXT,
-  message TEXT,
-  inquiry_type TEXT,
-  status TEXT DEFAULT 'unread',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 5. Create Webinars Table
-CREATE TABLE IF NOT EXISTS webinars (
-  id SERIAL PRIMARY KEY,
-  date TEXT NOT NULL,
-  track TEXT DEFAULT 'Free Webinar',
-  duration TEXT,
-  focus TEXT,
-  team TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 6. Create Webinar Registrations Table
-CREATE TABLE IF NOT EXISTS webinar_registrations (
-  id SERIAL PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  organization TEXT,
-  title TEXT,
-  country TEXT,
-  interest_sector TEXT,
-  comments TEXT,
-  track TEXT DEFAULT 'Free Webinar',
-  status TEXT DEFAULT 'registered',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 7. Disable RLS or Enable Custom Public RLS policies for rapid deployment
-ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE partner_applications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE webinars ENABLE ROW LEVEL SECURITY;
-ALTER TABLE webinar_registrations ENABLE ROW LEVEL SECURITY;
-
--- Allow broad read/write access policies for demo integrity
-CREATE POLICY "Public full access" ON subscriptions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON chat_messages FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON partner_applications FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON contact_submissions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON webinars FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON webinar_registrations FOR ALL USING (true) WITH CHECK (true);
-`;
-                        const ok = await copyToClipboard(sqlText.trim());
+                        const ok = await copyToClipboard(productionSchemaSql.trim());
                         if (ok) {
                           setCopiedSql(true);
                           if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
@@ -1377,93 +1309,8 @@ CREATE POLICY "Public full access" ON webinar_registrations FOR ALL USING (true)
                         </>
                       )}
                     </button>
-                    <pre className="p-4 bg-midnight-black/80 border border-glass-border rounded-2xl text-xs font-mono text-quantum-silver overflow-x-auto max-h-72 leading-relaxed">
-{`-- 1. Create Subscriptions Table
-CREATE TABLE IF NOT EXISTS subscriptions (
-  id SERIAL PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  status TEXT DEFAULT 'active',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2. Create Chat Messages Table
-CREATE TABLE IF NOT EXISTS chat_messages (
-  id SERIAL PRIMARY KEY,
-  session_id TEXT NOT NULL,
-  role TEXT NOT NULL,
-  text TEXT NOT NULL,
-  system_prompt_context TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 3. Create Partner Applications Table
-CREATE TABLE IF NOT EXISTS partner_applications (
-  id SERIAL PRIMARY KEY,
-  company TEXT NOT NULL,
-  type TEXT,
-  country TEXT,
-  interest TEXT,
-  objectives TEXT,
-  email TEXT NOT NULL,
-  status TEXT DEFAULT 'pending',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 4. Create Contact Submissions Table
-CREATE TABLE IF NOT EXISTS contact_submissions (
-  id SERIAL PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  organization TEXT,
-  email TEXT NOT NULL,
-  team_scale TEXT,
-  goal TEXT,
-  message TEXT,
-  inquiry_type TEXT,
-  status TEXT DEFAULT 'unread',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 5. Create Webinars Table
-CREATE TABLE IF NOT EXISTS webinars (
-  id SERIAL PRIMARY KEY,
-  date TEXT NOT NULL,
-  track TEXT DEFAULT 'Free Webinar',
-  duration TEXT,
-  focus TEXT,
-  team TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 6. Create Webinar Registrations Table
-CREATE TABLE IF NOT EXISTS webinar_registrations (
-  id SERIAL PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  organization TEXT,
-  title TEXT,
-  country TEXT,
-  interest_sector TEXT,
-  comments TEXT,
-  track TEXT DEFAULT 'Free Webinar',
-  status TEXT DEFAULT 'registered',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 7. Configure simple access control policies
-ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE partner_applications ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE webinars ENABLE ROW LEVEL SECURITY;
-ALTER TABLE webinar_registrations ENABLE ROW LEVEL SECURITY;
-
--- Allow broad access for the demonstration
-CREATE POLICY "Public full access" ON subscriptions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON chat_messages FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON partner_applications FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON contact_submissions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON webinars FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public full access" ON webinar_registrations FOR ALL USING (true) WITH CHECK (true);`}
+                    <pre className="p-4 bg-midnight-black/80 border border-glass-border rounded-2xl text-xs font-mono text-quantum-silver overflow-x-auto max-h-96 leading-relaxed">
+                      {productionSchemaSql}
                     </pre>
                   </div>
                 </motion.div>

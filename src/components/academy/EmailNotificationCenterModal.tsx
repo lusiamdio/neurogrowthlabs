@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   EmailNotificationRecord, getStoredEmailNotifications, 
@@ -33,8 +33,20 @@ export default function EmailNotificationCenterModal({
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Test send state
-  const [testEmailAddress, setTestEmailAddress] = useState(currentUser?.email || 'learner@neurogrowthlabs.co.za');
+  const [testEmailAddress, setTestEmailAddress] = useState(currentUser?.email || 'learner@neuroaidevelopment.co.za');
   const [isSendingTest, setIsSendingTest] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const list = getStoredEmailNotifications(currentUser?.uid || currentUser?.email);
+    setNotifications(list);
+    if (list.length > 0) {
+      setSelectedNotification((prev) => prev || list[0]);
+    }
+    if (currentUser?.email) {
+      setTestEmailAddress(currentUser.email);
+    }
+  }, [isOpen, currentUser?.uid, currentUser?.email]);
 
   if (!isOpen) return null;
 
@@ -192,7 +204,7 @@ export default function EmailNotificationCenterModal({
               </span>
             </div>
             <div className="font-mono text-[11px] text-slate-400">
-              Sender: <span className="text-white">academy@neurogrowthlabs.co.za</span>
+              Sender: <span className="text-white">academy@neuroaidevelopment.co.za</span>
             </div>
           </div>
 

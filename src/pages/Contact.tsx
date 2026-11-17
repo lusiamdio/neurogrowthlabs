@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../firebase';
-import { supabase } from '../supabase';
+import { postContactSubmission } from '../services/sqlApiClient';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -41,7 +41,7 @@ const contactCards = [
   {
     icon: Briefcase,
     title: "Careers",
-    desc: "Join NeuroGrowth Labs and help engineer Africa’s intelligent future.",
+    desc: "Join Neuro AI Development and help engineer Africa’s intelligent future.",
     cta: "Explore Careers",
     color: "from-ai-cyan/20 to-transparent",
     iconColor: "text-ai-cyan"
@@ -61,7 +61,7 @@ export default function Contact() {
   const location = useLocation();
   const [inquiryType, setInquiryType] = useState(location.state?.inquiryType || '');
   const [chatMessages, setChatMessages] = useState([
-    { role: 'ai', text: "Welcome to NeuroGrowth Labs. I am the AI Communication Assistant. I can help route your inquiry to the appropriate innovation, enterprise, or partnership team." }
+    { role: 'ai', text: "Welcome to Neuro AI Development. I am the AI Communication Assistant. I can help route your inquiry to the appropriate innovation, enterprise, or partnership team." }
   ]);
   const [chatInput, setChatInput] = useState('');
 
@@ -103,22 +103,19 @@ export default function Contact() {
         }
       }
 
-      // 2. Write to Supabase using exact SQL schema columns
+      // 2. Write via SQL Backend API (/api/v1/sql/contact-submissions) + Supabase fallback
       try {
-        const { error: sErr } = await supabase.from('contact_submissions').insert({
-          full_name: formData.fullName,
+        await postContactSubmission({
+          fullName: formData.fullName,
           organization: formData.organization,
           email: formData.email,
-          team_scale: formData.teamScale,
+          teamScale: formData.teamScale,
           goal: formData.goal,
           message: formData.message,
-          inquiry_type: inquiryType || 'General Inquiries',
-          status: 'unread',
-          created_at: new Date().toISOString()
+          inquiryType: inquiryType || 'General Inquiries',
         });
-        if (sErr) throw sErr;
       } catch (sErr) {
-        console.warn("Supabase contact submission save failed:", sErr);
+        console.warn("SQL/Supabase contact submission save failed:", sErr);
       }
 
       // 3. Fallback to localStorage list for immediate admin portal viewing
@@ -222,7 +219,7 @@ export default function Contact() {
             </h1>
             
             <p className="text-xl md:text-2xl text-quantum-silver mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-              Partner with NeuroGrowth Labs to build intelligent systems, AI-powered platforms, enterprise infrastructure, and next-generation digital ecosystems.
+              Partner with Neuro AI Development to build intelligent systems, AI-powered platforms, enterprise infrastructure, and next-generation digital ecosystems.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -252,6 +249,8 @@ export default function Contact() {
             {contactCards.map((card, idx) => (
               <motion.div 
                  key={idx}
+                 role="button"
+                 tabIndex={0}
                  initial={{ opacity: 0, y: 20 }}
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
@@ -262,7 +261,16 @@ export default function Contact() {
                     document.getElementById('ai-form')?.scrollIntoView({ behavior: 'smooth' });
                     setInquiryType(card.title);
                  }}
-                 className="group relative p-8 rounded-3xl bg-glass-surface border border-glass-border hover:border-white/20 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col justify-between min-h-[280px]"
+                 onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      if(card.title === 'Careers') { navigate('/careers'); window.scrollTo(0, 0); return; }
+                      if(card.title === 'Partnerships') { navigate('/partner'); window.scrollTo(0, 0); return; }
+                      document.getElementById('ai-form')?.scrollIntoView({ behavior: 'smooth' });
+                      setInquiryType(card.title);
+                    }
+                 }}
+                 className="group relative p-8 rounded-3xl bg-glass-surface border border-glass-border hover:border-white/20 transition-all duration-500 overflow-hidden cursor-pointer flex flex-col justify-between min-h-[280px] focus:outline-none focus:ring-2 focus:ring-ai-cyan/50"
               >
                 <div className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl ${card.color} opacity-0 group-hover:opacity-100 blur-[50px] transition-opacity duration-700 pointer-events-none`} />
                 
@@ -417,7 +425,7 @@ export default function Contact() {
                          placeholder="Query the network..." 
                          className="flex-1 bg-white/5 border border-glass-border rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-ai-cyan/50 transition-colors" 
                        />
-                       <button type="submit" className="w-12 h-11 bg-glass-surface border border-glass-border rounded-xl flex items-center justify-center text-ai-cyan hover:bg-ai-cyan hover:text-midnight-black transition-all">
+                       <button type="submit" aria-label="Send message" className="w-12 h-11 bg-glass-surface border border-glass-border rounded-xl flex items-center justify-center text-ai-cyan hover:bg-ai-cyan hover:text-midnight-black transition-all">
                           <Send className="w-4 h-4" />
                        </button>
                     </form>
@@ -441,7 +449,7 @@ export default function Contact() {
                <div className="p-6 rounded-2xl bg-glass-surface backdrop-blur-md border border-glass-border">
                   <MapPin className="w-6 h-6 text-ai-cyan mb-4" />
                   <h4 className="text-sm border-b border-glass-border pb-2 text-quantum-silver uppercase tracking-wider font-mono mb-4">Global Headquarters</h4>
-                  <p className="text-white font-medium mb-1">NeuroGrowth Labs</p>
+                  <p className="text-white font-medium mb-1">Neuro AI Development</p>
                   <p className="text-quantum-silver text-sm">V&A Waterfront<br/>Cape Town<br/>South Africa</p>
                </div>
 
@@ -451,11 +459,11 @@ export default function Contact() {
                   <div className="space-y-3">
                     <div>
                       <p className="text-white text-sm font-medium">General Inquiries</p>
-                      <p className="text-electric-blue text-sm">info@neurogrowthlabs.co.za</p>
+                      <p className="text-electric-blue text-sm">info@neuroaidevelopment.co.za</p>
                     </div>
                     <div>
                       <p className="text-white text-sm font-medium">Enterprise</p>
-                      <p className="text-electric-blue text-sm">enterprise@neurogrowthlabs.co.za</p>
+                      <p className="text-electric-blue text-sm">enterprise@neuroaidevelopment.co.za</p>
                     </div>
                   </div>
                </div>
@@ -466,11 +474,11 @@ export default function Contact() {
                   <div className="space-y-3">
                     <div>
                       <p className="text-white text-sm font-medium">Partnerships</p>
-                      <p className="text-green-400 text-sm">partners@neurogrowthlabs.co.za</p>
+                      <p className="text-green-400 text-sm">partners@neuroaidevelopment.co.za</p>
                     </div>
                     <div>
                       <p className="text-white text-sm font-medium">Careers</p>
-                      <p className="text-ai-cyan text-sm">careers@neurogrowthlabs.co.za</p>
+                      <p className="text-ai-cyan text-sm">careers@neuroaidevelopment.co.za</p>
                     </div>
                   </div>
                </div>
@@ -494,9 +502,9 @@ export default function Contact() {
                <h4 className="text-lg font-bold text-white mb-6">Connect across the Global Ecosystem</h4>
                <div className="flex flex-wrap items-center justify-center gap-6">
                   {[
-                     { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/company/neurogrowthlabs/', color: 'hover:text-blue-500 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]' },
-                     { icon: Twitter, label: 'X (Twitter)', href: 'https://x.com/neurogrowthlabs', color: 'hover:text-white hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]' },
-                     { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@neurogrowthlabs', color: 'hover:text-red-500 hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]' },
+                     { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/company/neuro-ai-development/', color: 'hover:text-blue-500 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]' },
+                     { icon: Twitter, label: 'X (Twitter)', href: 'https://x.com/neuroaidevelopment', color: 'hover:text-white hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]' },
+                     { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@neuroaidevelopment', color: 'hover:text-red-500 hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]' },
                   ].map((social, i) => (
                      <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-glass-border text-quantum-silver transition-all duration-300 ${social.color}`}>
                         <social.icon className="w-4 h-4" />
@@ -521,7 +529,7 @@ export default function Contact() {
          <div className="relative z-10 max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">Let’s Build Africa’s <span className="text-ai-cyan">Intelligent Future</span> Together</h2>
             <p className="text-lg md:text-xl text-quantum-silver mb-12 font-light leading-relaxed max-w-3xl mx-auto">
-               From AI infrastructure to enterprise systems and digital transformation, NeuroGrowth Labs is engineering the next generation of intelligent ecosystems.
+               From AI infrastructure to enterprise systems and digital transformation, Neuro AI Development is engineering the next generation of intelligent ecosystems.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

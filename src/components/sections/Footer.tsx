@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Hexagon, Twitter, Linkedin, Youtube, ShieldCheck } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../../firebase';
-import { supabase } from '../../supabase';
+import { postNewsletterSubscription } from '../../services/sqlApiClient';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -43,15 +43,11 @@ export default function Footer() {
         }
       }
 
-      // 2. Dual-write to Supabase Database
+      // 2. Persist via SQL Backend API (/api/v1/sql/subscriptions) + Supabase fallback
       try {
-        await supabase.from('subscriptions').insert({
-          email: email.trim().toLowerCase(),
-          status: 'active',
-          created_at: new Date().toISOString()
-        });
+        await postNewsletterSubscription(email, 'footer_newsletter');
       } catch (sErr) {
-        console.warn("Supabase newsletter subscription save failed:", sErr);
+        console.warn("SQL/Supabase newsletter subscription save failed:", sErr);
       }
 
       // 3. Fallback to localStorage list for immediate admin portal viewing
@@ -91,19 +87,19 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6 group">
               <Hexagon className="w-8 h-8 text-electric-blue group-hover:text-violet-glow transition-colors" />
-              <span className="text-xl font-bold tracking-tight text-white">Neurogrowth Labs</span>
+              <span className="text-xl font-bold tracking-tight text-white">Neuro AI Development</span>
             </Link>
             <p className="text-quantum-silver text-sm leading-relaxed mb-6">
               Building the intelligence layer for the modern economy. Headquartered in Cape Town, shaping the future globally.
             </p>
             <div className="flex gap-4">
-              <a href="https://x.com/neurogrowthlabs" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-graphite-grey border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-electric-blue transition-all">
+              <a href="https://x.com/neuroaidevelopment" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="w-10 h-10 rounded-full bg-graphite-grey border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-electric-blue transition-all">
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="https://www.linkedin.com/company/neurogrowthlabs/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-graphite-grey border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-electric-blue transition-all">
+              <a href="https://www.linkedin.com/company/neuro-ai-development/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 rounded-full bg-graphite-grey border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-electric-blue transition-all">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://www.youtube.com/@neurogrowthlabs" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-graphite-grey border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-electric-blue transition-all">
+              <a href="https://www.youtube.com/@neuroaidevelopment" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-10 h-10 rounded-full bg-graphite-grey border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-electric-blue transition-all">
                 <Youtube className="w-4 h-4" />
               </a>
             </div>
@@ -111,7 +107,7 @@ export default function Footer() {
             <div className="mt-10">
               <h4 className="text-white font-bold mb-4 tracking-wide text-sm uppercase">Newsletter</h4>
               <p className="text-quantum-silver text-sm mb-4 max-w-sm">
-                Subscribe to receive updates on the NeuroGrowth Labs ecosystem and African tech innovations.
+                Subscribe to receive updates on the Neuro AI Development ecosystem and African tech innovations.
               </p>
               <form className="flex gap-2 max-w-sm" onSubmit={handleSubscribe}>
                 <input 
@@ -177,7 +173,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-glass-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-quantum-silver text-xs">
-            © {new Date().getFullYear()} NeuroGrowth Labs. All rights reserved. Cape Town, ZA.
+            © {new Date().getFullYear()} Neuro AI Development. All rights reserved. Cape Town, ZA.
           </p>
           <div className="flex gap-4">
             <span className="text-quantum-silver text-xs flex items-center gap-2">

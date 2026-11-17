@@ -13,6 +13,10 @@ import {
   sendCertificateReadyNotification, sendCourseEnrollmentNotification 
 } from '../services/emailNotificationService';
 import { buildStableVerificationId } from '../utils/certificateId';
+import {
+  syncCourseEnrollmentToSql,
+  syncCertificateToSql,
+} from '../services/sqlApiClient';
 import { 
   ArrowLeft, ArrowRight, Award, BookOpen, Check, CheckCircle2, 
   Clock, ExternalLink, Globe, HelpCircle, MessageSquare, Play, 
@@ -63,6 +67,7 @@ export default function CourseClassroom() {
   // Active module & video selection
   const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [selectedCompanionIndex, setSelectedCompanionIndex] = useState<number | null>(null);
   const [showCourseProfile, setShowCourseProfile] = useState(false);
 
   // Exam states
@@ -122,14 +127,31 @@ export default function CourseClassroom() {
       parsed[course.id] = completedModuleIds;
       localStorage.setItem('ngl_completed_modules', JSON.stringify(parsed));
     } catch {}
-  }, [completedModuleIds, course.id]);
+
+    if (user) {
+      const pct = Math.round((completedModuleIds.length / Math.max(course.modules.length, 1)) * 100);
+      syncCourseEnrollmentToSql({
+        courseId: course.id,
+        courseTitle: course.title,
+        userName: user.displayName || user.email?.split('@')[0] || 'Scholar',
+        progress: pct,
+        completed: pct >= 100 && hasPassedExam,
+        completedLectures: completedModuleIds,
+      }).catch(() => {});
+    }
+  }, [completedModuleIds, course.id, course.title, course.modules.length, user, hasPassedExam]);
 
   // Load reviews on mount
   useEffect(() => {
+    let isMounted = true;
     getReviewsForCourse(course.id).then(list => {
+      if (!isMounted) return;
       setCourseReviews(list);
       setReviewStats(calculateCourseRatingStats(list));
     });
+    return () => {
+      isMounted = false;
+    };
   }, [course.id]);
 
   const currentModule = course.modules[selectedModuleIndex] || course.modules[0];
@@ -139,6 +161,16 @@ export default function CourseClassroom() {
   const progressPercent = Math.round((completedCount / totalModules) * 100);
 
   const currentVideo = course.youtubeLectures[selectedVideoIndex] || course.youtubeLectures[0];
+  const activeCompanion =
+    selectedCompanionIndex !== null && currentVideo.companionVideos?.[selectedCompanionIndex]
+      ? currentVideo.companionVideos[selectedCompanionIndex]
+      : null;
+  const activeVideoId = activeCompanion ? activeCompanion.videoId : currentVideo.videoId;
+  const activeVideoUrl = activeCompanion
+    ? activeCompanion.url
+    : currentVideo.url || `https://www.youtube.com/watch?v=${currentVideo.videoId}`;
+  const activeVideoTitle = activeCompanion ? activeCompanion.title : currentVideo.title;
+  const activeVideoChannel = activeCompanion ? activeCompanion.channel : currentVideo.channel;
 
   const handleToggleModule = (modId: string) => {
     setCompletedModuleIds(prev => 
@@ -173,6 +205,23 @@ export default function CourseClassroom() {
       if (user) {
         const certId = buildStableVerificationId(course.code, user.email);
         const verificationCode = `VER-${certId.slice(-6)}`;
+        syncCertificateToSql({
+          courseId: course.id,
+          courseTitle: course.title,
+          certificateId: certId,
+          verificationCode,
+          recipientName: user.displayName || user.email?.split('@')[0] || 'Scholar',
+        }).catch(() => {});
+
+        syncCourseEnrollmentToSql({
+          courseId: course.id,
+          courseTitle: course.title,
+          userName: user.displayName || user.email?.split('@')[0] || 'Scholar',
+          progress: Math.max(progressPercent, 100),
+          completed: true,
+          completedLectures: completedModuleIds,
+        }).catch(() => {});
+
         sendCertificateReadyNotification({
           user,
           course,
@@ -208,7 +257,7 @@ export default function CourseClassroom() {
         courseId: course.id,
         userId: user.uid || 'scholar-user',
         userName: user.displayName || 'Verified Scholar',
-        userEmail: user.email || 'scholar@neurogrowthlabs.co.za',
+        userEmail: user.email || 'scholar@neuroaidevelopment.co.za',
         rating: newRating,
         headline: newHeadline.trim(),
         reviewText: newReviewText.trim(),
@@ -266,7 +315,7 @@ export default function CourseClassroom() {
         {/* Navigation Breadcrumbs & Back Link */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
-            <Link to="/" className="hover:text-white transition-colors">NeuroGrowth Labs</Link>
+            <Link to="/" className="hover:text-white transition-colors">Neuro AI Development</Link>
             <span aria-hidden="true">/</span>
             <Link to="/academy" className="hover:text-white transition-colors">Academy</Link>
             <span aria-hidden="true">/</span>
@@ -502,7 +551,15 @@ export default function CourseClassroom() {
                 return (
                   <div
                     key={mod.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedModuleIndex(idx)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedModuleIndex(idx);
+                      }
+                    }}
                     className={`p-4 rounded-xl cursor-pointer transition-all flex items-start gap-3 shadow-sm ${
                       isSelected
                         ? 'bg-[#121927] shadow-lg'
@@ -637,7 +694,19 @@ export default function CourseClassroom() {
                 return (
                   <div
                     key={vid.id}
-                    onClick={() => setSelectedVideoIndex(idx)}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      setSelectedVideoIndex(idx);
+                      setSelectedCompanionIndex(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedVideoIndex(idx);
+                        setSelectedCompanionIndex(null);
+                      }
+                    }}
                     className={`p-4 rounded-xl cursor-pointer transition-all flex items-start gap-3 shadow-sm ${
                       isSelected
                         ? 'bg-[#121927] shadow-lg'
@@ -669,8 +738,8 @@ export default function CourseClassroom() {
             <div className="lg:col-span-8 bg-[#0c1018] rounded-2xl p-6 sm:p-8 shadow-xl space-y-5">
               <div className="relative aspect-video rounded-xl overflow-hidden bg-black shadow-2xl">
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${currentVideo.videoId}`}
-                  title={currentVideo.title}
+                  src={`https://www.youtube-nocookie.com/embed/${activeVideoId}`}
+                  title={activeVideoTitle}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="w-full h-full border-0"
@@ -680,10 +749,10 @@ export default function CourseClassroom() {
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-mono text-red-400 font-bold uppercase">
-                    VIDEO MASTERCLASS {selectedVideoIndex + 1} OF 5 · {currentVideo.duration}
+                    VIDEO MASTERCLASS {selectedVideoIndex + 1} OF 5 · {currentVideo.duration} · {activeVideoChannel}
                   </span>
                   <a
-                    href={`https://www.youtube.com/watch?v=${currentVideo.videoId}`}
+                    href={activeVideoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-mono transition-colors"
@@ -693,8 +762,38 @@ export default function CourseClassroom() {
                   </a>
                 </div>
 
+                {currentVideo.companionVideos && currentVideo.companionVideos.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCompanionIndex(null)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                        selectedCompanionIndex === null
+                          ? 'bg-ai-cyan text-midnight-black font-bold'
+                          : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      Part 1 · Primary ({currentVideo.channel})
+                    </button>
+                    {currentVideo.companionVideos.map((comp, compIdx) => (
+                      <button
+                        key={comp.videoId}
+                        type="button"
+                        onClick={() => setSelectedCompanionIndex(compIdx)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                          selectedCompanionIndex === compIdx
+                            ? 'bg-ai-cyan text-midnight-black font-bold'
+                            : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        Part {compIdx + 2} · {comp.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 <h2 className="text-xl font-bold text-white tracking-tight">
-                  {currentVideo.title}
+                  {activeVideoTitle}
                 </h2>
 
                 <div className="p-4 rounded-xl bg-white/[0.02] text-xs text-slate-300 leading-relaxed">
