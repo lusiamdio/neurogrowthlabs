@@ -12,7 +12,7 @@
   --theme-soft-white: #F8FAFC;
   --theme-quantum-silver: #BFC7D5;
   --theme-glass-surface: rgba(255, 255, 255, 0.03);
-  --theme-glass-border: transparent;
+  --theme-glass-border: rgba(255, 255, 255, 0.08);
   --theme-text-primary: #FFFFFF;
 }
 
@@ -23,18 +23,18 @@
   --theme-electric-blue: #0284C7;
   --theme-ai-cyan: #0891B2;
   --theme-violet-glow: #6D28D9;
-  --theme-soft-white: #050505;
+  --theme-soft-white: #0F172A;
   --theme-quantum-silver: #475569;
-  --theme-glass-surface: rgba(0, 0, 0, 0.05);
-  --theme-glass-border: transparent;
-  --theme-text-primary: #050505;
+  --theme-glass-surface: rgba(15, 23, 42, 0.04);
+  --theme-glass-border: rgba(15, 23, 42, 0.12);
+  --theme-text-primary: #0F172A;
 }
 
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  
+
   --color-midnight-black: var(--theme-midnight-black);
   --color-graphite-grey: var(--theme-graphite-grey);
   --color-deep-charcoal: var(--theme-deep-charcoal);
@@ -45,10 +45,6 @@
   --color-quantum-silver: var(--theme-quantum-silver);
   --color-glass-surface: var(--theme-glass-surface);
   --color-glass-border: var(--theme-glass-border);
-  
-  --color-white: var(--theme-text-primary);
-  --color-slate-300: var(--theme-quantum-silver);
-  --color-slate-400: var(--theme-quantum-silver);
 
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 6s ease-in-out infinite;
@@ -80,6 +76,38 @@ body {
   overflow-x: hidden;
 }
 
+/* Light theme surface adaptation without corrupting Tailwind core --color-white or hardcoded dark cards */
+.light .text-white:not(.bg-electric-blue):not(.bg-ai-cyan):not(.bg-emerald-500):not(.bg-emerald-600):not(.bg-red-500):not(.bg-red-600):not(.bg-violet-glow):not(.bg-blue-600) {
+  color: #0F172A;
+}
+
+.light .bg-midnight-black .text-slate-300,
+.light .bg-midnight-black .text-slate-400,
+.light .bg-deep-charcoal .text-slate-300,
+.light .bg-deep-charcoal .text-slate-400 {
+  color: #475569;
+}
+
+/* Preserve bright ink inside explicitly hardcoded dark panels & certificates even when Light mode is active */
+.light [class*="bg-[#0"] .text-white,
+.light [class*="bg-[#1"] .text-white,
+.light [class*="bg-black"] .text-white,
+.light [data-dark-surface="true"] .text-white {
+  color: #FFFFFF;
+}
+
+.light [class*="bg-[#0"] .text-slate-300,
+.light [class*="bg-[#1"] .text-slate-300,
+.light [data-dark-surface="true"] .text-slate-300 {
+  color: #CBD5E1;
+}
+
+.light [class*="bg-[#0"] .text-slate-400,
+.light [class*="bg-[#1"] .text-slate-400,
+.light [data-dark-surface="true"] .text-slate-400 {
+  color: #94A3B8;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -94,14 +122,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-electric-blue);
 }
-
-/* Remove all borderlines throughout the whole platform */
-*, ::before, ::after {
-  border-color: transparent !important;
-}
-
-/* Maintain clean accessible boundaries for native form checkboxes and radios */
-input[type="checkbox"], input[type="radio"] {
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
-

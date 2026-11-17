@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
-import { Network, Search, Filter, Download, MoreHorizontal, CheckCircle2, XCircle, Clock, ShieldCheck, Activity, BarChart3, TrendingUp, Users } from 'lucide-react';
+import { Network, Search, Filter, Download, MoreHorizontal, CheckCircle2, XCircle, Clock, ShieldCheck, Activity, TrendingUp, Users, X, Sliders } from 'lucide-react';
 import { MagneticButton } from '../components/ui/MagneticButton';
 
-const candidates = [
+type CandidateStatus = 'Interview' | 'Reviewing' | 'Archived';
+
+interface CandidateItem {
+  id: string;
+  name: string;
+  role: string;
+  score: number;
+  status: CandidateStatus;
+  match: string;
+  date: string;
+}
+
+const initialCandidates: CandidateItem[] = [
   { id: 'C-8802', name: 'Zainab Ahmed', role: 'Lead AI Engineer', score: 98, status: 'Interview', match: 'A+', date: 'Just now' },
   { id: 'C-8801', name: 'David Okafor', role: 'Enterprise Product Manager', score: 92, status: 'Reviewing', match: 'A', date: '2 hrs ago' },
   { id: 'C-8799', name: 'Sarah Mensah', role: 'Cybersecurity Analyst', score: 85, status: 'Reviewing', match: 'B+', date: '5 hrs ago' },
@@ -13,7 +26,62 @@ const candidates = [
   { id: 'C-8795', name: 'Amira Hassan', role: 'Quantitative Analyst', score: 78, status: 'Archived', match: 'C', date: '2 days ago' },
 ];
 
+const STATUS_CYCLE: Array<'All' | CandidateStatus> = ['All', 'Interview', 'Reviewing', 'Archived'];
+
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const [candidates, setCandidates] = useState<CandidateItem[]>(initialCandidates);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'All' | CandidateStatus>('All');
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [minAutoScore, setMinAutoScore] = useState(85);
+  const [anonymizeReview, setAnonymizeReview] = useState(true);
+
+  const filteredCandidates = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return candidates.filter((c) => {
+      const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
+      const matchesSearch =
+        !q ||
+        c.id.toLowerCase().includes(q) ||
+        c.name.toLowerCase().includes(q) ||
+        c.role.toLowerCase().includes(q);
+      return matchesStatus && matchesSearch;
+    });
+  }, [candidates, searchQuery, statusFilter]);
+
+  const handleCycleFilter = () => {
+    const idx = STATUS_CYCLE.indexOf(statusFilter);
+    setStatusFilter(STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length]);
+  };
+
+  const handleUpdateCandidateStatus = (id: string, nextStatus: CandidateStatus) => {
+    setCandidates((prev) => prev.map((c) => (c.id === id ? { ...c, status: nextStatus } : c)));
+    setOpenMenuId(null);
+  };
+
+  const handleExportReport = () => {
+    const headers = ['ID', 'Candidate', 'Role', 'AI Score', 'Match', 'Status', 'Timestamp'];
+    const escapeCell = (v: string | number) => {
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = filteredCandidates.map((c) =>
+      [c.id, c.name, c.role, `${c.score}%`, c.match, c.status, c.date].map(escapeCell).join(',')
+    );
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'neurogrowth-recruitment-report.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="bg-midnight-black text-slate-300 min-h-screen font-sans selection:bg-electric-blue/30 selection:text-white pb-20">
       <Navbar />
@@ -36,10 +104,18 @@ export default function AdminDashboard() {
               </div>
 
               <div className="flex items-center gap-3">
-                 <button className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors flex items-center gap-2">
+                 <button
+                   type="button"
+                   onClick={handleExportReport}
+                   className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors flex items-center gap-2"
+                 >
                     <Download className="w-4 h-4" /> Export Report
                  </button>
-                 <MagneticButton className="px-4 py-2 rounded-lg bg-electric-blue text-white text-sm font-medium hover:bg-blue-600 transition-colors">
+                 <MagneticButton
+                   type="button"
+                   onClick={() => setShowSettings(true)}
+                   className="px-4 py-2 rounded-lg bg-electric-blue text-white text-sm font-medium hover:bg-blue-600 transition-colors"
+                 >
                     System Settings
                  </MagneticButton>
               </div>
@@ -58,15 +134,38 @@ export default function AdminDashboard() {
               
               {/* Candidate Pipeline */}
               <div className="lg:col-span-2 bg-graphite-grey/40 backdrop-blur-xl border border-glass-border rounded-2xl overflow-hidden shadow-2xl flex flex-col">
-                 <div className="p-6 border-b border-glass-border flex justify-between items-center bg-white/5">
-                    <h3 className="text-lg font-bold text-white">Candidates Evaluated</h3>
+                 <div className="p-6 border-b border-glass-border flex flex-wrap justify-between items-center gap-3 bg-white/5">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-white">Candidates Evaluated</h3>
+                      {statusFilter !== 'All' && (
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-ai-cyan/15 text-ai-cyan border border-ai-cyan/30">
+                          {statusFilter}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex gap-2">
                        <div className="relative">
                           <Search className="w-4 h-4 text-quantum-silver absolute left-3 top-1/2 -translate-y-1/2" />
-                          <input type="text" placeholder="Search ID or Name" className="bg-midnight-black/40 border border-glass-border rounded-lg pl-9 pr-4 py-1.5 text-sm text-white focus:border-ai-cyan/50 outline-none w-48 transition-colors" />
+                          <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search ID or Name"
+                            className="bg-midnight-black/40 border border-glass-border rounded-lg pl-9 pr-4 py-1.5 text-sm text-white focus:border-ai-cyan/50 outline-none w-48 transition-colors"
+                          />
                        </div>
-                       <button className="w-8 h-8 rounded-lg border border-glass-border bg-midnight-black/40 flex items-center justify-center hover:bg-white/10 transition-colors">
-                          <Filter className="w-4 h-4 text-quantum-silver" />
+                       <button
+                         type="button"
+                         onClick={handleCycleFilter}
+                         title={`Filter status (${statusFilter})`}
+                         className={`h-8 px-2.5 rounded-lg border flex items-center justify-center gap-1.5 text-xs font-mono transition-colors ${
+                           statusFilter !== 'All'
+                             ? 'border-ai-cyan/50 bg-ai-cyan/15 text-ai-cyan'
+                             : 'border-glass-border bg-midnight-black/40 text-quantum-silver hover:bg-white/10'
+                         }`}
+                       >
+                          <Filter className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">{statusFilter}</span>
                        </button>
                     </div>
                  </div>
@@ -84,45 +183,83 @@ export default function AdminDashboard() {
                           </tr>
                        </thead>
                        <tbody>
-                          {candidates.map((c, i) => (
-                             <tr key={i} className="border-b border-glass-border/50 hover:bg-white/5 transition-colors group">
-                                <td className="p-4">
-                                   <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-ai-cyan/20 to-electric-blue/20 border border-electric-blue/30 flex items-center justify-center text-xs text-white font-bold uppercase">
-                                         {c.name.split(' ').map(n => n[0]).join('')}
-                                      </div>
-                                      <div>
-                                         <div className="text-sm font-medium text-white">{c.name}</div>
-                                         <div className="text-xs text-quantum-silver font-mono">{c.id}</div>
-                                      </div>
-                                   </div>
-                                </td>
-                                <td className="p-4 text-sm text-slate-300">{c.role}</td>
-                                <td className="p-4">
-                                   <div className="flex items-center gap-2">
-                                      <div className="text-sm font-bold text-white">{c.score}%</div>
-                                      <div className={`text-xs px-1.5 py-0.5 rounded uppercase font-mono tracking-wider ${
-                                         c.match === 'A+' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
-                                         c.match === 'A' ? 'bg-ai-cyan/10 text-ai-cyan border border-ai-cyan/20' :
-                                         'bg-white/5 border border-white/10 text-quantum-silver'
-                                      }`}>
-                                         {c.match}
-                                      </div>
-                                   </div>
-                                </td>
-                                <td className="p-4 text-sm">
-                                   {c.status === 'Interview' && <span className="flex items-center gap-1.5 text-green-400"><CheckCircle2 className="w-3.5 h-3.5" /> High Priority</span>}
-                                   {c.status === 'Reviewing' && <span className="flex items-center gap-1.5 text-electric-blue"><Clock className="w-3.5 h-3.5" /> Pending HR</span>}
-                                   {c.status === 'Archived' && <span className="flex items-center gap-1.5 text-quantum-silver"><XCircle className="w-3.5 h-3.5" /> Archived</span>}
-                                </td>
-                                <td className="p-4 text-xs text-quantum-silver">{c.date}</td>
-                                <td className="p-4 text-right">
-                                   <button className="text-quantum-silver hover:text-white transition-colors opacity-0 group-hover:opacity-100 p-1">
-                                      <MoreHorizontal className="w-5 h-5" />
-                                   </button>
+                          {filteredCandidates.length === 0 ? (
+                             <tr>
+                                <td colSpan={6} className="p-8 text-center text-sm text-quantum-silver">
+                                   No candidates match the active search or status filter.
                                 </td>
                              </tr>
-                          ))}
+                          ) : (
+                             filteredCandidates.map((c) => (
+                                <tr key={c.id} className="border-b border-glass-border/50 hover:bg-white/5 transition-colors group">
+                                   <td className="p-4">
+                                      <div className="flex items-center gap-3">
+                                         <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-ai-cyan/20 to-electric-blue/20 border border-electric-blue/30 flex items-center justify-center text-xs text-white font-bold uppercase">
+                                            {c.name.split(' ').map(n => n[0]).join('')}
+                                         </div>
+                                         <div>
+                                            <div className="text-sm font-medium text-white">{c.name}</div>
+                                            <div className="text-xs text-quantum-silver font-mono">{c.id}</div>
+                                         </div>
+                                      </div>
+                                   </td>
+                                   <td className="p-4 text-sm text-slate-300">{c.role}</td>
+                                   <td className="p-4">
+                                      <div className="flex items-center gap-2">
+                                         <div className="text-sm font-bold text-white">{c.score}%</div>
+                                         <div className={`text-xs px-1.5 py-0.5 rounded uppercase font-mono tracking-wider ${
+                                            c.match === 'A+' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 
+                                            c.match === 'A' ? 'bg-ai-cyan/10 text-ai-cyan border border-ai-cyan/20' :
+                                            'bg-white/5 border border-white/10 text-quantum-silver'
+                                         }`}>
+                                            {c.match}
+                                         </div>
+                                      </div>
+                                   </td>
+                                   <td className="p-4 text-sm">
+                                      {c.status === 'Interview' && <span className="flex items-center gap-1.5 text-green-400"><CheckCircle2 className="w-3.5 h-3.5" /> High Priority</span>}
+                                      {c.status === 'Reviewing' && <span className="flex items-center gap-1.5 text-electric-blue"><Clock className="w-3.5 h-3.5" /> Pending HR</span>}
+                                      {c.status === 'Archived' && <span className="flex items-center gap-1.5 text-quantum-silver"><XCircle className="w-3.5 h-3.5" /> Archived</span>}
+                                   </td>
+                                   <td className="p-4 text-xs text-quantum-silver">{c.date}</td>
+                                   <td className="p-4 text-right relative">
+                                      <button
+                                        type="button"
+                                        onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                                        aria-label={`Manage ${c.name}`}
+                                        className="text-quantum-silver hover:text-white transition-colors p-1 rounded hover:bg-white/10"
+                                      >
+                                         <MoreHorizontal className="w-5 h-5" />
+                                      </button>
+                                      {openMenuId === c.id && (
+                                        <div className="absolute right-4 top-12 z-30 w-44 rounded-xl bg-[#0d121c] border border-glass-border shadow-2xl p-1.5 text-left text-xs">
+                                          <button
+                                            type="button"
+                                            onClick={() => handleUpdateCandidateStatus(c.id, 'Interview')}
+                                            className="w-full text-left px-3 py-1.5 rounded-lg text-green-400 hover:bg-white/10 transition-colors"
+                                          >
+                                            Promote to Interview
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleUpdateCandidateStatus(c.id, 'Reviewing')}
+                                            className="w-full text-left px-3 py-1.5 rounded-lg text-electric-blue hover:bg-white/10 transition-colors"
+                                          >
+                                            Mark Reviewing
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleUpdateCandidateStatus(c.id, 'Archived')}
+                                            className="w-full text-left px-3 py-1.5 rounded-lg text-quantum-silver hover:bg-white/10 transition-colors"
+                                          >
+                                            Archive Candidate
+                                          </button>
+                                        </div>
+                                      )}
+                                   </td>
+                                </tr>
+                             ))
+                          )}
                        </tbody>
                     </table>
                  </div>
@@ -146,7 +283,6 @@ export default function AdminDashboard() {
                  <div className="bg-graphite-grey/40 backdrop-blur-xl border border-glass-border rounded-2xl p-6 shadow-2xl">
                     <h3 className="text-lg font-bold text-white mb-4">Competency Distribution</h3>
                     <div className="flex items-end gap-2 h-40 bg-midnight-black/30 border border-glass-border rounded-xl p-4">
-                       {/* Placeholder Chart */}
                        {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3].map((h, i) => (
                           <div key={i} className="flex-1 bg-gradient-to-t from-electric-blue/20 to-ai-cyan/80 rounded-sm hover:brightness-125 transition-all" style={{ height: `${h * 100}%` }} />
                        ))}
@@ -163,6 +299,90 @@ export default function AdminDashboard() {
            </div>
         </div>
       </main>
+
+      {/* System Settings Drawer */}
+      <AnimatePresence>
+        {showSettings && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSettings(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative z-10 w-full max-w-md rounded-2xl bg-[#0d121c] border border-glass-border p-6 shadow-2xl space-y-5"
+            >
+              <div className="flex items-center justify-between border-b border-glass-border pb-3">
+                <div className="flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-ai-cyan" />
+                  <h3 className="text-base font-bold text-white">Pipeline Scoring Controls</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSettings(false)}
+                  aria-label="Close settings"
+                  className="p-1.5 rounded-lg bg-white/5 text-quantum-silver hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-4 text-xs">
+                <div>
+                  <div className="flex justify-between text-slate-300 mb-1.5">
+                    <span>Auto-Promote Threshold</span>
+                    <span className="font-mono text-ai-cyan">{minAutoScore}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={65}
+                    max={98}
+                    value={minAutoScore}
+                    onChange={(e) => setMinAutoScore(Number(e.target.value))}
+                    className="w-full accent-ai-cyan"
+                  />
+                </div>
+
+                <label className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-glass-border cursor-pointer">
+                  <span className="text-slate-300">Anonymize Candidate Names During Review</span>
+                  <input
+                    type="checkbox"
+                    checked={anonymizeReview}
+                    onChange={(e) => setAnonymizeReview(e.target.checked)}
+                    className="accent-ai-cyan"
+                  />
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-glass-border">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSettings(false);
+                    navigate('/portal');
+                  }}
+                  className="text-xs font-mono text-ai-cyan hover:underline"
+                >
+                  Open Command Portal →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSettings(false)}
+                  className="px-4 py-2 rounded-lg bg-electric-blue hover:bg-blue-600 text-white text-xs font-semibold transition-colors"
+                >
+                  Save Controls
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <Footer />
 
     </div>

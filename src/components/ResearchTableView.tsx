@@ -8,6 +8,7 @@ import {
   Download,
   Search,
 } from 'lucide-react';
+import { copyToClipboard } from '../utils/clipboard';
 
 export interface ResearchTableData {
   title?: string;
@@ -100,13 +101,16 @@ export default function ResearchTableView({
     URL.revokeObjectURL(url);
   };
 
-  const handleCopyMarkdown = () => {
+  const handleCopyMarkdown = async () => {
     const header = `| ${table.columns.join(' | ')} |`;
     const sep = `| ${table.columns.map(() => '---').join(' | ')} |`;
     const body = processedRows.map((row) => `| ${row.join(' | ')} |`).join('\n');
-    navigator.clipboard.writeText(`${header}\n${sep}\n${body}`);
-    setCopiedMd(true);
-    setTimeout(() => setCopiedMd(false), 2000);
+    const text = `${header}\n${sep}\n${body}`;
+    const ok = await copyToClipboard(text);
+    if (ok) {
+      setCopiedMd(true);
+      setTimeout(() => setCopiedMd(false), 2000);
+    }
   };
 
   return (

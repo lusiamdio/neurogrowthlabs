@@ -9,6 +9,7 @@ import { downloadAcademicPaper } from '../utils/paperDownloadHelper';
 import { tryParseTableBlock } from '../utils/tableParser';
 import ResearchTableView from '../components/ResearchTableView';
 import ResearchTablesPanel from '../components/ResearchTablesPanel';
+import { copyToClipboard } from '../utils/clipboard';
 import {
   ArrowLeft,
   BookOpen,
@@ -76,10 +77,12 @@ export default function ResearchArticle() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const handleCopyBibtex = () => {
-    navigator.clipboard.writeText(paper.bibtex);
-    setCopiedBibtex(true);
-    setTimeout(() => setCopiedBibtex(false), 2000);
+  const handleCopyBibtex = async () => {
+    const ok = await copyToClipboard(paper.bibtex);
+    if (ok) {
+      setCopiedBibtex(true);
+      setTimeout(() => setCopiedBibtex(false), 2000);
+    }
   };
 
   const handleDownload = async () => {
@@ -93,7 +96,7 @@ export default function ResearchArticle() {
     showToast(`Downloading: "${paper.title}"`);
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (navigator.share) {
       navigator
         .share({
@@ -103,8 +106,8 @@ export default function ResearchArticle() {
         })
         .catch(() => {});
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      showToast('Article link copied to clipboard.');
+      const ok = await copyToClipboard(window.location.href);
+      showToast(ok ? 'Article link copied to clipboard.' : 'Unable to copy link.');
     }
   };
 

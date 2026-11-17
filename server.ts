@@ -40,7 +40,7 @@ function normalizeSupabaseUrl(raw?: string): string {
   return fallback;
 }
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const VALID_LENSES: TableLens[] = ['comprehensive', 'technical', 'governance', 'implementation'];
 const SUPABASE_PROXY_TARGET = normalizeSupabaseUrl(
   process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
@@ -165,6 +165,73 @@ async function startServer() {
   });
 
   app.use(express.json({ limit: '1mb' }));
+
+  app.get('/api/health', (_req, res) => {
+    res.json({
+      status: 'ok',
+      service: 'neurogrowth-labs',
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  app.post('/api/notifications/email', async (req, res) => {
+    const { toEmail, toName, subject, htmlContent, textContent, type } = req.body ?? {};
+    if (typeof toEmail !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(toEmail.trim())) {
+      res.status(400).json({ error: 'A valid recipient email address is required.' });
+      return;
+    }
+    if (typeof subject !== 'string' || subject.trim().length === 0) {
+      res.status(400).json({ error: 'Email subject is required.' });
+      return;
+    }
+
+    const sendgridKey = process.env.SENDGRID_API_KEY?.trim();
+    if (!sendgridKey || !sendgridKey.startsWith('SG.')) {
+      res.json({ status: 'simulated', message: 'Email logged in sandbox delivery mode.' });
+      return;
+    }
+
+    try {
+      const upstream = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${sendgridKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [
+            {
+              to: [{ email: toEmail.trim(), name: typeof toName === 'string' ? toName.trim() : undefined }],
+              subject: subject.trim(),
+            },
+          ],
+          from: {
+            email: process.env.SENDGRID_SENDER_EMAIL || 'academy@neurogrowthlabs.co.za',
+            name: 'Neurogrowth Labs Sovereign Academy',
+          },
+          content: [
+            { type: 'text/plain', value: typeof textContent === 'string' ? textContent : subject.trim() },
+            ...(typeof htmlContent === 'string' && htmlContent.length > 0
+              ? [{ type: 'text/html', value: htmlContent }]
+              : []),
+          ],
+        }),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (upstream.status === 202 || upstream.ok) {
+        res.json({ status: 'delivered', type: typeof type === 'string' ? type : 'notification' });
+        return;
+      }
+
+      const detail = await upstream.text();
+      console.warn(`[SendGrid Relay] Provider returned ${upstream.status}:`, detail.slice(0, 300));
+      res.json({ status: 'simulated', providerStatus: upstream.status });
+    } catch (err) {
+      console.warn('[SendGrid Relay] Upstream error:', err instanceof Error ? err.message : err);
+      res.json({ status: 'simulated' });
+    }
+  });
 
   // Research chapters & cached asset inventory
   app.get('/api/research/:paperId/chapters', (req, res) => {
@@ -347,9 +414,14 @@ async function startServer() {
 
   if (process.env.NODE_ENV === 'production') {
     const distDir = path.resolve(process.cwd(), 'dist');
+    const indexPath = path.join(distDir, 'index.html');
     app.use(express.static(distDir));
     app.get('*', (_req, res) => {
-      res.sendFile(path.join(distDir, 'index.html'));
+      if (!fs.existsSync(indexPath)) {
+        res.status(503).json({ error: 'Production frontend bundle not found. Run npm run build first.' });
+        return;
+      }
+      res.sendFile(indexPath);
     });
   } else {
     const { createServer: createViteServer } = await import('vite');

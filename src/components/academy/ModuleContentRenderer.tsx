@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check, Copy, Sigma, Terminal, Table2 } from 'lucide-react';
+import { copyToClipboard } from '../../utils/clipboard';
 
 interface ModuleContentRendererProps {
   content: string;
@@ -262,10 +263,12 @@ function ChecklistBlock({ items }: { items: { label: string; defaultChecked: boo
 function CodeBlockCard({ lang, code }: { lang: string; code: string }) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard?.writeText(code).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    const ok = await copyToClipboard(code);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const label =

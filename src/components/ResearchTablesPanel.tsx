@@ -65,7 +65,7 @@ export default function ResearchTablesPanel({
   const [error, setError] = useState<string | null>(null);
 
   const synthesizeTables = useCallback(
-    async (targetLens: TableLens, force = false) => {
+    async (targetLens: TableLens, force = false, signal?: AbortSignal) => {
       setLoading(true);
       setError(null);
       try {
@@ -75,8 +75,11 @@ export default function ResearchTablesPanel({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lens: targetLens, force }),
+            signal,
           }
         );
+
+        if (signal?.aborted) return;
 
         if (res.ok === false) {
           if (res.isHtmlFallback) {
@@ -98,9 +101,14 @@ export default function ResearchTablesPanel({
         setGeneratedAt(data.generated?.generatedAt || null);
         onTablesCountChange?.(resolvedInline.length + genList.length);
       } catch (err) {
+        if ((err as { name?: string })?.name === 'AbortError' || signal?.aborted) {
+          return;
+        }
         setError(err instanceof Error ? err.message : 'Unable to generate tables.');
       } finally {
-        setLoading(false);
+        if (!signal?.aborted) {
+          setLoading(false);
+        }
       }
     },
     [onTablesCountChange, paper]
@@ -108,7 +116,8 @@ export default function ResearchTablesPanel({
 
   // Load verbatim tables immediately; fetch cached generated matrices cleanly without crashing on HTML responses
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
+    const { signal } = controller;
     setError(null);
     const localInline = extractInlineTablesForPaper(paper);
     setInlineTables(localInline);
@@ -117,9 +126,10 @@ export default function ResearchTablesPanel({
       setLoading(true);
       try {
         const res = await safeFetchJson<TablesApiResponse>(
-          `/api/research/${encodeURIComponent(paper.id)}/tables?lens=${encodeURIComponent(lens)}`
+          `/api/research/${encodeURIComponent(paper.id)}/tables?lens=${encodeURIComponent(lens)}`,
+          { signal }
         );
-        if (cancelled) return;
+        if (signal.aborted) return;
 
         if (res.ok === false) {
           onTablesCountChange?.(localInline.length);
@@ -141,20 +151,21 @@ export default function ResearchTablesPanel({
           onTablesCountChange?.(resolvedInline.length + data.generated.tables.length);
           setLoading(false);
         } else {
-          await synthesizeTables(lens, false);
+          await synthesizeTables(lens, false, signal);
         }
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Unable to load structured tables.');
-          setLoading(false);
+        if ((err as { name?: string })?.name === 'AbortError' || signal.aborted) {
+          return;
         }
+        setError(err instanceof Error ? err.message : 'Unable to load structured tables.');
+        setLoading(false);
       }
     };
 
     void loadOrGenerate();
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [lens, paper, synthesizeTables, onTablesCountChange]);
 

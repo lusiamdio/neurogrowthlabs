@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, isFirebaseConfigured } from '../firebase';
 import { supabase } from '../supabase';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
@@ -168,8 +168,8 @@ export default function Webinar() {
           console.warn("Supabase fetch webinars failed, falling back to Firebase:", sErr);
         }
 
-        // 2. Fallback to Firebase Firestore if Supabase empty
-        if (dbWebinars.length === 0) {
+        // 2. Fallback to Firebase Firestore if Supabase empty and configured
+        if (dbWebinars.length === 0 && isFirebaseConfigured) {
           try {
             const snap = await getDocs(collection(db, 'webinars'));
             if (!snap.empty) {
@@ -183,25 +183,19 @@ export default function Webinar() {
         console.error("Database retrieval error for webinars:", err);
       }
 
-      // Merge with any locally created webinars in localStorage
+      // Merge locally created webinars, DB webinars, and curated default calendar sessions
       try {
         const localWebinars = JSON.parse(localStorage.getItem('local_webinars') || '[]');
-        const combined = [...localWebinars, ...dbWebinars];
-        
-        // De-duplicate by some keys if needed, or if empty use defaults
-        if (combined.length > 0) {
-          // Filter duplicates by focus/date combination
-          const seen = new Set();
-          const unique = combined.filter(w => {
-            const key = `${w.date}-${w.focus}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-          });
-          setSessions(unique);
-        } else {
-          setSessions(calendarSessions);
-        }
+        const combined = [...localWebinars, ...dbWebinars, ...calendarSessions];
+
+        const seen = new Set();
+        const unique = combined.filter(w => {
+          const key = `${w.date}-${w.focus}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        setSessions(unique.length > 0 ? unique : calendarSessions);
       } catch (lErr) {
         console.error("Local storage processing failed for webinars:", lErr);
         setSessions(calendarSessions);
@@ -226,34 +220,35 @@ export default function Webinar() {
     e.preventDefault();
     if (!formData.fullName || !formData.email) return;
     
-    // 1. Dual-write to Firebase
-    try {
-      await addDoc(collection(db, 'webinar_registrations'), {
-        ...formData,
-        track: registrationTrack,
-        status: 'registered',
-        createdAt: serverTimestamp()
-      });
-    } catch (err) {
-      console.error("Error saving webinar registration in Firebase:", err);
+    // 1. Dual-write to Firebase when configured
+    if (isFirebaseConfigured) {
+      try {
+        await addDoc(collection(db, 'webinar_registrations'), {
+          ...formData,
+          track: registrationTrack,
+          status: 'registered',
+          createdAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.error("Error saving webinar registration in Firebase:", err);
+      }
     }
 
-    // 2. Dual-write to Supabase
+    // 2. Write to Supabase using exact SQL schema columns
     try {
-      await supabase.from('webinar_registrations').insert({
-        fullName: formData.fullName,
+      const { error: sErr } = await supabase.from('webinar_registrations').insert({
+        full_name: formData.fullName,
         email: formData.email,
         organization: formData.organization,
         title: formData.title,
         country: formData.country,
-        interestSector: formData.interestSector,
-        comments: formData.comments,
-        track: registrationTrack,
-        status: 'registered',
-        full_name: formData.fullName,
         interest_sector: formData.interestSector,
+        comments: formData.comments,
+        track: registrationTrack === 'free' ? 'Free Webinar' : 'Paid Program',
+        status: 'registered',
         created_at: new Date().toISOString()
       });
+      if (sErr) throw sErr;
     } catch (err) {
       console.error("Error saving webinar registration in Supabase:", err);
     }
@@ -392,7 +387,7 @@ export default function Webinar() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative p-8 rounded-3xl bg-graphite-grey/40 backdrop-blur-3xl border border-glass-border shadow-2xl relative overflow-hidden"
+                className="relative p-8 rounded-3xl bg-graphite-grey/40 backdrop-blur-3xl border border-glass-border shadow-2xl overflow-hidden"
               >
                 {/* Visual decoration overlay */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-ai-cyan/10 rounded-full blur-2xl pointer-events-none" />
@@ -894,7 +889,7 @@ export default function Webinar() {
                 <div className="mt-8 p-4 rounded-xl bg-ai-cyan/5 border border-ai-cyan/20 flex gap-3 items-start">
                   <Info className="w-5 h-5 text-ai-cyan shrink-0 mt-0.5" />
                   <p className="text-xs text-quantum-silver leading-relaxed">
-                    Registration for the Free capacity building webinar series opens via a dedicated sign-up portal, ahead of the **15 July 2026** launch. Enrolment fee schedule and payment terms for the Paid Program are issued separately.
+                    Registration for the Free capacity building webinar series opens via a dedicated sign-up portal, ahead of the <strong className="text-white">15 July 2026</strong> launch. Enrolment fee schedule and payment terms for the Paid Program are issued separately.
                   </p>
                 </div>
               </div>
@@ -1091,7 +1086,7 @@ export default function Webinar() {
                   
                   <h4 className="text-2xl font-bold text-white mb-3">Alignment Successful</h4>
                   <p className="text-quantum-silver max-w-lg mx-auto text-sm leading-relaxed mb-8">
-                    Thank you, <span className="text-white font-semibold">{formData.fullName}</span>. We have logged your strategic interest in the **{formData.interestSector}** rotation. 
+                    Thank you, <span className="text-white font-semibold">{formData.fullName}</span>. We have logged your strategic interest in the <strong className="text-white">{formData.interestSector}</strong> rotation. 
                     {registrationTrack === 'free' ? (
                       <span> A calendar invite with live Microsoft Teams access credentials will be routed to <strong className="text-white">{formData.email}</strong> shortly ahead of the 15 July 2026 launch.</span>
                     ) : (

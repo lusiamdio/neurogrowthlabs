@@ -5,6 +5,7 @@ import {
   X, Download, ExternalLink, FileText, BookOpen, 
   Calendar, Award, Hash, Check, Copy, Share2, Eye
 } from 'lucide-react';
+import { copyToClipboard } from '../../utils/clipboard';
 
 interface ArticleReaderModalProps {
   isOpen: boolean;
@@ -26,10 +27,12 @@ export default function ArticleReaderModal({
 
   if (!isOpen) return null;
 
-  const handleCopyBibtex = () => {
-    navigator.clipboard.writeText(paper.bibtex);
-    setCopiedBibtex(true);
-    setTimeout(() => setCopiedBibtex(false), 2000);
+  const handleCopyBibtex = async () => {
+    const ok = await copyToClipboard(paper.bibtex);
+    if (ok) {
+      setCopiedBibtex(true);
+      setTimeout(() => setCopiedBibtex(false), 2000);
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -13,8 +13,9 @@ import {
   query,
   orderBy 
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, isFirebaseConfigured } from '../firebase';
 import { supabase } from '../supabase';
+import { copyToClipboard } from '../utils/clipboard';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
 import { 
@@ -54,6 +55,22 @@ export default function Portal() {
   // SQL Schema guide states
   const [showSqlGuide, setShowSqlGuide] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
+  const copyTimerRef = useRef<number | null>(null);
+
+  // In-app destructive confirmation modal state (avoids native window.confirm in sandboxed iframes)
+  const [confirmDialog, setConfirmDialog] = useState<{
+    title: string;
+    message: string;
+    confirmLabel: string;
+    onConfirm: () => Promise<void>;
+  } | null>(null);
+  const [confirmBusy, setConfirmBusy] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   // New Webinar Form State
   const [showAddWebinar, setShowAddWebinar] = useState(false);
@@ -83,6 +100,7 @@ export default function Portal() {
       } catch (sErr) {
         console.warn("Supabase webinars fetch failed, trying Firebase Firestore:", sErr);
         anyFailure = true;
+        if (!isFirebaseConfigured) throw sErr;
         const webinarsQuery = query(collection(db, 'webinars'));
         const webinarsSnap = await getDocs(webinarsQuery);
         webinarsList = webinarsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -116,6 +134,7 @@ export default function Portal() {
       } catch (sErr) {
         console.warn("Supabase webinar registrations fetch failed, trying Firebase Firestore:", sErr);
         anyFailure = true;
+        if (!isFirebaseConfigured) throw sErr;
         const regSnap = await getDocs(collection(db, 'webinar_registrations'));
         regList = regSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       }
@@ -157,6 +176,7 @@ export default function Portal() {
       } catch (sErr) {
         console.warn("Supabase partner applications fetch failed, trying Firebase Firestore:", sErr);
         anyFailure = true;
+        if (!isFirebaseConfigured) throw sErr;
         const partnersSnap = await getDocs(collection(db, 'partner_applications'));
         partnersList = partnersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       }
@@ -197,6 +217,7 @@ export default function Portal() {
       } catch (sErr) {
         console.warn("Supabase contact submissions fetch failed, trying Firebase Firestore:", sErr);
         anyFailure = true;
+        if (!isFirebaseConfigured) throw sErr;
         const contactsSnap = await getDocs(collection(db, 'contact_submissions'));
         contactsList = contactsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       }
@@ -229,6 +250,7 @@ export default function Portal() {
       } catch (sErr) {
         console.warn("Supabase subscriptions fetch failed, trying Firebase Firestore:", sErr);
         anyFailure = true;
+        if (!isFirebaseConfigured) throw sErr;
         const subSnap = await getDocs(collection(db, 'subscriptions'));
         subList = subSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       }
@@ -303,14 +325,16 @@ export default function Portal() {
         createdAt: new Date().toISOString()
       };
 
-      // 1. Dual-write to Firebase
-      try {
-        await addDoc(collection(db, 'webinars'), {
-          ...newWebinar,
-          createdAt: serverTimestamp()
-        });
-      } catch (fErr) {
-        console.warn("Firebase webinar create failed:", fErr);
+      // 1. Dual-write to Firebase when configured
+      if (isFirebaseConfigured) {
+        try {
+          await addDoc(collection(db, 'webinars'), {
+            ...newWebinar,
+            createdAt: serverTimestamp()
+          });
+        } catch (fErr) {
+          console.warn("Firebase webinar create failed:", fErr);
+        }
       }
 
       // 2. Dual-write to Supabase
@@ -351,53 +375,58 @@ export default function Portal() {
   };
 
   // Delete Webinar Action
-  const handleDeleteWebinar = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this webinar? This will also affect what displays on the public webinar page.")) return;
-    try {
-      // 1. Firebase delete
-      try {
-        await deleteDoc(doc(db, 'webinars', id));
-      } catch (fErr) {
-        console.warn("Firebase webinar delete failed:", fErr);
-      }
-
-      // 2. Supabase delete
-      try {
-        await supabase.from('webinars').delete().eq('id', id);
-      } catch (sErr) {
-        // Also try casting to integer if necessary
+  const handleDeleteWebinar = (id: string) => {
+    setConfirmDialog({
+      title: 'Delete Webinar Program',
+      message: 'Are you sure you want to delete this webinar? This will also update what displays on the public webinar page.',
+      confirmLabel: 'Delete Webinar',
+      onConfirm: async () => {
         try {
-          await supabase.from('webinars').delete().eq('id', parseInt(id, 10));
-        } catch (innerErr) {
-          console.warn("Supabase webinar delete failed:", sErr, innerErr);
+          if (isFirebaseConfigured) {
+            try {
+              await deleteDoc(doc(db, 'webinars', id));
+            } catch (fErr) {
+              console.warn("Firebase webinar delete failed:", fErr);
+            }
+          }
+
+          try {
+            await supabase.from('webinars').delete().eq('id', id);
+          } catch (sErr) {
+            try {
+              await supabase.from('webinars').delete().eq('id', parseInt(id, 10));
+            } catch (innerErr) {
+              console.warn("Supabase webinar delete failed:", sErr, innerErr);
+            }
+          }
+
+          try {
+            const localWebinars = JSON.parse(localStorage.getItem('local_webinars') || '[]');
+            const updated = localWebinars.filter((w: any) => String(w.id) !== String(id));
+            localStorage.setItem('local_webinars', JSON.stringify(updated));
+          } catch (lErr) {
+            console.warn("localStorage webinar delete failed:", lErr);
+          }
+
+          fetchAllData();
+        } catch (err) {
+          console.error("Error deleting webinar:", err);
         }
       }
-
-      // 3. Sync to localStorage
-      try {
-        const localWebinars = JSON.parse(localStorage.getItem('local_webinars') || '[]');
-        const updated = localWebinars.filter((w: any) => String(w.id) !== String(id));
-        localStorage.setItem('local_webinars', JSON.stringify(updated));
-      } catch (lErr) {
-        console.warn("localStorage webinar delete failed:", lErr);
-      }
-
-      fetchAllData();
-    } catch (err) {
-      console.error("Error deleting webinar:", err);
-    }
+    });
   };
 
   // Update Partner Application Status
   const handleUpdatePartnerStatus = async (id: string, newStatus: string) => {
     try {
-      // 1. Firebase update
-      try {
-        await updateDoc(doc(db, 'partner_applications', id), {
-          status: newStatus
-        });
-      } catch (fErr) {
-        console.warn("Firebase partner status update failed:", fErr);
+      if (isFirebaseConfigured) {
+        try {
+          await updateDoc(doc(db, 'partner_applications', id), {
+            status: newStatus
+          });
+        } catch (fErr) {
+          console.warn("Firebase partner status update failed:", fErr);
+        }
       }
 
       // 2. Supabase update
@@ -432,15 +461,20 @@ export default function Portal() {
   };
 
   // Delete Partner Application
-  const handleDeletePartner = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this partner application?")) return;
-    try {
-      // 1. Firebase delete
-      try {
-        await deleteDoc(doc(db, 'partner_applications', id));
-      } catch (fErr) {
-        console.warn("Firebase partner delete failed:", fErr);
-      }
+  const handleDeletePartner = (id: string) => {
+    setConfirmDialog({
+      title: 'Purge Partner Application',
+      message: 'Are you sure you want to delete this partner application?',
+      confirmLabel: 'Delete Application',
+      onConfirm: async () => {
+        try {
+          if (isFirebaseConfigured) {
+            try {
+              await deleteDoc(doc(db, 'partner_applications', id));
+            } catch (fErr) {
+              console.warn("Firebase partner delete failed:", fErr);
+            }
+          }
 
       // 2. Supabase delete
       try {
@@ -463,22 +497,25 @@ export default function Portal() {
       }
 
       fetchAllData();
-    } catch (err) {
-      console.error("Error deleting partner application:", err);
-    }
+        } catch (err) {
+          console.error("Error deleting partner application:", err);
+        }
+      }
+    });
   };
 
   // Toggle Contact read/unread state
   const handleToggleContactStatus = async (id: string, currentStatus: string) => {
     const nextStatus = currentStatus === 'unread' ? 'read' : 'unread';
     try {
-      // 1. Firebase update
-      try {
-        await updateDoc(doc(db, 'contact_submissions', id), {
-          status: nextStatus
-        });
-      } catch (fErr) {
-        console.warn("Firebase contact status update failed:", fErr);
+      if (isFirebaseConfigured) {
+        try {
+          await updateDoc(doc(db, 'contact_submissions', id), {
+            status: nextStatus
+          });
+        } catch (fErr) {
+          console.warn("Firebase contact status update failed:", fErr);
+        }
       }
 
       // 2. Supabase update
@@ -513,77 +550,87 @@ export default function Portal() {
   };
 
   // Delete Contact Inquiries
-  const handleDeleteContact = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this inquiry?")) return;
-    try {
-      // 1. Firebase delete
-      try {
-        await deleteDoc(doc(db, 'contact_submissions', id));
-      } catch (fErr) {
-        console.warn("Firebase contact delete failed:", fErr);
-      }
-
-      // 2. Supabase delete
-      try {
-        await supabase.from('contact_submissions').delete().eq('id', id);
-      } catch (sErr) {
+  const handleDeleteContact = (id: string) => {
+    setConfirmDialog({
+      title: 'Purge Contact Inquiry',
+      message: 'Are you sure you want to delete this inquiry from the ledger?',
+      confirmLabel: 'Delete Inquiry',
+      onConfirm: async () => {
         try {
-          await supabase.from('contact_submissions').delete().eq('id', parseInt(id, 10));
-        } catch (innerErr) {
-          console.warn("Supabase contact delete failed:", sErr, innerErr);
+          if (isFirebaseConfigured) {
+            try {
+              await deleteDoc(doc(db, 'contact_submissions', id));
+            } catch (fErr) {
+              console.warn("Firebase contact delete failed:", fErr);
+            }
+          }
+
+          try {
+            await supabase.from('contact_submissions').delete().eq('id', id);
+          } catch (sErr) {
+            try {
+              await supabase.from('contact_submissions').delete().eq('id', parseInt(id, 10));
+            } catch (innerErr) {
+              console.warn("Supabase contact delete failed:", sErr, innerErr);
+            }
+          }
+
+          try {
+            const localContacts = JSON.parse(localStorage.getItem('local_contact_submissions') || '[]');
+            const updated = localContacts.filter((c: any) => String(c.id) !== String(id));
+            localStorage.setItem('local_contact_submissions', JSON.stringify(updated));
+          } catch (lErr) {
+            console.warn("localStorage contact delete failed:", lErr);
+          }
+
+          fetchAllData();
+        } catch (err) {
+          console.error("Error deleting contact inquiry:", err);
         }
       }
-
-      // 3. Sync to localStorage
-      try {
-        const localContacts = JSON.parse(localStorage.getItem('local_contact_submissions') || '[]');
-        const updated = localContacts.filter((c: any) => String(c.id) !== String(id));
-        localStorage.setItem('local_contact_submissions', JSON.stringify(updated));
-      } catch (lErr) {
-        console.warn("localStorage contact delete failed:", lErr);
-      }
-
-      fetchAllData();
-    } catch (err) {
-      console.error("Error deleting contact inquiry:", err);
-    }
+    });
   };
 
   // Delete Subscriber Email
-  const handleDeleteSubscriber = async (id: string) => {
-    if (!window.confirm("Are you sure you want to remove this email subscriber?")) return;
-    try {
-      // 1. Firebase delete
-      try {
-        await deleteDoc(doc(db, 'subscriptions', id));
-      } catch (fErr) {
-        console.warn("Firebase subscription delete failed:", fErr);
-      }
-
-      // 2. Supabase delete
-      try {
-        await supabase.from('subscriptions').delete().eq('id', id);
-      } catch (sErr) {
+  const handleDeleteSubscriber = (id: string) => {
+    setConfirmDialog({
+      title: 'Remove Subscriber',
+      message: 'Are you sure you want to remove this email subscriber from broadcast streams?',
+      confirmLabel: 'Remove Subscriber',
+      onConfirm: async () => {
         try {
-          await supabase.from('subscriptions').delete().eq('id', parseInt(id, 10));
-        } catch (innerErr) {
-          console.warn("Supabase subscription delete failed:", sErr, innerErr);
+          if (isFirebaseConfigured) {
+            try {
+              await deleteDoc(doc(db, 'subscriptions', id));
+            } catch (fErr) {
+              console.warn("Firebase subscription delete failed:", fErr);
+            }
+          }
+
+          try {
+            await supabase.from('subscriptions').delete().eq('id', id);
+          } catch (sErr) {
+            try {
+              await supabase.from('subscriptions').delete().eq('id', parseInt(id, 10));
+            } catch (innerErr) {
+              console.warn("Supabase subscription delete failed:", sErr, innerErr);
+            }
+          }
+
+          try {
+            const localSubs = JSON.parse(localStorage.getItem('local_subscriptions') || '[]');
+            const updated = localSubs.filter((s: any) => String(s.id) !== String(id));
+            localStorage.setItem('local_subscriptions', JSON.stringify(updated));
+          } catch (lErr) {
+            console.warn("localStorage subscription delete failed:", lErr);
+          }
+
+          fetchAllData();
+        } catch (err) {
+          console.error("Error deleting subscriber:", err);
         }
       }
-
-      // 3. Sync to localStorage
-      try {
-        const localSubs = JSON.parse(localStorage.getItem('local_subscriptions') || '[]');
-        const updated = localSubs.filter((s: any) => String(s.id) !== String(id));
-        localStorage.setItem('local_subscriptions', JSON.stringify(updated));
-      } catch (lErr) {
-        console.warn("localStorage subscription delete failed:", lErr);
-      }
-
-      fetchAllData();
-    } catch (err) {
-      console.error("Error deleting subscriber:", err);
-    }
+    });
   };
 
   // Filtering Logic
@@ -1021,13 +1068,18 @@ export default function Portal() {
                                   <div className="text-xs text-electric-blue font-mono">{p.email}</div>
                                 </td>
                                 <td className="p-4 text-xs">
-                                  <span className={`px-2 py-1 rounded font-mono uppercase tracking-wider border ${
-                                    p.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                    p.status === 'Rejected' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                                    'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                  }`}>
-                                    {p.status || 'In Review'}
-                                  </span>
+                                  {(() => {
+                                    const normalized = (p.status || 'pending').toLowerCase();
+                                    return (
+                                      <span className={`px-2 py-1 rounded font-mono uppercase tracking-wider border ${
+                                        normalized === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                        normalized === 'rejected' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                                        'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                      }`}>
+                                        {p.status || 'In Review'}
+                                      </span>
+                                    );
+                                  })()}
                                 </td>
                                 <td className="p-4 text-right">
                                   <div className="flex justify-end gap-2">
@@ -1217,7 +1269,7 @@ export default function Portal() {
 
                   <div className="relative">
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         const sqlText = `
 -- 1. Create Subscriptions Table
 CREATE TABLE IF NOT EXISTS subscriptions (
@@ -1306,9 +1358,12 @@ CREATE POLICY "Public full access" ON contact_submissions FOR ALL USING (true) W
 CREATE POLICY "Public full access" ON webinars FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Public full access" ON webinar_registrations FOR ALL USING (true) WITH CHECK (true);
 `;
-                        navigator.clipboard.writeText(sqlText.trim());
-                        setCopiedSql(true);
-                        setTimeout(() => setCopiedSql(false), 3000);
+                        const ok = await copyToClipboard(sqlText.trim());
+                        if (ok) {
+                          setCopiedSql(true);
+                          if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
+                          copyTimerRef.current = window.setTimeout(() => setCopiedSql(false), 3000);
+                        }
                       }}
                       className="absolute top-3 right-3 p-2 bg-midnight-black/80 border border-glass-border rounded-lg text-quantum-silver hover:text-white transition-all flex items-center gap-1 text-xs font-mono"
                     >
@@ -1418,6 +1473,65 @@ CREATE POLICY "Public full access" ON webinar_registrations FOR ALL USING (true)
 
         </div>
       </main>
+
+      {/* In-App Confirmation Modal */}
+      <AnimatePresence>
+        {confirmDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !confirmBusy && setConfirmDialog(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative z-10 w-full max-w-md rounded-2xl bg-[#0d121c] border border-glass-border p-6 shadow-2xl space-y-4"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">{confirmDialog.title}</h3>
+                  <p className="text-xs text-quantum-silver mt-1 leading-relaxed">
+                    {confirmDialog.message}
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-glass-border">
+                <button
+                  type="button"
+                  disabled={confirmBusy}
+                  onClick={() => setConfirmDialog(null)}
+                  className="px-4 py-2 rounded-lg bg-white/5 border border-glass-border text-xs font-medium text-quantum-silver hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={confirmBusy}
+                  onClick={async () => {
+                    setConfirmBusy(true);
+                    try {
+                      await confirmDialog.onConfirm();
+                    } finally {
+                      setConfirmBusy(false);
+                      setConfirmDialog(null);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                >
+                  {confirmBusy ? 'Processing...' : confirmDialog.confirmLabel}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

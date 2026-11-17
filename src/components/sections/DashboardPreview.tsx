@@ -212,7 +212,7 @@ export default function DashboardPreviewSection() {
                    </div>
                    
                    <div className="absolute bottom-0 text-center w-full pb-4">
-                     <p className="text-xs font-mono text-quantum-silver uppercase tracking-widest bg-black/40 inline-px-3 py-1 rounded">Mesh Router Active</p>
+                     <p className="text-xs font-mono text-quantum-silver uppercase tracking-widest bg-black/40 inline-block px-3 py-1 rounded">Mesh Router Active</p>
                    </div>
                  </motion.div>
                )}

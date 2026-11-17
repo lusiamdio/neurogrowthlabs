@@ -4,8 +4,8 @@
  * Supports Firestore persistence with fallback to local storage for offline resilience.
  */
 
-import { db, auth } from '../firebase';
-import { collection, doc, setDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { db, isFirebaseConfigured } from '../firebase';
+import { collection, doc, setDoc, getDocs, query, where } from 'firebase/firestore';
 
 export interface CourseReview {
   id: string;
@@ -247,9 +247,9 @@ export async function getReviewsForCourse(courseId: string): Promise<CourseRevie
   const localList = getLocalReviews();
   let courseReviews = localList.filter(r => r.courseId === courseId);
 
-  // Try fetching any cloud-persisted reviews from Firestore
+  // Try fetching any cloud-persisted reviews from Firestore when configured
   try {
-    if (db) {
+    if (isFirebaseConfigured && db) {
       const colRef = collection(db, 'course_reviews');
       const q = query(colRef, where('courseId', '==', courseId));
       const snapshot = await getDocs(q);
@@ -357,9 +357,9 @@ export async function submitCourseReview(payload: {
     console.warn('Failed saving review to localStorage:', e);
   }
 
-  // 2. Persist to Firestore if available
+  // 2. Persist to Firestore if configured
   try {
-    if (db) {
+    if (isFirebaseConfigured && db) {
       const docRef = doc(collection(db, 'course_reviews'), newReview.id);
       await setDoc(docRef, newReview);
     }
@@ -370,17 +370,29 @@ export async function submitCourseReview(payload: {
   return newReview;
 }
 
-// Toggle helpful upvote
-export async function toggleReviewHelpful(reviewId: string): Promise<number> {
+// Toggle helpful upvote (supports both increment and decrement)
+export async function toggleReviewHelpful(reviewId: string, isRemoving = false): Promise<number> {
   const localList = getLocalReviews();
+  const delta = isRemoving ? -1 : 1;
   let updatedCount = 0;
-  const updatedList = localList.map(r => {
+  let found = false;
+
+  const updatedList = localList.map((r) => {
     if (r.id === reviewId) {
-      updatedCount = (r.helpfulCount || 0) + 1;
+      found = true;
+      updatedCount = Math.max(0, (r.helpfulCount || 0) + delta);
       return { ...r, helpfulCount: updatedCount };
     }
     return r;
   });
+
+  if (!found) {
+    const seedMatch = SEED_COURSE_REVIEWS.find((r) => r.id === reviewId);
+    if (seedMatch) {
+      updatedCount = Math.max(0, (seedMatch.helpfulCount || 0) + delta);
+      updatedList.push({ ...seedMatch, helpfulCount: updatedCount });
+    }
+  }
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
@@ -389,7 +401,7 @@ export async function toggleReviewHelpful(reviewId: string): Promise<number> {
   }
 
   try {
-    if (db) {
+    if (isFirebaseConfigured && db) {
       const docRef = doc(collection(db, 'course_reviews'), reviewId);
       await setDoc(docRef, { helpfulCount: updatedCount }, { merge: true });
     }

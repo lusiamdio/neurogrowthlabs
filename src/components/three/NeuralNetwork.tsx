@@ -1,11 +1,32 @@
-import { useRef, useMemo } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+
+class CanvasErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: any) {
+    console.warn('NeuralNetwork WebGL Canvas fallback active:', error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,229,255,0.08),transparent_70%)] pointer-events-none" />
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function ParticleCloud() {
   const ref = useRef<THREE.Points>(null);
   const count = 4000;
-  
+
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -36,9 +57,11 @@ function ParticleCloud() {
 export default function NeuralNetwork() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
-      <Canvas camera={{ position: [0, 0, 5] }}>
-        <ParticleCloud />
-      </Canvas>
+      <CanvasErrorBoundary>
+        <Canvas camera={{ position: [0, 0, 5] }} dpr={[1, 1.5]}>
+          <ParticleCloud />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }

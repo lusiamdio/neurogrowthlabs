@@ -5,8 +5,18 @@
  * 2. Certificate of Completion Issuance & Verification
  */
 
-import { db, auth } from '../firebase';
-import { collection, doc, setDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { db, auth, isFirebaseConfigured } from '../firebase';
+import { collection, doc, setDoc } from 'firebase/firestore';
+import { safeFetchJson } from '../utils/safeFetchJson';
+
+function escapeHtml(raw: string): string {
+  return String(raw)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 export interface EmailNotificationRecord {
   id: string;
@@ -59,9 +69,9 @@ function saveNotification(record: EmailNotificationRecord) {
     console.warn('Could not save notification to localStorage:', err);
   }
 
-  // Sync to Firestore if authenticated & db is available
+  // Sync to Firestore if Firebase is configured & user is authenticated
   try {
-    if (auth.currentUser && db) {
+    if (isFirebaseConfigured && auth?.currentUser && db) {
       const colRef = collection(db, 'email_notifications');
       const docRef = doc(colRef, record.id);
       setDoc(docRef, {
@@ -72,7 +82,7 @@ function saveNotification(record: EmailNotificationRecord) {
         console.info('Firestore notification sync deferred (offline/cached):', err?.message);
       });
     }
-  } catch (err) {
+  } catch {
     // Non-blocking
   }
 }
@@ -90,7 +100,13 @@ export function buildEnrollmentEmailHtml(params: {
   duration: string;
   courseUrl: string;
 }): string {
-  const { userName, courseCode, courseTitle, track, difficultyLevel, duration, courseUrl } = params;
+  const userName = escapeHtml(params.userName);
+  const courseCode = escapeHtml(params.courseCode);
+  const courseTitle = escapeHtml(params.courseTitle);
+  const track = escapeHtml(params.track);
+  const difficultyLevel = escapeHtml(params.difficultyLevel);
+  const duration = escapeHtml(params.duration);
+  const courseUrl = escapeHtml(params.courseUrl);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -221,7 +237,14 @@ export function buildCertificateReadyEmailHtml(params: {
   grade: string;
   certificateUrl: string;
 }): string {
-  const { userName, courseCode, courseTitle, certificateId, verificationCode, issuedDate, grade, certificateUrl } = params;
+  const userName = escapeHtml(params.userName);
+  const courseCode = escapeHtml(params.courseCode);
+  const courseTitle = escapeHtml(params.courseTitle);
+  const certificateId = escapeHtml(params.certificateId);
+  const verificationCode = escapeHtml(params.verificationCode);
+  const issuedDate = escapeHtml(params.issuedDate);
+  const grade = escapeHtml(params.grade);
+  const certificateUrl = escapeHtml(params.certificateUrl);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -366,52 +389,30 @@ export async function dispatchSendGridEmail(payload: {
   const recordId = `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   const sentAt = new Date().toISOString();
 
-  // Check if SendGrid API Key is configured in environment
-  const apiKey = (import.meta as any).env?.VITE_SENDGRID_API_KEY || (typeof process !== 'undefined' && process.env?.SENDGRID_API_KEY);
-
   let deliveryStatus: 'delivered' | 'simulated' | 'failed' = 'simulated';
 
-  if (apiKey && apiKey.startsWith('SG.')) {
-    try {
-      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          personalizations: [
-            {
-              to: [{ email: toEmail, name: toName }],
-              subject: subject
-            }
-          ],
-          from: {
-            email: SENDER_EMAIL,
-            name: SENDER_NAME
-          },
-          content: [
-            { type: 'text/plain', value: textContent },
-            { type: 'text/html', value: htmlContent }
-          ]
-        })
-      });
+  try {
+    const result = await safeFetchJson<{ status?: 'delivered' | 'simulated' }>('/api/notifications/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        toEmail,
+        toName,
+        subject,
+        htmlContent,
+        textContent,
+        type,
+      }),
+    });
 
-      if (response.status === 202 || response.ok) {
-        deliveryStatus = 'delivered';
-        console.log(`[SendGrid API] Dispatched ${type} email successfully to ${toEmail}`);
-      } else {
-        const errorText = await response.text();
-        console.warn(`[SendGrid API] Returned status ${response.status}:`, errorText);
-        deliveryStatus = 'simulated';
-      }
-    } catch (apiErr: any) {
-      console.warn(`[SendGrid API] Network or CORS handled gracefully:`, apiErr?.message);
+    if (result.ok && result.data.status === 'delivered') {
+      deliveryStatus = 'delivered';
+    } else {
       deliveryStatus = 'simulated';
     }
-  } else {
-    // Simulated delivery mode with high-fidelity logging
-    console.info(`[SendGrid Dispatcher] Simulated delivery to ${toEmail} (${subject}). SendGrid v3 payload synthesized.`);
+  } catch {
     deliveryStatus = 'simulated';
   }
 
@@ -450,7 +451,8 @@ export async function sendCourseEnrollmentNotification(params: {
   const toEmail = user.email || 'scholar@neurogrowthlabs.co.za';
   const toName = user.displayName || toEmail.split('@')[0];
   const userId = user.uid || user.id || 'anonymous-learner';
-  const courseUrl = `${window.location.origin}/academy#course=${course.id}`;
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://neurogrowthlabs.com';
+  const courseUrl = `${origin}/course/${encodeURIComponent(course.id)}`;
 
   const subject = `🎓 Enrollment Confirmed: ${course.code} - ${course.title}`;
   const textContent = `Hello ${toName},\n\nYou have been successfully enrolled in ${course.code}: ${course.title}.\n\nAccess the course workspace and masterclasses here: ${courseUrl}\n\nFaculty Lead: Mr. Lusimanadio Soki Simao, MBA\nNeurogrowth Labs Sovereign Academy`;
@@ -495,7 +497,8 @@ export async function sendCertificateReadyNotification(params: {
   const toEmail = user.email || 'scholar@neurogrowthlabs.co.za';
   const toName = user.displayName || toEmail.split('@')[0];
   const userId = user.uid || user.id || 'anonymous-learner';
-  const certificateUrl = `${window.location.origin}/academy#verify=${certificateId}`;
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://neurogrowthlabs.com';
+  const certificateUrl = `${origin}/verify/${encodeURIComponent(certificateId)}`;
 
   const subject = `🏆 Certificate Ready: ${course.code} - ${course.title} (Accredited)`;
   const textContent = `Congratulations ${toName}!\n\nYour Certificate of Completion for ${course.code}: ${course.title} is now ready and cryptographically verified.\n\nCertificate ID: ${certificateId}\nVerification Code: ${verificationCode}\nDate: ${issuedDate}\nGrade: ${grade}\n\nView and download your official credential: ${certificateUrl}\n\nInstructor: Mr. Lusimanadio Soki Simao, MBA\nNeurogrowth Labs Sovereign Academy`;

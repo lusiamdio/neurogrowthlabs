@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/sections/Navbar';
@@ -12,6 +12,7 @@ import {
 import { 
   sendCertificateReadyNotification, sendCourseEnrollmentNotification 
 } from '../services/emailNotificationService';
+import { buildStableVerificationId } from '../utils/certificateId';
 import { 
   ArrowLeft, ArrowRight, Award, BookOpen, Check, CheckCircle2, 
   Clock, ExternalLink, Globe, HelpCircle, MessageSquare, Play, 
@@ -86,10 +87,20 @@ export default function CourseClassroom() {
 
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reviewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      if (reviewTimerRef.current) clearTimeout(reviewTimerRef.current);
+    };
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 4000);
   };
 
   // Sync completed modules to localStorage & enroll user
@@ -160,12 +171,13 @@ export default function CourseClassroom() {
       setHasPassedExam(true);
       showToast(`🎉 Capstone Passed with ${calculatedScore}%! Certificate unlocked.`);
       if (user) {
-        const certId = `NGL-CERT-${course.code}-${Math.floor(100000 + Math.random() * 900000)}`;
+        const certId = buildStableVerificationId(course.code, user.email);
+        const verificationCode = `VER-${certId.slice(-6)}`;
         sendCertificateReadyNotification({
           user,
           course,
           certificateId: certId,
-          verificationCode: `SHA256-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+          verificationCode,
           issuedDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
           grade: `Pass with Honors (${calculatedScore}%)`
         }).catch(console.warn);
@@ -205,12 +217,14 @@ export default function CourseClassroom() {
         recommendation: newRating >= 4
       });
 
-      setCourseReviews(prev => [added, ...prev]);
-      setReviewStats(prev => calculateCourseRatingStats([added, ...courseReviews]));
+      const updatedReviews = [added, ...courseReviews];
+      setCourseReviews(updatedReviews);
+      setReviewStats(calculateCourseRatingStats(updatedReviews));
       setNewHeadline('');
       setNewReviewText('');
       setReviewSuccess(true);
-      setTimeout(() => setReviewSuccess(false), 3000);
+      if (reviewTimerRef.current) clearTimeout(reviewTimerRef.current);
+      reviewTimerRef.current = setTimeout(() => setReviewSuccess(false), 3000);
       showToast('Thank you! Your verified review has been published.');
     } catch (err) {
       console.error(err);
@@ -220,10 +234,11 @@ export default function CourseClassroom() {
   };
 
   const handleUpvote = async (revId: string) => {
-    await toggleReviewHelpful(revId);
-    setUpvotedMap(prev => ({ ...prev, [revId]: !prev[revId] }));
+    const isRemoving = Boolean(upvotedMap[revId]);
+    await toggleReviewHelpful(revId, isRemoving);
+    setUpvotedMap(prev => ({ ...prev, [revId]: !isRemoving }));
     setCourseReviews(prev => prev.map(r => 
-      r.id === revId ? { ...r, helpfulCount: r.helpfulCount + (upvotedMap[revId] ? -1 : 1) } : r
+      r.id === revId ? { ...r, helpfulCount: Math.max(0, r.helpfulCount + (isRemoving ? -1 : 1)) } : r
     ));
   };
 

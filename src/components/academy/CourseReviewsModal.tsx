@@ -136,9 +136,9 @@ export default function CourseReviewsModal({
   };
 
   const handleHelpfulClick = async (reviewId: string) => {
-    if (upvotedMap[reviewId]) return;
-    setUpvotedMap(prev => ({ ...prev, [reviewId]: true }));
-    const newCount = await toggleReviewHelpful(reviewId);
+    const isRemoving = !!upvotedMap[reviewId];
+    setUpvotedMap(prev => ({ ...prev, [reviewId]: !isRemoving }));
+    const newCount = await toggleReviewHelpful(reviewId, isRemoving);
     setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, helpfulCount: newCount } : r));
   };
 

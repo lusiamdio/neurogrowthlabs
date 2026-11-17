@@ -5,7 +5,7 @@ import DataCenter from '../three/DataCenter';
 
 export default function AILabSection() {
   return (
-    <section id="infrastructure" className="relative py-32 px-6 bg-midnight-black overflow-hidden border-t border-glass-border min-h-[100vh] flex items-center">
+    <section id="ai-lab" className="relative py-32 px-6 bg-midnight-black overflow-hidden border-t border-glass-border min-h-[100vh] flex items-center">
       
       {/* 3D Data Center Background */}
       <div className="absolute inset-0 z-0 opacity-50">

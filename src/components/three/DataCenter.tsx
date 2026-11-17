@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Box, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -100,10 +100,16 @@ function ServerRack({ position }: { position: [number, number, number] }) {
 }
 
 export default function DataCenter() {
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = 'auto';
+    };
+  }, []);
+
   return (
     <div className="absolute inset-0 z-10">
       <CanvasErrorBoundary>
-        <Canvas camera={{ position: [5, 5, 8], fov: 50 }}>
+        <Canvas camera={{ position: [5, 5, 8], fov: 50 }} dpr={[1, 1.5]}>
           <ambientLight intensity={0.2} />
           <directionalLight position={[5, 10, 5]} intensity={1.5} color="#00e5ff" />
           <directionalLight position={[-5, 5, -5]} intensity={1} color="#7B61FF" />

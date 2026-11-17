@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, isFirebaseConfigured } from '../firebase';
 import { supabase } from '../supabase';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
 import { MagneticButton } from '../components/ui/MagneticButton';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
   MessageSquare, Building2, FlaskConical, Briefcase, Handshake, 
   MapPin, Mail, Clock, ArrowRight, Sparkles, Send, Bot, Globe,
@@ -76,40 +76,47 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const chatTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (chatTimerRef.current) window.clearTimeout(chatTimerRef.current);
+    };
+  }, []);
+
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName || !formData.email) return;
     setIsSubmitting(true);
     try {
-      // 1. Dual-write to Firebase
-      try {
-        await addDoc(collection(db, 'contact_submissions'), {
-          ...formData,
-          inquiryType,
-          status: 'unread',
-          createdAt: serverTimestamp()
-        });
-      } catch (fErr) {
-        console.warn("Firebase contact submission save failed:", fErr);
+      // 1. Dual-write to Firebase when configured
+      if (isFirebaseConfigured) {
+        try {
+          await addDoc(collection(db, 'contact_submissions'), {
+            ...formData,
+            inquiryType,
+            status: 'unread',
+            createdAt: serverTimestamp()
+          });
+        } catch (fErr) {
+          console.warn("Firebase contact submission save failed:", fErr);
+        }
       }
 
-      // 2. Dual-write to Supabase (supporting multiple key structures for database schema compatibility)
+      // 2. Write to Supabase using exact SQL schema columns
       try {
-        await supabase.from('contact_submissions').insert({
-          fullName: formData.fullName,
-          fullName_custom: formData.fullName,
+        const { error: sErr } = await supabase.from('contact_submissions').insert({
+          full_name: formData.fullName,
           organization: formData.organization,
           email: formData.email,
-          teamScale: formData.teamScale,
+          team_scale: formData.teamScale,
           goal: formData.goal,
           message: formData.message,
-          inquiryType: inquiryType,
+          inquiry_type: inquiryType || 'General Inquiries',
           status: 'unread',
-          full_name: formData.fullName,
-          team_scale: formData.teamScale,
-          inquiry_type: inquiryType,
           created_at: new Date().toISOString()
         });
+        if (sErr) throw sErr;
       } catch (sErr) {
         console.warn("Supabase contact submission save failed:", sErr);
       }
@@ -175,7 +182,8 @@ export default function Contact() {
     setChatMessages(prev => [...prev, { role: 'user', text: chatInput }]);
     setChatInput('');
     
-    setTimeout(() => {
+    if (chatTimerRef.current) window.clearTimeout(chatTimerRef.current);
+    chatTimerRef.current = window.setTimeout(() => {
       setChatMessages(prev => [...prev, { 
         role: 'ai', 
         text: "Analyzing intent... I have routed your request to our priority queue. A specialist will engage with you shortly." 
@@ -489,13 +497,16 @@ export default function Contact() {
                      { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/company/neurogrowthlabs/', color: 'hover:text-blue-500 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]' },
                      { icon: Twitter, label: 'X (Twitter)', href: 'https://x.com/neurogrowthlabs', color: 'hover:text-white hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]' },
                      { icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@neurogrowthlabs', color: 'hover:text-red-500 hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]' },
-                     { icon: FlaskConical, label: 'Research', href: '#', color: 'hover:text-ai-cyan hover:border-ai-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.5)]' },
                   ].map((social, i) => (
-                     <a key={i} href={social.href} target={social.href !== '#' ? "_blank" : undefined} rel={social.href !== '#' ? "noopener noreferrer" : undefined} className={`group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-glass-border text-quantum-silver transition-all duration-300 ${social.color}`}>
+                     <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-glass-border text-quantum-silver transition-all duration-300 ${social.color}`}>
                         <social.icon className="w-4 h-4" />
                         <span className="font-medium text-sm">{social.label}</span>
                      </a>
                   ))}
+                  <Link to="/research" className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-glass-border text-quantum-silver transition-all duration-300 hover:text-ai-cyan hover:border-ai-cyan hover:shadow-[0_0_15px_rgba(0,229,255,0.5)]">
+                     <FlaskConical className="w-4 h-4" />
+                     <span className="font-medium text-sm">Research</span>
+                  </Link>
                </div>
             </div>
          </div>
@@ -517,7 +528,14 @@ export default function Contact() {
                <MagneticButton onClick={() => document.getElementById('ai-form')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-white text-midnight-black font-semibold rounded-full hover:bg-ai-cyan transition-colors flex items-center gap-2">
                   Launch a Project <ArrowRight className="w-4 h-4" />
                </MagneticButton>
-               <button className="px-8 py-4 bg-glass-surface border border-glass-border text-white font-medium rounded-full hover:bg-white/10 transition-colors">
+               <button
+                 type="button"
+                 onClick={() => {
+                   setInquiryType('Enterprise Solutions');
+                   document.getElementById('ai-form')?.scrollIntoView({ behavior: 'smooth' });
+                 }}
+                 className="px-8 py-4 bg-glass-surface border border-glass-border text-white font-medium rounded-full hover:bg-white/10 transition-colors"
+               >
                   Schedule Executive Consultation
                </button>
             </div>

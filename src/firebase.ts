@@ -13,6 +13,11 @@ const firebaseConfig = {
 
 const databaseId = import.meta.env.VITE_FIREBASE_DB_ID || 'ai-studio-9b4c93c8-49f4-4901-9ba9-d7014844a3c9';
 
+export const isFirebaseConfigured = Boolean(
+  import.meta.env.VITE_FIREBASE_API_KEY &&
+    !String(import.meta.env.VITE_FIREBASE_API_KEY).includes('DummyKey')
+);
+
 export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app, databaseId);
 export const auth = getAuth(app);

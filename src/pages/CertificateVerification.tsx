@@ -7,6 +7,8 @@ import OfficialCertificateCard from '../components/academy/OfficialCertificateCa
 import { useAuth } from '../components/AuthContext';
 import { ACADEMY_COURSES } from '../data/academyData';
 import { downloadCertificatePdf, type CertificateRenderData } from '../utils/certificatePdf';
+import { copyToClipboard } from '../utils/clipboard';
+import { buildStableVerificationId, resolveCourseFromParams } from '../utils/certificateId';
 import {
   Award,
   ArrowLeft,
@@ -19,23 +21,15 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-function buildStableVerificationId(courseCode: string, email?: string, overrideCode?: string): string {
-  if (overrideCode) return overrideCode;
-  const seed = `${courseCode}:${(email || 'sample').toLowerCase()}`;
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  }
-  const suffix = String(100000 + (hash % 900000));
-  return `NGL-CERT-${courseCode}-2026-${suffix}`;
-}
-
 export default function CertificateVerification() {
   const { courseId, code } = useParams<{ courseId?: string; code?: string }>();
   const navigate = useNavigate();
   const { user, updateDisplayName } = useAuth();
 
-  const course = ACADEMY_COURSES.find((c) => c.id === courseId) || ACADEMY_COURSES[0];
+  const course = useMemo(
+    () => resolveCourseFromParams(ACADEMY_COURSES, courseId, code),
+    [courseId, code]
+  );
 
   const registeredProfile = useMemo(() => {
     try {
@@ -153,12 +147,16 @@ export default function CertificateVerification() {
     }
   };
 
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}/certificate/${course.id}`;
-    navigator.clipboard.writeText(url);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2500);
-    showToast('Verification URL copied to clipboard.');
+  const handleCopyLink = async () => {
+    const url = `${window.location.origin}/verify/${encodeURIComponent(verificationId)}`;
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+      showToast('Verification URL copied to clipboard.');
+    } else {
+      showToast('Unable to copy link automatically.');
+    }
   };
 
   const handlePrint = () => {

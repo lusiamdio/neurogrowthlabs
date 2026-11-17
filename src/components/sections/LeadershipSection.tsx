@@ -249,21 +249,27 @@ const LeadershipCard = ({ member, isExpanded, onExpand, onClose }: any) => {
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 bg-midnight-black border-t border-glass-border p-4">
-          <div className="flex gap-3">
-            <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-blue-500 transition-all">
-              <Linkedin className="w-4 h-4" />
-            </a>
-            <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-gray-300 transition-all">
-              <Twitter className="w-4 h-4" />
-            </a>
-            {member.github && (
-              <a href={member.github} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-purple-500 transition-all">
-                <GithubIcon className="w-4 h-4" />
-              </a>
-            )}
+        {(member.linkedin !== '#' || member.twitter !== '#' || member.github) && (
+          <div className="flex-shrink-0 bg-midnight-black border-t border-glass-border p-4">
+            <div className="flex gap-3">
+              {member.linkedin && member.linkedin !== '#' && (
+                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-blue-500 transition-all">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+              )}
+              {member.twitter && member.twitter !== '#' && (
+                <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-gray-300 transition-all">
+                  <Twitter className="w-4 h-4" />
+                </a>
+              )}
+              {member.github && (
+                <a href={member.github} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-purple-500 transition-all">
+                  <GithubIcon className="w-4 h-4" />
+                </a>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </motion.div>
     );
   }
@@ -313,19 +319,25 @@ const LeadershipCard = ({ member, isExpanded, onExpand, onClose }: any) => {
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex gap-4 pt-4 border-t border-glass-border opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-blue-500 transition-all">
-              <Linkedin className="w-4 h-4" />
-            </a>
-            <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-gray-300 transition-all">
-              <Twitter className="w-4 h-4" />
-            </a>
-            {member.github && (
-              <a href={member.github} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-purple-500 transition-all">
-                <GithubIcon className="w-4 h-4" />
-              </a>
-            )}
-          </div>
+          {(member.linkedin !== '#' || member.twitter !== '#' || member.github) && (
+            <div className="flex gap-4 pt-4 border-t border-glass-border opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {member.linkedin && member.linkedin !== '#' && (
+                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="w-10 h-10 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-blue-500 transition-all">
+                  <Linkedin className="w-4 h-4" />
+                </a>
+              )}
+              {member.twitter && member.twitter !== '#' && (
+                <a href={member.twitter} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="w-10 h-10 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-gray-300 transition-all">
+                  <Twitter className="w-4 h-4" />
+                </a>
+              )}
+              {member.github && (
+                <a href={member.github} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="w-10 h-10 rounded-full bg-white/5 border border-glass-border flex items-center justify-center text-quantum-silver hover:text-white hover:border-purple-500 transition-all">
+                  <GithubIcon className="w-4 h-4" />
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
@@ -340,15 +352,9 @@ const SkeletonCard = () => (
 );
 
 export default function LeadershipSection() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Simulate network request for perceived performance enhancement
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
   
   const scroll = (direction: 'left' | 'right') => {
     if (carouselRef.current) {

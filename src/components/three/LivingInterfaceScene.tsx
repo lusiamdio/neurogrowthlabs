@@ -48,6 +48,16 @@ export default function LivingInterfaceScene({
   onMetricsUpdate,
 }: LivingInterfaceSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const onPhaseChangeRef = useRef(onPhaseChange);
+  const onMetricsUpdateRef = useRef(onMetricsUpdate);
+
+  useEffect(() => {
+    onPhaseChangeRef.current = onPhaseChange;
+  }, [onPhaseChange]);
+
+  useEffect(() => {
+    onMetricsUpdateRef.current = onMetricsUpdate;
+  }, [onMetricsUpdate]);
   
   // Track state for interaction and phases
   const stateRef = useRef({
@@ -258,7 +268,6 @@ export default function LivingInterfaceScene({
       if (i > PARTICLE_COUNT * 0.95) {
         const stemT = Math.random();
         xBase = (Math.random() - 0.5) * 0.35;
-        galaxyPositions[i * 3 + 1] = -1.2 - stemT * 1.0;
         brainPositions[i * 3] = xBase;
         brainPositions[i * 3 + 1] = -1.1 - stemT * 0.9;
         brainPositions[i * 3 + 2] = -0.3 + (Math.random() - 0.5) * 0.3;
@@ -406,6 +415,7 @@ export default function LivingInterfaceScene({
 
     const handlePointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const clientX = e.clientX - rect.left;
       const clientY = e.clientY - rect.top;
 
@@ -437,6 +447,7 @@ export default function LivingInterfaceScene({
 
     const handleClick = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const normX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const normY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
@@ -494,7 +505,7 @@ export default function LivingInterfaceScene({
         const activePhaseName: MorphPhase = pFloor === 0 ? 'orb' : pFloor === 1 ? 'galaxy' : 'brain';
         if (state.phase !== activePhaseName) {
           state.phase = activePhaseName;
-          onPhaseChange?.(activePhaseName);
+          onPhaseChangeRef.current?.(activePhaseName);
         }
       } else {
         // Damped interpolation towards selected targetPhaseProgress
@@ -747,7 +758,7 @@ export default function LivingInterfaceScene({
         const baseFiring = 980 + Math.floor(Math.sin(now * 3) * 240);
         const hoverBoost = state.mouse.isHovering ? 620 : 0;
         const shockBoost = state.shockwaves.length * 350;
-        onMetricsUpdate?.({
+        onMetricsUpdateRef.current?.({
           coherence: Math.min(99.8, 94.2 + brainWeight * 4.8 + Math.random() * 0.8),
           firingRate: baseFiring + hoverBoost + shockBoost,
           activeNodes: PARTICLE_COUNT,
@@ -778,7 +789,7 @@ export default function LivingInterfaceScene({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [triggerImpulse, onMetricsUpdate, onPhaseChange]);
+  }, [triggerImpulse]);
 
   return (
     <div 

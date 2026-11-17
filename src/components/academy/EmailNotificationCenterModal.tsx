@@ -4,6 +4,7 @@ import {
   EmailNotificationRecord, getStoredEmailNotifications, 
   dispatchSendGridEmail, sendCourseEnrollmentNotification, sendCertificateReadyNotification 
 } from '../../services/emailNotificationService';
+import { buildStableVerificationId } from '../../utils/certificateId';
 import { 
   Mail, X, CheckCircle, RefreshCw, Send, ExternalLink, 
   Eye, Clock, ShieldCheck, Award, BookOpen, AlertCircle, Copy, Check
@@ -108,7 +109,7 @@ export default function EmailNotificationCenterModal({
     if (!testEmailAddress.trim()) return;
     setIsSendingTest(true);
     try {
-      const randomCode = Math.random().toString(16).substring(2, 10).toUpperCase();
+      const certId = buildStableVerificationId('CYBER-AI 204', testEmailAddress.trim());
       const sent = await sendCertificateReadyNotification({
         user: {
           email: testEmailAddress.trim(),
@@ -120,8 +121,8 @@ export default function EmailNotificationCenterModal({
           code: 'CYBER-AI 204',
           title: 'Adversarial Machine Learning, Evasion Attacks & Certified Robustness'
         },
-        certificateId: `NGL-CERT-204-2026-${randomCode.slice(0, 5)}`,
-        verificationCode: randomCode,
+        certificateId: certId,
+        verificationCode: certId,
         issuedDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         grade: 'Pass with Honors (88% Capstone)'
       });

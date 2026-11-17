@@ -93,9 +93,10 @@ Neurogrowth Labs (Pty) Ltd. | Cape Town, ZA.
     URL.revokeObjectURL(url);
   }
 
-  // 3. Log to Firebase Firestore
+  // 3. Log to Firebase Firestore only when Firebase is configured
   try {
-    if (user.uid) {
+    const { isFirebaseConfigured } = await import('../firebase');
+    if (isFirebaseConfigured && user.uid) {
       await addDoc(collection(db, 'paper_downloads'), {
         userId: user.uid,
         userEmail: user.email || 'unknown',

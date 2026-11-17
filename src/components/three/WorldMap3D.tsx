@@ -171,7 +171,7 @@ export default function WorldMap3D() {
   return (
     <div className="absolute inset-0 z-0 pointer-events-none">
       <CanvasErrorBoundary>
-        <Canvas camera={{ position: [0, 0, 6] }}>
+        <Canvas camera={{ position: [0, 0, 6] }} dpr={[1, 1.5]}>
           <ambientLight intensity={0.2} />
           <directionalLight position={[3, 5, 2]} intensity={1} color="#7B61FF" />
           <GlobeWithNodes />

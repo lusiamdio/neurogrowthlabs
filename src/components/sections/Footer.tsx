@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Hexagon, Twitter, Linkedin, Youtube, ShieldCheck } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, isFirebaseConfigured } from '../../firebase';
 import { supabase } from '../../supabase';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const statusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (statusTimerRef.current) clearTimeout(statusTimerRef.current);
+    };
+  }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,15 +30,17 @@ export default function Footer() {
     }
 
     try {
-      // 1. Dual-write to Firebase Firestore
-      try {
-        await addDoc(collection(db, 'subscriptions'), {
-          email: email.trim().toLowerCase(),
-          createdAt: serverTimestamp(),
-          status: 'active'
-        });
-      } catch (fErr) {
-        console.warn("Firebase newsletter subscription save failed:", fErr);
+      // 1. Dual-write to Firebase Firestore when configured
+      if (isFirebaseConfigured) {
+        try {
+          await addDoc(collection(db, 'subscriptions'), {
+            email: email.trim().toLowerCase(),
+            createdAt: serverTimestamp(),
+            status: 'active'
+          });
+        } catch (fErr) {
+          console.warn("Firebase newsletter subscription save failed:", fErr);
+        }
       }
 
       // 2. Dual-write to Supabase Database
@@ -62,12 +71,14 @@ export default function Footer() {
 
       setStatus('success');
       setEmail('');
-      setTimeout(() => setStatus('idle'), 3000);
+      if (statusTimerRef.current) clearTimeout(statusTimerRef.current);
+      statusTimerRef.current = setTimeout(() => setStatus('idle'), 3000);
     } catch (err) {
       console.error("Error saving subscription:", err);
       setStatus('success');
       setEmail('');
-      setTimeout(() => setStatus('idle'), 3000);
+      if (statusTimerRef.current) clearTimeout(statusTimerRef.current);
+      statusTimerRef.current = setTimeout(() => setStatus('idle'), 3000);
     }
   };
 
@@ -129,24 +140,24 @@ export default function Footer() {
               <li><a href="https://afritradeos.co.za" target="_blank" rel="noopener noreferrer" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">AfriTrade OS</a></li>
               <li><a href="https://afriestate.co.za" target="_blank" rel="noopener noreferrer" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">AfriEstate</a></li>
               <li><a href="https://cgwastedata.co.za" target="_blank" rel="noopener noreferrer" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">CG Waste Data</a></li>
-              <li><a href="#" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">RescueBot AI</a></li>
-              <li><a href="#" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">IBOS</a></li>
-              <li><a href="#" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">NGX AfriQuant</a></li>
-              <li><a href="#" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Health AI</a></li>
+              <li><Link to="/#infrastructure" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">RescueBot AI</Link></li>
+              <li><Link to="/#infrastructure" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">IBOS</Link></li>
+              <li><Link to="/#infrastructure" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">NGX AfriQuant</Link></li>
+              <li><Link to="/#infrastructure" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Health AI</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-bold mb-6 tracking-wide">Company</h4>
             <ul className="space-y-4">
-              <li><Link to="/about" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors" onClick={() => window.scrollTo(0,0)}>About</Link></li>
-              <li><Link to="/academy" className="text-ai-cyan hover:text-white text-sm font-semibold flex items-center gap-1.5 transition-colors" onClick={() => window.scrollTo(0,0)}>Cybersecurity & AI Academy <span className="text-[10px] bg-green-500/20 text-green-400 border border-green-500/30 px-1.5 py-0.2 rounded-full font-mono">Free</span></Link></li>
-              <li><Link to="/webinar" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors" onClick={() => window.scrollTo(0,0)}>AI Webinar Program</Link></li>
-              <li><a href="#services" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Services</a></li>
-              <li><a href="#infrastructure" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Infrastructure</a></li>
-              <li><Link to="/careers" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors" onClick={() => window.scrollTo(0,0)}>Careers</Link></li>
-              <li><Link to="/contact" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors" onClick={() => window.scrollTo(0,0)}>Contact</Link></li>
-              <li><Link to="/portal" className="text-ai-cyan hover:text-white text-sm font-semibold flex items-center gap-1.5 transition-colors pt-2 border-t border-glass-border/30" onClick={() => window.scrollTo(0,0)}><ShieldCheck className="w-4 h-4" /> Super Admin Portal</Link></li>
+              <li><Link to="/about" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">About</Link></li>
+              <li><Link to="/academy" className="text-ai-cyan hover:text-white text-sm font-semibold flex items-center gap-1.5 transition-colors">Cybersecurity & AI Academy <span className="text-[10px] bg-green-500/20 text-green-400 border border-green-500/30 px-1.5 py-0.2 rounded-full font-mono">Free</span></Link></li>
+              <li><Link to="/webinar" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">AI Webinar Program</Link></li>
+              <li><Link to="/#services" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Services</Link></li>
+              <li><Link to="/#infrastructure" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Infrastructure</Link></li>
+              <li><Link to="/careers" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Careers</Link></li>
+              <li><Link to="/contact" className="text-quantum-silver hover:text-ai-cyan text-sm transition-colors">Contact</Link></li>
+              <li><Link to="/portal" className="text-ai-cyan hover:text-white text-sm font-semibold flex items-center gap-1.5 transition-colors pt-2 border-t border-glass-border/30"><ShieldCheck className="w-4 h-4" /> Super Admin Portal</Link></li>
             </ul>
           </div>
 

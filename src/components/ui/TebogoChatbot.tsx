@@ -2,8 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, X, Send, Minimize2, Sparkles } from 'lucide-react';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, isFirebaseConfigured } from '../../firebase';
 import { supabase } from '../../supabase';
+
+const INITIAL_MESSAGE = {
+  id: 'initial',
+  role: 'ai',
+  text: 'Greetings. I am Tebogo, your Super Intelligent AI Assistant. How may I accelerate your journey within the NeuroGrowth Labs ecosystem today?',
+};
 
 export default function TebogoChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,32 +21,39 @@ export default function TebogoChatbot() {
     }
     return id;
   });
-  const [messages, setMessages] = useState<any[]>([
-    { id: 'initial', role: 'ai', text: "Greetings. I am Tebogo, your Super Intelligent AI Assistant. How may I accelerate your journey within the NeuroGrowth Labs ecosystem today?" }
-  ]);
+  const [messages, setMessages] = useState<any[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const replyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    return () => {
+      if (replyTimerRef.current) clearTimeout(replyTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isFirebaseConfigured || !db) return;
     const q = query(collection(db, 'chat_sessions', sessionId, 'messages'), orderBy('timestamp', 'asc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedMessages = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      const initialMessage = { id: 'initial', role: 'ai', text: "Greetings. I am Tebogo, your Super Intelligent AI Assistant. How may I accelerate your journey within the NeuroGrowth Labs ecosystem today?" };
-      
-      if (fetchedMessages.length > 0) {
-        setMessages([initialMessage, ...fetchedMessages]);
-      } else {
-        setMessages([initialMessage]);
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const fetchedMessages = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        if (fetchedMessages.length > 0) {
+          setMessages([INITIAL_MESSAGE, ...fetchedMessages]);
+        } else {
+          setMessages([INITIAL_MESSAGE]);
+        }
+      },
+      (error) => {
+        console.warn('Firestore onSnapshot error:', error);
       }
-    }, (error) => {
-      console.warn("Firestore onSnapshot error:", error);
-    });
-    
+    );
+
     return () => unsubscribe();
   }, [sessionId]);
 
@@ -60,17 +73,22 @@ export default function TebogoChatbot() {
     setInput('');
     setIsTyping(true);
 
-    const messagesRef = collection(db, 'chat_sessions', sessionId, 'messages');
-    
+    if (!isFirebaseConfigured) {
+      setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: 'user', text: userMessage }]);
+    }
+
     // 1. Dual-write user message
-    try {
-      await addDoc(messagesRef, {
-        role: 'user',
-        text: userMessage,
-        timestamp: serverTimestamp()
-      });
-    } catch (fErr) {
-      console.warn("Firebase save chatbot message failed:", fErr);
+    if (isFirebaseConfigured && db) {
+      try {
+        const messagesRef = collection(db, 'chat_sessions', sessionId, 'messages');
+        await addDoc(messagesRef, {
+          role: 'user',
+          text: userMessage,
+          timestamp: serverTimestamp()
+        });
+      } catch (fErr) {
+        console.warn('Firebase save chatbot message failed:', fErr);
+      }
     }
 
     try {
@@ -81,24 +99,31 @@ export default function TebogoChatbot() {
         created_at: new Date().toISOString()
       });
     } catch (sErr) {
-      console.warn("Supabase save chatbot message failed:", sErr);
+      console.warn('Supabase save chatbot message failed:', sErr);
     }
 
-    // Simulate AI response with context
-    setTimeout(async () => {
+    if (replyTimerRef.current) clearTimeout(replyTimerRef.current);
+    replyTimerRef.current = setTimeout(async () => {
       setIsTyping(false);
-      const aiResponse = `I see you are exploring our ${window.location.pathname} page. I am processing your request through our intelligence layer. While I currently function in a demonstration capacity, this interaction stream is being optimized for future full-stack automation.`;
-      
+      const aiResponse = `I see you are exploring our ${window.location.pathname} page. You can explore our Academy, Research Papers, Enterprise Infrastructures, or Partner programs directly from the navigation menu.`;
+
+      if (!isFirebaseConfigured) {
+        setMessages((prev) => [...prev, { id: `a-${Date.now()}`, role: 'ai', text: aiResponse }]);
+      }
+
       // 2. Dual-write AI response
-      try {
-        await addDoc(messagesRef, {
-          role: 'ai',
-          text: aiResponse,
-          systemPromptContext: `Current Page URL: ${window.location.href}`,
-          timestamp: serverTimestamp()
-        });
-      } catch (fErr) {
-        console.warn("Firebase save chatbot AI message failed:", fErr);
+      if (isFirebaseConfigured && db) {
+        try {
+          const messagesRef = collection(db, 'chat_sessions', sessionId, 'messages');
+          await addDoc(messagesRef, {
+            role: 'ai',
+            text: aiResponse,
+            systemPromptContext: `Current Page URL: ${window.location.href}`,
+            timestamp: serverTimestamp()
+          });
+        } catch (fErr) {
+          console.warn('Firebase save chatbot AI message failed:', fErr);
+        }
       }
 
       try {
@@ -110,9 +135,9 @@ export default function TebogoChatbot() {
           created_at: new Date().toISOString()
         });
       } catch (sErr) {
-        console.warn("Supabase save chatbot AI message failed:", sErr);
+        console.warn('Supabase save chatbot AI message failed:', sErr);
       }
-    }, 1500);
+    }, 1000);
   };
 
   return (

@@ -103,9 +103,10 @@ function AssessmentPhase({ onComplete }: { onComplete: () => void }) {
       }, 1500);
       return () => clearTimeout(timer);
     } else {
-      setTimeout(() => onComplete(), 2000);
+      const completeTimer = setTimeout(() => onComplete(), 2000);
+      return () => clearTimeout(completeTimer);
     }
-  }, [qIndex]);
+  }, [qIndex, onComplete]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,8 +308,16 @@ function DocumentsPhase({ onComplete }: { onComplete: () => void }) {
 
 function UploadCard({ title, desc, icon, isUploaded, onUpload }: { title: string, desc: string, icon: React.ReactNode, isUploaded: boolean, onUpload: () => void }) {
   return (
-    <div 
+    <div
+      role="button"
+      tabIndex={isUploaded ? -1 : 0}
       onClick={!isUploaded ? onUpload : undefined}
+      onKeyDown={(e) => {
+        if (!isUploaded && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onUpload();
+        }
+      }}
       className={`relative p-6 rounded-2xl border transition-all ${
         isUploaded 
         ? 'bg-green-500/5 border-green-500/20' 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, isFirebaseConfigured } from '../firebase';
 import { supabase } from '../supabase';
 import Navbar from '../components/sections/Navbar';
 import Footer from '../components/sections/Footer';
@@ -205,20 +205,22 @@ export default function Partner() {
     if (!formData.company || !formData.email) return;
     setIsSubmitting(true);
     try {
-      // 1. Dual-write to Firebase
-      try {
-        await addDoc(collection(db, 'partner_applications'), {
-          ...formData,
-          status: 'pending',
-          createdAt: serverTimestamp()
-        });
-      } catch (fErr) {
-        console.warn("Firebase partner application save failed:", fErr);
+      // 1. Dual-write to Firebase when configured
+      if (isFirebaseConfigured) {
+        try {
+          await addDoc(collection(db, 'partner_applications'), {
+            ...formData,
+            status: 'pending',
+            createdAt: serverTimestamp()
+          });
+        } catch (fErr) {
+          console.warn("Firebase partner application save failed:", fErr);
+        }
       }
 
-      // 2. Dual-write to Supabase (supporting multiple possible schema keys for robust execution)
+      // 2. Write to Supabase using exact SQL schema columns
       try {
-        await supabase.from('partner_applications').insert({
+        const { error: sErr } = await supabase.from('partner_applications').insert({
           company: formData.company,
           type: formData.type,
           country: formData.country,
@@ -226,18 +228,9 @@ export default function Partner() {
           objectives: formData.objectives,
           email: formData.email,
           status: 'pending',
-          orgName: formData.company,
-          orgType: formData.type,
-          domainStack: formData.interest || formData.country,
-          collabGoal: formData.objectives,
-          repName: formData.company,
-          org_name: formData.company,
-          org_type: formData.type,
-          domain_stack: formData.interest || formData.country,
-          collab_goal: formData.objectives,
-          rep_name: formData.company,
           created_at: new Date().toISOString()
         });
+        if (sErr) throw sErr;
       } catch (sErr) {
         console.warn("Supabase partner application save failed:", sErr);
       }

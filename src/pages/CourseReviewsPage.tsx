@@ -75,8 +75,9 @@ export default function CourseReviewsPage() {
         recommendation
       });
 
-      setReviews(prev => [created, ...prev]);
-      setStats(calculateCourseRatingStats([created, ...reviews]));
+      const nextReviews = [created, ...reviews];
+      setReviews(nextReviews);
+      setStats(calculateCourseRatingStats(nextReviews));
       setHeadline('');
       setReviewText('');
       setRoleTag('');
@@ -90,10 +91,11 @@ export default function CourseReviewsPage() {
   };
 
   const handleUpvote = async (revId: string) => {
-    await toggleReviewHelpful(revId);
-    setUpvotedMap(prev => ({ ...prev, [revId]: !prev[revId] }));
+    const isRemoving = Boolean(upvotedMap[revId]);
+    await toggleReviewHelpful(revId, isRemoving);
+    setUpvotedMap(prev => ({ ...prev, [revId]: !isRemoving }));
     setReviews(prev => prev.map(r => 
-      r.id === revId ? { ...r, helpfulCount: r.helpfulCount + (upvotedMap[revId] ? -1 : 1) } : r
+      r.id === revId ? { ...r, helpfulCount: Math.max(0, r.helpfulCount + (isRemoving ? -1 : 1)) } : r
     ));
   };
 

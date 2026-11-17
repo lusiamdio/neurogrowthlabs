@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Award, Download, Printer, Check, Copy } from 'lucide-react';
 import OfficialCertificateCard from './OfficialCertificateCard';
 import { downloadCertificatePdf, type CertificateRenderData } from '../../utils/certificatePdf';
+import { copyToClipboard } from '../../utils/clipboard';
 
 interface CertificateModalProps {
   isOpen: boolean;
@@ -51,11 +52,13 @@ export default function CertificateModal({
     issuedDate: certificateData.issuedDate,
   };
 
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}/academy#verify=${certificateData.certificateId}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const handleCopyLink = async () => {
+    const url = `${window.location.origin}/verify/${encodeURIComponent(certificateData.certificateId)}`;
+    const ok = await copyToClipboard(url);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   const handleDownloadPdf = async () => {
